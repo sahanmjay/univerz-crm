@@ -437,11 +437,11 @@ const APPT_TYPES = ["Discovery meeting","Shoot / site visit","Proposal review","
 
 function seed(){
   const users = [
-    {id:"u1",name:"Subodha Kalhara",   role:"Director / Admin",              color:"#1f5c5a",initials:"SK"},
-    {id:"u2",name:"Sadeepa Namarathna",role:"Account Manager",               color:"#bb472b",initials:"SN"},
-    {id:"u3",name:"Sahan Madhawa",     role:"Telecaller",                    color:"#9a6a14",initials:"SM"},
-    {id:"u4",name:"Pulasthi Wijayarathna",role:"Telecaller",                 color:"#3c7a4e",initials:"PW"},
-    {id:"u5",name:"Ashan Indusara",    role:"Project Coordinator",           color:"#5a466a",initials:"AI"},
+    {id:"u1",name:"Subodha Kalhara",   role:"",color:"#1f5c5a",initials:"SK"},
+    {id:"u2",name:"Sadeepa Namarathna",role:"",color:"#bb472b",initials:"SN"},
+    {id:"u3",name:"Sahan Madhawa",     role:"",color:"#9a6a14",initials:"SM"},
+    {id:"u4",name:"Pulasthi Wijayarathna",role:"",color:"#3c7a4e",initials:"PW"},
+    {id:"u5",name:"Ashan Indusara",    role:"",color:"#5a466a",initials:"AI"},
   ];
   return {users,contacts:[],appointments:[],calls:[],currentUserId:"u1"};
 }
@@ -728,7 +728,7 @@ function renderTeam(){
     const appts = DB.appointments.filter(a=>a.userId===u.id && a.status==='scheduled').length;
     h += `<div class="appt" style="--d:${i*.04}s">
       <div class="avatar" style="background:${u.color};width:42px;height:42px;font-size:14px">${u.initials}</div>
-      <div><div class="ttl">${esc(u.name)}</div><div class="det"><span>${esc(u.role)}</span></div></div>
+      <div><div class="ttl">${esc(u.name)}</div></div>
       <div style="display:flex;gap:22px;text-align:right">
         <div><div class="num" style="font-size:18px;font-weight:600">${owned}</div><div style="font-size:11px;color:var(--muted)">contacts</div></div>
         <div><div class="num" style="font-size:18px;font-weight:600">${callsToday}</div><div style="font-size:11px;color:var(--muted)">calls today</div></div>
@@ -964,7 +964,7 @@ $("#search").addEventListener("input",e=>{ SEARCH=e.target.value.trim(); draw();
 
 /* acting-as switcher */
 function buildMe(){
-  const sel=$("#me-select"); sel.innerHTML = DB.users.map(u=>`<option value="${u.id}" ${u.id===DB.currentUserId?'selected':''}>${u.name} — ${u.role}</option>`).join("");
+  const sel=$("#me-select"); sel.innerHTML = DB.users.map(u=>`<option value="${u.id}" ${u.id===DB.currentUserId?'selected':''}>${u.name}</option>`).join("");
   const me=user(DB.currentUserId); $("#me-av").textContent=me.initials; $("#me-av").style.background=me.color;
 }
 $("#me-select").addEventListener("change",e=>{
