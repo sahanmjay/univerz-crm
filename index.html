@@ -305,15 +305,240 @@ td .num{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
   *{animation:none !important;transition:none !important}
 }
 
+/* ---- mobile navigation & header styles ---- */
+.mobile-bar {
+  display: none;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  padding: 10px 16px;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.mobile-bar .mark {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.mobile-bar .logo-img {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  object-fit: contain;
+}
+.mobile-bar .glyph {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  background: var(--teal);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 13px;
+  font-family: var(--mono);
+}
+.mobile-bar .name {
+  font-weight: 650;
+  font-size: 14px;
+  letter-spacing: -.2px;
+}
+.mobile-bar .whoami {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.mobile-bar .whoami select {
+  border: 1px solid var(--line);
+  background: var(--paper);
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-size: 11px;
+  color: var(--ink);
+  max-width: 120px;
+}
+
+.bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+  grid-template-columns: repeat(5, 1fr);
+  padding: 6px 0;
+  z-index: 30;
+  box-shadow: 0 -2px 10px rgba(0,0,0,.04);
+}
+.bottom-nav button {
+  background: none;
+  border: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 4px 0;
+  font-size: 10px;
+  font-weight: 550;
+  position: relative;
+  width: 100%;
+}
+.bottom-nav button .ic {
+  width: 18px;
+  height: 18px;
+  opacity: .75;
+}
+.bottom-nav button.on {
+  color: var(--teal);
+}
+.bottom-nav button.on .ic {
+  opacity: 1;
+}
+.bottom-nav button .badge {
+  position: absolute;
+  top: 1px;
+  right: 15%;
+  font-family: var(--mono);
+  font-size: 9px;
+  background: var(--clay);
+  color: #fff;
+  border-radius: 10px;
+  padding: 0px 4px;
+  min-width: 14px;
+  text-align: center;
+  line-height: 1.3;
+}
+.bottom-nav button .badge.zero {
+  display: none;
+}
+
 @media (max-width:880px){
-  .app{grid-template-columns:1fr}
-  .side{position:static;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center}
-  .nav{flex-direction:row;flex-wrap:wrap;flex:1}
-  .nav .group-label{display:none}
-  .stats{grid-template-columns:1fr 1fr}
-  .board{grid-template-columns:1fr;}
-  .qcard{grid-template-columns:4px 1fr}
-  .qcard .acts{border-left:0;border-top:1px solid var(--line);grid-column:1/-1}
+  .app{
+    grid-template-columns:1fr;
+    padding-bottom: 60px;
+  }
+  .side{
+    display:none;
+  }
+  .mobile-bar{
+    display:flex;
+  }
+  .bottom-nav{
+    display:grid;
+  }
+  .topbar{
+    position:static;
+    flex-direction:column;
+    align-items:stretch;
+    gap:10px;
+    padding:16px 16px 12px;
+  }
+  .topbar .search{
+    max-width:none;
+    margin-left:0;
+  }
+  .topbar .btn.primary{
+    width:100%;
+    justify-content:center;
+  }
+  .content{
+    padding:12px 12px 60px;
+  }
+  .stats{
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin-bottom:14px;
+  }
+  .board{
+    grid-template-columns:1fr;
+  }
+  .qcard{
+    grid-template-columns:4px 1fr;
+  }
+  .qcard .acts{
+    border-left:0;
+    border-top:1px solid var(--line);
+    grid-column:1/-1;
+    justify-content:flex-end;
+  }
+  .appt{
+    grid-template-columns:1fr;
+    gap:10px;
+    align-items:start;
+  }
+  .appt .date{
+    border-right:0;
+    border-bottom:1px solid var(--line);
+    padding-right:0;
+    padding-bottom:8px;
+    text-align:left;
+    display:flex;
+    align-items:baseline;
+    gap:6px;
+  }
+  .appt .date .d{
+    font-size:18px;
+  }
+  .appt .date .m{
+    margin-top:0;
+  }
+  
+  .grid2 {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  
+  /* responsive table to cards */
+  table, thead, tbody, th, td, tr { 
+    display: block; 
+  }
+  thead tr { 
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+  tr { 
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--surface);
+    margin-bottom: 10px;
+    padding: 10px 14px;
+    box-shadow: var(--shadow);
+  }
+  tr:hover {
+    background: var(--surface);
+  }
+  td { 
+    border: none;
+    border-bottom: 1px solid var(--surface-2);
+    position: relative;
+    padding: 8px 0 !important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  td:last-child {
+    border-bottom: 0;
+    margin-top: 6px;
+    justify-content: flex-end;
+    padding-bottom: 0 !important;
+  }
+  td::before { 
+    content: attr(data-label);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--muted);
+    font-weight: 600;
+  }
+  td:last-child::before {
+    content: none;
+  }
 }
 </style>
 </head>
@@ -361,6 +586,25 @@ td .num{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
 
   <!-- ===================== MAIN ===================== -->
   <div class="main">
+    <!-- Visible only on mobile -->
+    <div class="mobile-bar">
+      <div class="mark">
+        <img
+          id="mobile-brand-logo"
+          class="logo-img"
+          src="/logo-placeholder.png"
+          alt="Univerz logo"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='grid';"
+        />
+        <div class="glyph" style="display:none;">U</div>
+        <div class="name">Univerz CRM <span class="conn-dot offline" id="mobile-conn-dot" title="Connecting…"></span></div>
+      </div>
+      <div class="whoami">
+        <div class="avatar" id="mobile-me-av">SK</div>
+        <select id="mobile-me-select" title="Acting as"></select>
+      </div>
+    </div>
+
     <div class="topbar">
       <div>
         <h1 id="page-title">Today's calls</h1>
@@ -546,7 +790,7 @@ const PAGES = {
 
 function go(v){
   VIEW=v;
-  $$("#nav button").forEach(b=>b.classList.toggle("on", b.dataset.view===v));
+  $$("[data-view]").forEach(b=>b.classList.toggle("on", b.dataset.view===v));
   $("#page-title").textContent = PAGES[v].title;
   $("#page-crumb").textContent = PAGES[v].crumb;
   draw();
@@ -631,13 +875,13 @@ function renderContacts(){
   rows.forEach((c,i)=>{
     const o=user(c.owner);
     h += `<tr style="--d:${Math.min(i,12)*.02}s">
-      <td><span class="nm">${esc(c.name)}</span></td>
-      <td>${esc(c.company)}</td>
-      <td><span class="num">${esc(c.phone)}</span></td>
-      <td><span class="pill ${c.service}">${svc(c.service)}</span></td>
-      <td><span class="pill stage">${stageLabel(c.stage)}</span></td>
-      <td><span class="owner-tag"><span class="dot" style="background:${o.color}"></span>${esc(o.name)}</span></td>
-      <td><span class="num" style="color:${c.nextCallAt&&c.nextCallAt<Date.now()?'var(--clay)':'var(--ink-soft)'}">${c.doNotCall?'<span style="color:var(--muted)">do not call</span>':fmtWhen(c.nextCallAt)}</span></td>
+      <td data-label="Name"><span class="nm">${esc(c.name)}</span></td>
+      <td data-label="Company">${esc(c.company)}</td>
+      <td data-label="Phone"><span class="num">${esc(c.phone)}</span></td>
+      <td data-label="Service"><span class="pill ${c.service}">${svc(c.service)}</span></td>
+      <td data-label="Stage"><span class="pill stage">${stageLabel(c.stage)}</span></td>
+      <td data-label="Owner"><span class="owner-tag"><span class="dot" style="background:${o.color}"></span>${esc(o.name)}</span></td>
+      <td data-label="Next Call"><span class="num" style="color:${c.nextCallAt&&c.nextCallAt<Date.now()?'var(--clay)':'var(--ink-soft)'}">${c.doNotCall?'<span style="color:var(--muted)">do not call</span>':fmtWhen(c.nextCallAt)}</span></td>
       <td style="text-align:right;white-space:nowrap">
         <button class="btn sm" data-call="${c.id}">Call</button>
         <button class="btn ghost sm" data-open="${c.id}">Edit</button>
@@ -959,29 +1203,41 @@ document.body.addEventListener("click",e=>{
   }
 });
 $("#nav").addEventListener("click",e=>{ const b=e.target.closest("button[data-view]"); if(b) go(b.dataset.view); });
+$("#bottom-nav").addEventListener("click",e=>{ const b=e.target.closest("button[data-view]"); if(b) go(b.dataset.view); });
 $("#add-contact").onclick = ()=>contactForm(null);
 $("#search").addEventListener("input",e=>{ SEARCH=e.target.value.trim(); draw(); });
 
 /* acting-as switcher */
 function buildMe(){
-  const sel=$("#me-select"); sel.innerHTML = DB.users.map(u=>`<option value="${u.id}" ${u.id===DB.currentUserId?'selected':''}>${u.name}</option>`).join("");
-  const me=user(DB.currentUserId); $("#me-av").textContent=me.initials; $("#me-av").style.background=me.color;
+  const html = DB.users.map(u=>`<option value="${u.id}" ${u.id===DB.currentUserId?'selected':''}>${u.name}</option>`).join("");
+  const sel=$("#me-select"); if(sel) sel.innerHTML = html;
+  const msel=$("#mobile-me-select"); if(msel) msel.innerHTML = html;
+  
+  const me=user(DB.currentUserId); 
+  const av=$("#me-av"); if(av) { av.textContent=me.initials; av.style.background=me.color; }
+  const mav=$("#mobile-me-av"); if(mav) { mav.textContent=me.initials; mav.style.background=me.color; }
 }
-$("#me-select").addEventListener("change",e=>{
-  DB.currentUserId=e.target.value;
-  localStorage.setItem("crm_current_user", e.target.value);
+
+function changeMe(userId){
+  DB.currentUserId=userId;
+  localStorage.setItem("crm_current_user", userId);
   cacheLocal(DB);
   buildMe();
   toast("Now acting as "+user(DB.currentUserId).name);
-});
+}
+$("#me-select").addEventListener("change",e=>changeMe(e.target.value));
+if($("#mobile-me-select")) $("#mobile-me-select").addEventListener("change",e=>changeMe(e.target.value));
 
 /* badges */
 function refreshBadges(){
   const now=Date.now();
   const due = DB.contacts.filter(c=>!c.doNotCall && c.nextCallAt && (c.nextCallAt<now || new Date(c.nextCallAt).toDateString()===new Date().toDateString())).length;
-  const b=$("#badge-today"); b.textContent=due; b.classList.toggle("zero",due===0);
+  const b=$("#badge-today"); if(b) { b.textContent=due; b.classList.toggle("zero",due===0); }
+  const bm=$("#badge-today-mobile"); if(bm) { bm.textContent=due; bm.classList.toggle("zero",due===0); }
+  
   const ap = DB.appointments.filter(a=>a.status==="scheduled" && a.at>=now).length;
-  const ba=$("#badge-appt"); ba.textContent=ap; ba.classList.toggle("zero",ap===0);
+  const ba=$("#badge-appt"); if(ba) { ba.textContent=ap; ba.classList.toggle("zero",ap===0); }
+  const bam=$("#badge-appt-mobile"); if(bam) { bam.textContent=ap; bam.classList.toggle("zero",ap===0); }
 }
 
 /* toast */
@@ -994,10 +1250,14 @@ function toast(msg){
 /* connection indicator */
 function setOnline(v){
   ONLINE=v;
-  const dot=$("#conn-dot");
-  dot.classList.toggle("live",v);
-  dot.classList.toggle("offline",!v);
-  dot.title = v?"Connected to Supabase":"Offline — using local cache";
+  const dots = [$("#conn-dot"), $("#mobile-conn-dot")];
+  dots.forEach(dot => {
+    if(dot) {
+      dot.classList.toggle("live",v);
+      dot.classList.toggle("offline",!v);
+      dot.title = v?"Connected to Supabase":"Offline — using local cache";
+    }
+  });
 }
 
 /* =================================================================
@@ -1059,5 +1319,13 @@ async function boot(){
 
 boot();
 </script>
+<!-- Visible only on mobile -->
+<nav class="bottom-nav" id="bottom-nav">
+  <button data-view="today" class="on"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span>Today</span><span class="badge" id="badge-today-mobile">0</span></button>
+  <button data-view="contacts"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Contacts</span></button>
+  <button data-view="appointments"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>Appts</span><span class="badge zero" id="badge-appt-mobile">0</span></button>
+  <button data-view="pipeline"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg><span>Pipeline</span></button>
+  <button data-view="team"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Team</span></button>
+</nav>
 </body>
 </html>
