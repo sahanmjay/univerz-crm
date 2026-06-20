@@ -1,0 +1,918 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Univerz CRM — calls &amp; appointments</title>
+<meta name="description" content="Internal call queue and appointment CRM for the Univerz team. Track leads, log calls, book meetings and shoots." />
+<meta name="theme-color" content="#1f5c5a" />
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<style>
+/* ----------------------------------------------------------------
+   Univerz CRM — single file prototype
+   Plain HTML / CSS / JS. No build step, no framework, no CDN.
+   Data lives in the browser (localStorage key: univerz_crm_v1).
+   Design note: system fonts for UI, monospace for phone numbers,
+   times and counts — a CRM is read by scanning numbers, so the
+   numbers get the readable face. One accent (teal), one alarm
+   colour (clay) for overdue calls. Deliberately plain.
+   ----------------------------------------------------------------*/
+
+:root{
+  --paper:#faf8f4;
+  --surface:#ffffff;
+  --surface-2:#f3f0e9;
+  --ink:#20262e;
+  --ink-soft:#444b54;
+  --muted:#6f6a60;
+  --line:#e7e1d6;
+  --line-strong:#d8d1c2;
+  --teal:#1f5c5a;
+  --teal-deep:#174644;
+  --teal-wash:#e8f0ef;
+  --clay:#bb472b;
+  --clay-wash:#f7e7e1;
+  --amber:#9a6a14;
+  --amber-wash:#f4ecd9;
+  --green:#3c7a4e;
+  --green-wash:#e6f0e8;
+  --radius:7px;
+  --mono:ui-monospace,"SF Mono","DejaVu Sans Mono",Menlo,Consolas,monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --shadow:0 1px 2px rgba(32,38,46,.06),0 6px 18px rgba(32,38,46,.05);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;font-family:var(--sans);color:var(--ink);background:var(--paper);
+  font-size:14px;line-height:1.45;-webkit-font-smoothing:antialiased;
+}
+button{font-family:inherit}
+a{color:var(--teal)}
+
+/* ---- layout shell ---- */
+.app{display:grid;grid-template-columns:228px 1fr;min-height:100vh}
+
+/* ---- sidebar ---- */
+.side{
+  background:var(--surface);border-right:1px solid var(--line);
+  display:flex;flex-direction:column;position:sticky;top:0;height:100vh;
+}
+.brand{padding:18px 18px 14px;border-bottom:1px solid var(--line)}
+.brand .mark{display:flex;align-items:center;gap:9px}
+/* Logo placeholder — replace /logo-placeholder.png with your real logo file */
+.brand .logo-img{
+  width:30px;height:30px;border-radius:6px;object-fit:contain;flex:none;
+}
+.brand .glyph{
+  width:30px;height:30px;border-radius:6px;background:var(--teal);
+  color:#fff;display:grid;place-items:center;font-weight:700;font-size:15px;
+  font-family:var(--mono);letter-spacing:-1px;flex:none;
+}
+.brand .name{font-weight:650;letter-spacing:-.2px}
+.brand .sub{font-size:11px;color:var(--muted);margin-top:2px;letter-spacing:.02em}
+
+.nav{padding:10px 10px;display:flex;flex-direction:column;gap:1px;flex:1}
+.nav .group-label{font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);padding:12px 9px 5px}
+.nav button{
+  display:flex;align-items:center;gap:10px;width:100%;text-align:left;
+  background:none;border:0;padding:8px 9px;border-radius:6px;color:var(--ink-soft);
+  cursor:pointer;font-size:13.5px;position:relative;transition:background .12s,color .12s;
+}
+.nav button:hover{background:var(--surface-2)}
+.nav button.on{background:var(--teal-wash);color:var(--teal-deep);font-weight:600}
+.nav button .ic{width:17px;height:17px;flex:none;opacity:.85}
+.nav .badge{
+  margin-left:auto;font-family:var(--mono);font-size:11px;background:var(--clay);
+  color:#fff;border-radius:20px;padding:1px 7px;min-width:20px;text-align:center;
+}
+.nav .badge.zero{background:var(--surface-2);color:var(--muted)}
+
+.whoami{border-top:1px solid var(--line);padding:11px 12px;display:flex;align-items:center;gap:9px}
+.whoami select{
+  border:1px solid var(--line);background:var(--paper);border-radius:6px;
+  padding:6px 7px;font-size:12.5px;color:var(--ink);width:100%;
+}
+.avatar{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;
+  color:#fff;font-size:11px;font-weight:600;flex:none;font-family:var(--mono)}
+
+/* ---- main ---- */
+.main{display:flex;flex-direction:column;min-width:0}
+.topbar{
+  display:flex;align-items:center;gap:12px;padding:13px 22px;
+  border-bottom:1px solid var(--line);background:rgba(250,248,244,.85);
+  backdrop-filter:saturate(1.1) blur(2px);position:sticky;top:0;z-index:5;
+}
+.topbar h1{font-size:16px;margin:0;font-weight:650;letter-spacing:-.2px}
+.topbar .crumb{color:var(--muted);font-size:12.5px;margin-top:1px}
+.search{flex:1;max-width:340px;margin-left:8px;position:relative}
+.search input{
+  width:100%;border:1px solid var(--line-strong);background:var(--surface);
+  border-radius:7px;padding:8px 11px 8px 31px;font-size:13px;color:var(--ink);
+}
+.search input:focus{outline:2px solid var(--teal-wash);border-color:var(--teal)}
+.search .si{position:absolute;left:9px;top:8px;opacity:.5}
+
+.btn{
+  border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);
+  border-radius:7px;padding:8px 13px;font-size:13px;cursor:pointer;font-weight:550;
+  display:inline-flex;align-items:center;gap:7px;transition:transform .08s,background .12s,border-color .12s;
+}
+.btn:hover{background:var(--surface-2)}
+.btn:active{transform:translateY(1px)}
+.btn.primary{background:var(--teal);border-color:var(--teal);color:#fff}
+.btn.primary:hover{background:var(--teal-deep)}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.ghost:hover{background:var(--surface-2)}
+.btn.danger{color:var(--clay);border-color:var(--clay-wash)}
+.btn.sm{padding:5px 9px;font-size:12px}
+
+.content{padding:20px 22px 60px;overflow:auto}
+
+/* ---- stat strip ---- */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:13px 15px;box-shadow:var(--shadow);
+}
+.stat .k{font-size:11.5px;color:var(--muted);letter-spacing:.02em}
+.stat .v{font-family:var(--mono);font-size:25px;font-weight:600;margin-top:5px;letter-spacing:-1px}
+.stat .v small{font-size:13px;color:var(--muted);font-weight:500}
+.stat.alarm .v{color:var(--clay)}
+.stat .bar{height:3px;border-radius:3px;background:var(--surface-2);margin-top:9px;overflow:hidden}
+.stat .bar i{display:block;height:100%;background:var(--teal);border-radius:3px}
+
+/* ---- section heading ---- */
+.sec-h{display:flex;align-items:baseline;gap:10px;margin:24px 0 10px}
+.sec-h:first-child{margin-top:0}
+.sec-h h2{font-size:13.5px;margin:0;font-weight:650;letter-spacing:.01em}
+.sec-h .count{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.sec-h .rule{flex:1;height:1px;background:var(--line)}
+
+/* ---- call queue cards ---- */
+.queue{display:flex;flex-direction:column;gap:8px}
+.qcard{
+  display:grid;grid-template-columns:4px 1fr auto;gap:0;align-items:stretch;
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  overflow:hidden;box-shadow:var(--shadow);
+  animation:rise .32s ease both;
+}
+.qcard .spine{background:var(--line-strong)}
+.qcard.overdue .spine{background:var(--clay)}
+.qcard.today .spine{background:var(--amber)}
+.qcard.soon .spine{background:var(--teal)}
+.qcard .body{padding:12px 14px;min-width:0}
+.qcard .row1{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.qcard .who{font-weight:600;font-size:14px}
+.qcard .co{color:var(--muted);font-size:12.5px}
+.qcard .meta{display:flex;gap:14px;margin-top:6px;flex-wrap:wrap;align-items:center}
+.qcard .meta span{font-size:12px;color:var(--ink-soft);display:inline-flex;align-items:center;gap:5px}
+.qcard .meta .num{font-family:var(--mono);font-size:12.5px}
+.qcard .when{font-family:var(--mono);font-size:12px}
+.qcard.overdue .when{color:var(--clay);font-weight:600}
+.qcard .acts{display:flex;align-items:center;gap:7px;padding:12px 14px;border-left:1px solid var(--line)}
+
+.pill{
+  font-size:10.5px;font-weight:600;letter-spacing:.03em;padding:2px 8px;border-radius:20px;
+  text-transform:uppercase;white-space:nowrap;
+}
+.pill.web{background:var(--teal-wash);color:var(--teal-deep)}
+.pill.social{background:var(--amber-wash);color:var(--amber)}
+.pill.photo{background:var(--green-wash);color:var(--green)}
+.pill.video{background:#ece6f0;color:#5a466a}
+.pill.stage{background:var(--surface-2);color:var(--ink-soft);text-transform:none;font-weight:550;letter-spacing:0}
+
+/* ---- table (contacts) ---- */
+.tablewrap{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+table{border-collapse:collapse;width:100%}
+thead th{
+  text-align:left;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);
+  font-weight:600;padding:10px 14px;background:var(--surface-2);border-bottom:1px solid var(--line);
+}
+tbody td{padding:11px 14px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:middle}
+tbody tr{transition:background .1s;animation:rise .3s ease both}
+tbody tr:hover{background:var(--surface-2)}
+tbody tr:last-child td{border-bottom:0}
+td .nm{font-weight:600}
+td .num{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
+.owner-tag{display:inline-flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;flex:none}
+
+/* ---- appointments list ---- */
+.appt{
+  display:grid;grid-template-columns:64px 1fr auto;gap:14px;align-items:center;
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:12px 15px;box-shadow:var(--shadow);animation:rise .3s ease both;
+}
+.appt .date{text-align:center;border-right:1px solid var(--line);padding-right:14px}
+.appt .date .d{font-family:var(--mono);font-size:22px;font-weight:600;line-height:1}
+.appt .date .m{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-top:3px}
+.appt .ttl{font-weight:600}
+.appt .det{color:var(--muted);font-size:12.5px;margin-top:3px;display:flex;gap:13px;flex-wrap:wrap}
+.appt .det .num{font-family:var(--mono)}
+.appt.done{opacity:.55}
+.appt.done .ttl{text-decoration:line-through}
+
+/* ---- pipeline board ---- */
+.board{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;align-items:start}
+.col{background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius);padding:9px;min-height:120px}
+.col h3{margin:2px 4px 9px;font-size:12px;font-weight:650;display:flex;justify-content:space-between;align-items:center}
+.col h3 .c{font-family:var(--mono);font-size:11px;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:0 7px}
+.dcard{
+  background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:9px 10px;
+  margin-bottom:8px;cursor:grab;box-shadow:0 1px 1px rgba(0,0,0,.03);animation:rise .25s ease both;
+}
+.dcard:active{cursor:grabbing}
+.dcard.dragging{opacity:.4}
+.col.drop{outline:2px dashed var(--teal);outline-offset:-3px;background:var(--teal-wash)}
+.dcard .dn{font-weight:600;font-size:13px}
+.dcard .dco{color:var(--muted);font-size:11.5px;margin:2px 0 7px}
+.dcard .dfoot{display:flex;justify-content:space-between;align-items:center}
+
+/* ---- empty state ---- */
+.empty{
+  text-align:center;color:var(--muted);padding:40px 20px;border:1px dashed var(--line-strong);
+  border-radius:var(--radius);background:var(--surface)
+}
+.empty b{color:var(--ink);display:block;margin-bottom:5px;font-size:14px}
+
+/* ---- modal ---- */
+.scrim{
+  position:fixed;inset:0;background:rgba(28,33,40,.42);display:none;z-index:40;
+  align-items:flex-start;justify-content:center;padding:48px 16px;overflow:auto;
+}
+.scrim.show{display:flex;animation:fade .15s ease both}
+.modal{
+  background:var(--surface);border-radius:11px;width:100%;max-width:540px;
+  box-shadow:0 20px 60px rgba(20,25,30,.3);animation:pop .22s cubic-bezier(.2,.9,.25,1) both;
+}
+.modal header{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line)}
+.modal header h3{margin:0;font-size:15px}
+.modal header .x{border:0;background:none;font-size:20px;color:var(--muted);cursor:pointer;line-height:1;padding:4px}
+.modal .pad{padding:18px 20px}
+.modal footer{display:flex;justify-content:flex-end;gap:9px;padding:14px 20px;border-top:1px solid var(--line);background:var(--surface-2);border-radius:0 0 11px 11px}
+
+.field{margin-bottom:13px}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--ink-soft);margin-bottom:5px}
+.field input,.field select,.field textarea{
+  width:100%;border:1px solid var(--line-strong);border-radius:7px;padding:9px 10px;
+  font-size:13.5px;color:var(--ink);background:var(--surface);font-family:inherit;
+}
+.field input.num{font-family:var(--mono)}
+.field textarea{resize:vertical;min-height:64px}
+.field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--teal-wash);border-color:var(--teal)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* disposition chips */
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{
+  border:1px solid var(--line-strong);background:var(--surface);border-radius:20px;
+  padding:6px 12px;font-size:12.5px;cursor:pointer;transition:all .12s;
+}
+.chip:hover{border-color:var(--teal)}
+.chip.sel{background:var(--teal);border-color:var(--teal);color:#fff}
+.chip.bad.sel{background:var(--clay);border-color:var(--clay)}
+.chip.good.sel{background:var(--green);border-color:var(--green)}
+
+.subpanel{border:1px solid var(--line);border-radius:8px;padding:12px;margin-top:12px;background:var(--surface-2);display:none}
+.subpanel.show{display:block;animation:rise .2s ease both}
+.subpanel .ttl{font-size:12px;font-weight:650;margin-bottom:9px;color:var(--ink-soft)}
+
+.toggle{display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;user-select:none}
+.toggle input{width:auto}
+
+/* ---- toast ---- */
+.toasts{position:fixed;right:20px;bottom:20px;z-index:60;display:flex;flex-direction:column;gap:8px}
+.toast{
+  background:var(--ink);color:#fff;padding:11px 15px;border-radius:8px;font-size:13px;
+  box-shadow:0 8px 24px rgba(0,0,0,.25);display:flex;align-items:center;gap:9px;
+  animation:slidein .25s ease both;max-width:330px;
+}
+.toast .tk{width:7px;height:7px;border-radius:50%;background:var(--green);flex:none}
+
+/* ---- animations ---- */
+@keyframes rise{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes pop{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+@keyframes slidein{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
+.stagger>*{animation-delay:var(--d,0s)}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important;transition:none !important}
+}
+
+@media (max-width:880px){
+  .app{grid-template-columns:1fr}
+  .side{position:static;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center}
+  .nav{flex-direction:row;flex-wrap:wrap;flex:1}
+  .nav .group-label{display:none}
+  .stats{grid-template-columns:1fr 1fr}
+  .board{grid-template-columns:1fr;}
+  .qcard{grid-template-columns:4px 1fr}
+  .qcard .acts{border-left:0;border-top:1px solid var(--line);grid-column:1/-1}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside class="side">
+    <div class="brand">
+      <div class="mark">
+        <!--
+          ╔══════════════════════════════════════════════════╗
+          ║  LOGO PLACEHOLDER                               ║
+          ║  Replace /logo-placeholder.png with your real   ║
+          ║  Univerz logo file. Recommended size: 60×60px.  ║
+          ║  To revert to the "U" glyph, remove the <img>  ║
+          ║  and uncomment the <div class="glyph"> below.   ║
+          ╚══════════════════════════════════════════════════╝
+        -->
+        <img
+          id="brand-logo"
+          class="logo-img"
+          src="/logo-placeholder.png"
+          alt="Univerz logo"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='grid';"
+        />
+        <div class="glyph" style="display:none;">U</div>
+        <div>
+          <div class="name">Univerz CRM</div>
+          <div class="sub">calls &amp; appointments</div>
+        </div>
+      </div>
+    </div>
+    <nav class="nav" id="nav">
+      <div class="group-label">Work</div>
+      <button data-view="today" class="on"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Today's calls<span class="badge" id="badge-today">0</span></button>
+      <button data-view="contacts"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Contacts</button>
+      <button data-view="appointments"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Appointments<span class="badge zero" id="badge-appt">0</span></button>
+      <button data-view="pipeline"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg>Pipeline</button>
+      <div class="group-label">Team</div>
+      <button data-view="team"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>People &amp; activity</button>
+    </nav>
+    <div class="whoami">
+      <div class="avatar" id="me-av">SK</div>
+      <select id="me-select" title="Acting as"></select>
+    </div>
+  </aside>
+
+  <!-- ===================== MAIN ===================== -->
+  <div class="main">
+    <div class="topbar">
+      <div>
+        <h1 id="page-title">Today's calls</h1>
+        <div class="crumb" id="page-crumb">Calls due and overdue, oldest first</div>
+      </div>
+      <div class="search">
+        <svg class="si" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="search" placeholder="Search name, company or number…" />
+      </div>
+      <button class="btn primary" id="add-contact">+ New contact</button>
+    </div>
+    <div class="content" id="content"></div>
+  </div>
+</div>
+
+<!-- scrim/modal mount -->
+<div class="scrim" id="scrim"><div id="modal-mount"></div></div>
+<div class="toasts" id="toasts"></div>
+
+<script>
+/* =================================================================
+   STORE  — plain object kept in localStorage. No magic.
+   ================================================================= */
+const KEY = "univerz_crm_v1";
+const DAY = 86400000;
+
+const SERVICES = [
+  {id:"web",   label:"Web"},
+  {id:"social",label:"Social media"},
+  {id:"photo", label:"Photography"},
+  {id:"video", label:"Videography"},
+];
+const STAGES = [
+  {id:"new",      label:"New lead"},
+  {id:"contacted",label:"Contacted"},
+  {id:"qualified",label:"Qualified"},
+  {id:"proposal", label:"Proposal"},
+  {id:"won",      label:"Won"},
+];
+const DISPOSITIONS = [
+  {id:"answered",   label:"Spoke — interested", tone:"good"},
+  {id:"callback",   label:"Call back later",    tone:""},
+  {id:"noanswer",   label:"No answer",          tone:""},
+  {id:"busy",       label:"Busy / engaged",     tone:""},
+  {id:"appt",       label:"Booked appointment", tone:"good"},
+  {id:"won",        label:"Closed — won",       tone:"good"},
+  {id:"notnow",     label:"Not now",            tone:""},
+  {id:"notint",     label:"Not interested",     tone:"bad"},
+  {id:"wrong",      label:"Wrong number",       tone:"bad"},
+  {id:"dnc",        label:"Do not call",        tone:"bad"},
+];
+const APPT_TYPES = ["Discovery meeting","Shoot / site visit","Proposal review","Follow-up call","Handover"];
+
+function seed(){
+  const now = Date.now();
+  /* ── The Univerz team ── */
+  const users = [
+    {id:"u1",name:"Subodha Kalhara",   role:"Director / Admin",              color:"#1f5c5a",initials:"SK"},
+    {id:"u2",name:"Sadeepa Namarathna",role:"Account Manager",               color:"#bb472b",initials:"SN"},
+    {id:"u3",name:"Sahan Madhawa",     role:"Telecaller",                    color:"#9a6a14",initials:"SM"},
+    {id:"u4",name:"Pulasthi Wijayarathna",role:"Telecaller",                 color:"#3c7a4e",initials:"PW"},
+    {id:"u5",name:"Ashan Indusara",    role:"Project Coordinator",           color:"#5a466a",initials:"AI"},
+    {id:"u6",name:"Videographer",      role:"Photographer / Videographer",   color:"#2b6178",initials:"VG"},
+  ];
+  const C = (o)=>Object.assign({id:uid(),email:"",notes:"",doNotCall:false,lastDisposition:"",createdAt:now-Math.random()*40*DAY},o);
+  const contacts = [
+    C({name:"Nimal Perera",company:"Sunrise Villas, Bentota",phone:"077 412 6650",service:"web",stage:"qualified",owner:"u3",source:"Referral",nextCallAt:now-2*DAY,lastDisposition:"callback"}),
+    C({name:"Anushka Silva",company:"Cecrafto Kombucha",phone:"071 998 2210",service:"social",stage:"proposal",owner:"u2",source:"Instagram DM",nextCallAt:now-DAY+3*3600e3,lastDisposition:"answered"}),
+    C({name:"Mr. Bandara",company:"Mahawaththa Distributors",phone:"076 330 0145",service:"web",stage:"contacted",owner:"u3",source:"Cold call",nextCallAt:now-5*3600e3,lastDisposition:"noanswer"}),
+    C({name:"Sanduni Fernando",company:"Goddess Heritage Villa",phone:"070 226 8890",service:"photo",stage:"qualified",owner:"u4",source:"Website form",nextCallAt:now+2*3600e3,lastDisposition:"callback"}),
+    C({name:"Ravi Jayasuriya",company:"Yantech Lanka",phone:"077 700 1234",service:"video",stage:"new",owner:"u4",source:"Expo lead",nextCallAt:now+5*3600e3,lastDisposition:""}),
+    C({name:"Hashini",company:"Bathle Eco Resort",phone:"072 545 1190",service:"social",stage:"contacted",owner:"u2",source:"Referral",nextCallAt:now+DAY,lastDisposition:"busy"}),
+    C({name:"Mohamed Rizwan",company:"Sigiri Hunter's Tree Lodge",phone:"075 880 7766",service:"web",stage:"new",owner:"u3",source:"Facebook",nextCallAt:now+3*DAY,lastDisposition:""}),
+    C({name:"Priyanka",company:"Misty Hills Villa",phone:"078 414 0098",service:"photo",stage:"won",owner:"u2",source:"Repeat client",nextCallAt:null,lastDisposition:"won"}),
+    C({name:"Kasun Madushanka",company:"Vocell Lanka",phone:"077 121 3344",service:"web",stage:"proposal",owner:"u3",source:"Cold call",nextCallAt:now-3*DAY,lastDisposition:"answered"}),
+  ];
+  const cById = Object.fromEntries(contacts.map(c=>[c.name,c.id]));
+  const appointments = [
+    {id:uid(),contactId:cById["Anushka Silva"],userId:"u5",title:"Proposal review",type:"Proposal review",at:todayAt(15,30),durationMin:45,location:"Zoom",notes:"Walk through 3 content packages",status:"scheduled"},
+    {id:uid(),contactId:cById["Sanduni Fernando"],userId:"u6",title:"Villa photo shoot",type:"Shoot / site visit",at:Date.now()+2*DAY+ (10-new Date().getHours())*3600e3,durationMin:240,location:"Kandy",notes:"Bring drone + wide lens",status:"scheduled"},
+    {id:uid(),contactId:cById["Nimal Perera"],userId:"u1",title:"Discovery meeting",type:"Discovery meeting",at:Date.now()+DAY,durationMin:60,location:"Office",notes:"",status:"scheduled"},
+  ];
+  const calls = [
+    {id:uid(),contactId:cById["Anushka Silva"],userId:"u2",at:now-DAY,disposition:"answered",note:"Likes the south-coast season idea",durationSec:480},
+    {id:uid(),contactId:cById["Kasun Madushanka"],userId:"u3",at:now-3*DAY,disposition:"answered",note:"Sent quotation, waiting",durationSec:300},
+  ];
+  return {users,contacts,appointments,calls,currentUserId:"u1"};
+}
+
+function load(){
+  try{
+    const raw = localStorage.getItem(KEY);
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  const s = seed(); save(s); return s;
+}
+function save(s){ try{ localStorage.setItem(KEY, JSON.stringify(s)); }catch(e){} }
+let DB = load();
+
+/* helpers */
+function uid(){ return "id"+Math.random().toString(36).slice(2,9); }
+function todayAt(h,m){ const d=new Date(); d.setHours(h,m,0,0); return d.getTime(); }
+function $(s,r=document){ return r.querySelector(s); }
+function $$(s,r=document){ return [...r.querySelectorAll(s)]; }
+function esc(s){ return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+function user(id){ return DB.users.find(u=>u.id===id)||{name:"—",color:"#999",initials:"?"}; }
+function contact(id){ return DB.contacts.find(c=>c.id===id); }
+function svc(id){ return (SERVICES.find(s=>s.id===id)||{}).label||id; }
+function stageLabel(id){ return (STAGES.find(s=>s.id===id)||{}).label||id; }
+function dispoLabel(id){ return (DISPOSITIONS.find(d=>d.id===id)||{}).label||"—"; }
+
+/* date formatting — kept human and short */
+function fmtWhen(ts){
+  if(!ts) return "—";
+  const d=new Date(ts), now=new Date();
+  const sameDay = d.toDateString()===now.toDateString();
+  const tom = new Date(now.getTime()+DAY).toDateString()===d.toDateString();
+  const yest = new Date(now.getTime()-DAY).toDateString()===d.toDateString();
+  const t = d.toLocaleTimeString([], {hour:"numeric",minute:"2-digit"});
+  if(sameDay) return "Today "+t;
+  if(tom) return "Tomorrow "+t;
+  if(yest) return "Yesterday "+t;
+  return d.toLocaleDateString([], {day:"numeric",month:"short"})+" "+t;
+}
+function relOverdue(ts){
+  const diff = Date.now()-ts;
+  const days = Math.floor(diff/DAY);
+  if(days>=1) return days+"d overdue";
+  const hrs = Math.floor(diff/3600e3);
+  if(hrs>=1) return hrs+"h overdue";
+  return "due now";
+}
+
+/* =================================================================
+   ROUTER / VIEWS
+   ================================================================= */
+let VIEW = "today";
+let SEARCH = "";
+
+const PAGES = {
+  today:{title:"Today's calls", crumb:"Calls due and overdue, oldest first", render:renderToday},
+  contacts:{title:"Contacts", crumb:"Everyone in the pipeline", render:renderContacts},
+  appointments:{title:"Appointments", crumb:"Meetings, shoots and site visits", render:renderAppointments},
+  pipeline:{title:"Pipeline", crumb:"Drag a card to move its stage", render:renderPipeline},
+  team:{title:"People & activity", crumb:"Who is doing what", render:renderTeam},
+};
+
+function go(v){
+  VIEW=v;
+  $$("#nav button").forEach(b=>b.classList.toggle("on", b.dataset.view===v));
+  $("#page-title").textContent = PAGES[v].title;
+  $("#page-crumb").textContent = PAGES[v].crumb;
+  draw();
+}
+function draw(){
+  PAGES[VIEW].render();
+  refreshBadges();
+}
+
+/* ---- TODAY: the call queue (the heart of the tool) ---- */
+function callQueue(){
+  const now = Date.now();
+  return DB.contacts
+    .filter(c=>!c.doNotCall && c.nextCallAt)
+    .filter(matchSearch)
+    .sort((a,b)=>a.nextCallAt-b.nextCallAt);
+}
+function renderToday(){
+  const now = Date.now();
+  const q = callQueue();
+  const overdue = q.filter(c=>c.nextCallAt < now - 60e3);
+  const todayList = q.filter(c=> c.nextCallAt>=now-60e3 && new Date(c.nextCallAt).toDateString()===new Date().toDateString());
+  const later = q.filter(c=> !overdue.includes(c) && !todayList.includes(c));
+
+  const callsToday = DB.calls.filter(c=> new Date(c.at).toDateString()===new Date().toDateString()).length;
+  const apptToday = DB.appointments.filter(a=> a.status==="scheduled" && new Date(a.at).toDateString()===new Date().toDateString()).length;
+  const pct = q.length? Math.round((callsToday/(callsToday+overdue.length+todayList.length||1))*100):0;
+
+  let h = `
+  <div class="stats stagger">
+    <div class="stat alarm" style="--d:0s"><div class="k">Overdue calls</div><div class="v">${overdue.length}</div><div class="bar"><i style="width:${overdue.length?100:0}%;background:var(--clay)"></i></div></div>
+    <div class="stat" style="--d:.05s"><div class="k">Due today</div><div class="v">${todayList.length}</div><div class="bar"><i style="width:${todayList.length?70:0}%;background:var(--amber)"></i></div></div>
+    <div class="stat" style="--d:.1s"><div class="k">Calls logged today</div><div class="v">${callsToday}</div><div class="bar"><i style="width:${pct}%"></i></div></div>
+    <div class="stat" style="--d:.15s"><div class="k">Appointments today</div><div class="v">${apptToday}</div><div class="bar"><i style="width:${apptToday?80:0}%;background:var(--teal)"></i></div></div>
+  </div>`;
+
+  h += queueSection("Overdue", overdue, "overdue");
+  h += queueSection("Due today", todayList, "today");
+  h += queueSection("Coming up", later, "soon");
+
+  if(!q.length) h += `<div class="empty"><b>Nothing in the queue</b>No calls scheduled. Open a contact and set a next-call time, or add a new contact.</div>`;
+  $("#content").innerHTML = h;
+}
+function queueSection(title, list, cls){
+  if(!list.length) return "";
+  let h = `<div class="sec-h"><h2>${title}</h2><span class="count">${list.length}</span><div class="rule"></div></div><div class="queue stagger">`;
+  list.forEach((c,i)=>{
+    const o = user(c.owner);
+    const overdue = cls==="overdue";
+    h += `<div class="qcard ${cls}" style="--d:${i*.04}s">
+      <div class="spine"></div>
+      <div class="body">
+        <div class="row1">
+          <span class="who">${esc(c.name)}</span>
+          <span class="co">· ${esc(c.company)}</span>
+          <span class="pill ${c.service}">${svc(c.service)}</span>
+          <span class="pill stage">${stageLabel(c.stage)}</span>
+        </div>
+        <div class="meta">
+          <span class="num"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.8 12.8 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>${esc(c.phone)}</span>
+          <span class="when">${overdue? relOverdue(c.nextCallAt) : fmtWhen(c.nextCallAt)}</span>
+          <span><span class="dot" style="background:${o.color}"></span>${esc(o.name)}</span>
+          ${c.lastDisposition?`<span style="color:var(--muted)">last: ${dispoLabel(c.lastDisposition)}</span>`:""}
+        </div>
+      </div>
+      <div class="acts">
+        <button class="btn primary sm" data-call="${c.id}">Log call</button>
+        <button class="btn sm" data-open="${c.id}">Open</button>
+      </div>
+    </div>`;
+  });
+  return h+`</div>`;
+}
+
+/* ---- CONTACTS table ---- */
+function renderContacts(){
+  const rows = DB.contacts.filter(matchSearch)
+    .sort((a,b)=>(a.nextCallAt||9e15)-(b.nextCallAt||9e15));
+  if(!rows.length){ $("#content").innerHTML = `<div class="empty"><b>No contacts found</b>Try a different search, or add a new contact.</div>`; return; }
+  let h = `<div class="tablewrap"><table><thead><tr>
+    <th>Name</th><th>Company</th><th>Phone</th><th>Service</th><th>Stage</th><th>Owner</th><th>Next call</th><th></th>
+  </tr></thead><tbody>`;
+  rows.forEach((c,i)=>{
+    const o=user(c.owner);
+    h += `<tr style="--d:${Math.min(i,12)*.02}s">
+      <td><span class="nm">${esc(c.name)}</span></td>
+      <td>${esc(c.company)}</td>
+      <td><span class="num">${esc(c.phone)}</span></td>
+      <td><span class="pill ${c.service}">${svc(c.service)}</span></td>
+      <td><span class="pill stage">${stageLabel(c.stage)}</span></td>
+      <td><span class="owner-tag"><span class="dot" style="background:${o.color}"></span>${esc(o.name)}</span></td>
+      <td><span class="num" style="color:${c.nextCallAt&&c.nextCallAt<Date.now()?'var(--clay)':'var(--ink-soft)'}">${c.doNotCall?'<span style="color:var(--muted)">do not call</span>':fmtWhen(c.nextCallAt)}</span></td>
+      <td style="text-align:right;white-space:nowrap">
+        <button class="btn sm" data-call="${c.id}">Call</button>
+        <button class="btn ghost sm" data-open="${c.id}">Edit</button>
+      </td>
+    </tr>`;
+  });
+  $("#content").innerHTML = h+`</tbody></table></div>`;
+}
+
+/* ---- APPOINTMENTS ---- */
+function renderAppointments(){
+  const list = DB.appointments
+    .filter(a=>{ const c=contact(a.contactId); return c? matchSearch(c):true; })
+    .sort((a,b)=>a.at-b.at);
+  if(!list.length){ $("#content").innerHTML=`<div class="empty"><b>No appointments yet</b>Book one from a call (choose \u201cBooked appointment\u201d) or from a contact.</div>`; return; }
+  let h = `<div class="queue stagger">`;
+  list.forEach((a,i)=>{
+    const c=contact(a.contactId)||{name:"—",company:""}, o=user(a.userId);
+    const d=new Date(a.at);
+    h += `<div class="appt ${a.status==='done'?'done':''}" style="--d:${i*.04}s">
+      <div class="date"><div class="d">${d.getDate()}</div><div class="m">${d.toLocaleDateString([], {month:'short'})}</div></div>
+      <div>
+        <div class="ttl">${esc(a.title)} <span class="pill stage">${esc(a.type)}</span></div>
+        <div class="det">
+          <span class="num">${d.toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})} · ${a.durationMin}min</span>
+          <span>${esc(c.name)} — ${esc(c.company)}</span>
+          ${a.location?`<span>📍 ${esc(a.location)}</span>`:""}
+          <span><span class="dot" style="background:${o.color}"></span>${esc(o.name)}</span>
+        </div>
+        ${a.notes?`<div class="det" style="margin-top:5px">${esc(a.notes)}</div>`:""}
+      </div>
+      <div style="display:flex;gap:7px">
+        ${a.status==='scheduled'?`<button class="btn sm" data-appt-done="${a.id}">Mark done</button>`:`<span class="pill good" style="background:var(--green-wash);color:var(--green)">Done</span>`}
+      </div>
+    </div>`;
+  });
+  $("#content").innerHTML = h+`</div>`;
+}
+
+/* ---- PIPELINE board (drag to move stage) ---- */
+function renderPipeline(){
+  let h = `<div class="board">`;
+  STAGES.forEach(st=>{
+    const items = DB.contacts.filter(c=>c.stage===st.id && matchSearch(c));
+    h += `<div class="col" data-stage="${st.id}"><h3>${st.label}<span class="c">${items.length}</span></h3>`;
+    items.forEach(c=>{
+      const o=user(c.owner);
+      h += `<div class="dcard" draggable="true" data-id="${c.id}">
+        <div class="dn">${esc(c.name)}</div>
+        <div class="dco">${esc(c.company)}</div>
+        <div class="dfoot"><span class="pill ${c.service}">${svc(c.service)}</span><span class="dot" style="background:${o.color}" title="${esc(o.name)}"></span></div>
+      </div>`;
+    });
+    h += `</div>`;
+  });
+  $("#content").innerHTML = h+`</div>`;
+  wireDrag();
+}
+function wireDrag(){
+  let dragId=null;
+  $$(".dcard").forEach(card=>{
+    card.addEventListener("dragstart",()=>{dragId=card.dataset.id;card.classList.add("dragging");});
+    card.addEventListener("dragend",()=>{card.classList.remove("dragging");$$(".col").forEach(c=>c.classList.remove("drop"));});
+  });
+  $$(".col").forEach(col=>{
+    col.addEventListener("dragover",e=>{e.preventDefault();col.classList.add("drop");});
+    col.addEventListener("dragleave",()=>col.classList.remove("drop"));
+    col.addEventListener("drop",e=>{
+      e.preventDefault();
+      const c=contact(dragId); if(c){ c.stage=col.dataset.stage; save(DB); toast(`${c.name} → ${stageLabel(c.stage)}`); draw(); }
+    });
+  });
+}
+
+/* ---- TEAM / activity ---- */
+function renderTeam(){
+  let h = `<div class="sec-h"><h2>The team (6 seats)</h2><div class="rule"></div></div><div class="queue stagger">`;
+  DB.users.forEach((u,i)=>{
+    const owned = DB.contacts.filter(c=>c.owner===u.id).length;
+    const callsToday = DB.calls.filter(c=>c.userId===u.id && new Date(c.at).toDateString()===new Date().toDateString()).length;
+    const appts = DB.appointments.filter(a=>a.userId===u.id && a.status==='scheduled').length;
+    h += `<div class="appt" style="--d:${i*.04}s">
+      <div class="avatar" style="background:${u.color};width:42px;height:42px;font-size:14px">${u.initials}</div>
+      <div><div class="ttl">${esc(u.name)}</div><div class="det"><span>${esc(u.role)}</span></div></div>
+      <div style="display:flex;gap:22px;text-align:right">
+        <div><div class="num" style="font-size:18px;font-weight:600">${owned}</div><div style="font-size:11px;color:var(--muted)">contacts</div></div>
+        <div><div class="num" style="font-size:18px;font-weight:600">${callsToday}</div><div style="font-size:11px;color:var(--muted)">calls today</div></div>
+        <div><div class="num" style="font-size:18px;font-weight:600">${appts}</div><div style="font-size:11px;color:var(--muted)">appts</div></div>
+      </div>
+    </div>`;
+  });
+  h += `</div>`;
+  // recent activity
+  const acts = [...DB.calls.map(c=>({t:c.at,kind:"call",txt:`${user(c.userId).name} called ${contact(c.contactId)?.name||'—'} — ${dispoLabel(c.disposition)}`})),
+                ...DB.appointments.map(a=>({t:a.at,kind:"appt",txt:`${user(a.userId).name} has ${a.title} with ${contact(a.contactId)?.name||'—'}`}))]
+                .sort((a,b)=>b.t-a.t).slice(0,8);
+  h += `<div class="sec-h"><h2>Recent activity</h2><div class="rule"></div></div><div class="queue stagger">`;
+  acts.forEach((a,i)=> h+=`<div class="qcard soon" style="--d:${i*.03}s"><div class="spine"></div><div class="body"><div class="row1"><span>${esc(a.txt)}</span></div><div class="meta"><span class="when">${fmtWhen(a.t)}</span></div></div></div>`);
+  h += `</div>`;
+  $("#content").innerHTML = h;
+}
+
+/* =================================================================
+   SEARCH
+   ================================================================= */
+function matchSearch(c){
+  if(!SEARCH) return true;
+  const s = SEARCH.toLowerCase();
+  return (c.name+" "+c.company+" "+c.phone).toLowerCase().includes(s);
+}
+
+/* =================================================================
+   MODALS
+   ================================================================= */
+function openModal(html){
+  $("#modal-mount").innerHTML = html;
+  $("#scrim").classList.add("show");
+}
+function closeModal(){ $("#scrim").classList.remove("show"); $("#modal-mount").innerHTML=""; }
+$("#scrim").addEventListener("mousedown",e=>{ if(e.target.id==="scrim") closeModal(); });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") closeModal(); });
+
+/* ----- contact add/edit ----- */
+function contactForm(c){
+  const isNew = !c;
+  c = c || {name:"",company:"",phone:"",email:"",service:"web",stage:"new",owner:DB.currentUserId,source:"",notes:"",nextCallAt:null,doNotCall:false};
+  const dt = c.nextCallAt? new Date(c.nextCallAt - new Date().getTimezoneOffset()*60000).toISOString().slice(0,16) : "";
+  openModal(`<div class="modal"><header><h3>${isNew?"New contact":"Edit contact"}</h3><button class="x" data-close>×</button></header>
+  <div class="pad">
+    <div class="grid2">
+      <div class="field"><label>Name</label><input id="f-name" value="${esc(c.name)}" placeholder="e.g. Nimal Perera"></div>
+      <div class="field"><label>Company</label><input id="f-company" value="${esc(c.company)}" placeholder="e.g. Sunrise Villas"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Phone</label><input id="f-phone" class="num" value="${esc(c.phone)}" placeholder="07X XXX XXXX"></div>
+      <div class="field"><label>Email <span style="color:var(--muted);font-weight:400">(optional)</span></label><input id="f-email" value="${esc(c.email)}"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Service needed</label><select id="f-service">${SERVICES.map(s=>`<option value="${s.id}" ${s.id===c.service?'selected':''}>${s.label}</option>`).join("")}</select></div>
+      <div class="field"><label>Stage</label><select id="f-stage">${STAGES.map(s=>`<option value="${s.id}" ${s.id===c.stage?'selected':''}>${s.label}</option>`).join("")}</select></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Owner</label><select id="f-owner">${DB.users.map(u=>`<option value="${u.id}" ${u.id===c.owner?'selected':''}>${u.name}</option>`).join("")}</select></div>
+      <div class="field"><label>Source</label><input id="f-source" value="${esc(c.source)}" placeholder="Referral, Facebook, expo…"></div>
+    </div>
+    <div class="field"><label>Next call</label><input id="f-next" class="num" type="datetime-local" value="${dt}"></div>
+    <div class="field"><label>Notes</label><textarea id="f-notes" placeholder="Context, what they want, budget hints…">${esc(c.notes)}</textarea></div>
+    <label class="toggle"><input type="checkbox" id="f-dnc" ${c.doNotCall?'checked':''}> Do not call</label>
+  </div>
+  <footer>
+    ${isNew?"":`<button class="btn danger" data-del="${c.id}" style="margin-right:auto">Delete</button>`}
+    <button class="btn" data-close>Cancel</button>
+    <button class="btn primary" id="f-save">${isNew?"Add contact":"Save changes"}</button>
+  </footer></div>`);
+
+  $("#f-save").onclick = ()=>{
+    const name=$("#f-name").value.trim();
+    if(!name){ $("#f-name").focus(); $("#f-name").style.borderColor="var(--clay)"; return; }
+    const next = $("#f-next").value? new Date($("#f-next").value).getTime() : null;
+    const data = {
+      name, company:$("#f-company").value.trim(), phone:$("#f-phone").value.trim(),
+      email:$("#f-email").value.trim(), service:$("#f-service").value, stage:$("#f-stage").value,
+      owner:$("#f-owner").value, source:$("#f-source").value.trim(), notes:$("#f-notes").value.trim(),
+      nextCallAt:next, doNotCall:$("#f-dnc").checked,
+    };
+    if(isNew){ DB.contacts.push(Object.assign({id:uid(),createdAt:Date.now(),lastDisposition:""},data)); toast("Contact added"); }
+    else { Object.assign(c,data); toast("Contact saved"); }
+    save(DB); closeModal(); draw();
+  };
+}
+
+/* ----- log call (core workflow) ----- */
+function logCallForm(c){
+  let dispo="";
+  openModal(`<div class="modal"><header><h3>Log call — ${esc(c.name)}</h3><button class="x" data-close>×</button></header>
+  <div class="pad">
+    <div style="font-size:12.5px;color:var(--muted);margin-bottom:12px">
+      <span class="num">${esc(c.phone)}</span> · ${esc(c.company)} · owner ${esc(user(c.owner).name)}
+    </div>
+    <div class="field"><label>How did it go?</label>
+      <div class="chips" id="dispo">${DISPOSITIONS.map(d=>`<button class="chip ${d.tone}" data-d="${d.id}">${d.label}</button>`).join("")}</div>
+    </div>
+    <div class="field"><label>Note</label><textarea id="c-note" placeholder="What was said, next step…"></textarea></div>
+
+    <!-- next call sub-panel -->
+    <div class="subpanel" id="sp-next">
+      <div class="ttl">Schedule the next call</div>
+      <div class="chips" style="margin-bottom:10px" id="quick-next">
+        <button class="chip" data-h="3">In 3 hours</button>
+        <button class="chip" data-h="24">Tomorrow</button>
+        <button class="chip" data-h="72">In 3 days</button>
+        <button class="chip" data-h="168">Next week</button>
+      </div>
+      <input id="c-next" class="num" type="datetime-local" style="width:100%;border:1px solid var(--line-strong);border-radius:7px;padding:9px 10px;font-family:var(--mono)">
+    </div>
+
+    <!-- appointment sub-panel -->
+    <div class="subpanel" id="sp-appt">
+      <div class="ttl">Book the appointment</div>
+      <div class="grid2">
+        <div class="field"><label>Type</label><select id="a-type">${APPT_TYPES.map(t=>`<option>${t}</option>`).join("")}</select></div>
+        <div class="field"><label>Assign to</label><select id="a-user">${DB.users.map(u=>`<option value="${u.id}" ${u.id===DB.currentUserId?'selected':''}>${u.name}</option>`).join("")}</select></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>Date &amp; time</label><input id="a-at" class="num" type="datetime-local"></div>
+        <div class="field"><label>Duration (min)</label><input id="a-dur" class="num" type="number" value="60"></div>
+      </div>
+      <div class="field"><label>Location</label><input id="a-loc" placeholder="Office, Zoom, site address…"></div>
+    </div>
+  </div>
+  <footer>
+    <button class="btn" data-close>Cancel</button>
+    <button class="btn primary" id="c-save">Save call</button>
+  </footer></div>`);
+
+  // disposition selection
+  $("#dispo").addEventListener("click",e=>{
+    const b=e.target.closest(".chip"); if(!b) return;
+    $$("#dispo .chip").forEach(x=>x.classList.remove("sel"));
+    b.classList.add("sel"); dispo=b.dataset.d;
+    // show relevant sub-panel
+    const wantsNext = ["callback","noanswer","busy","notnow"].includes(dispo);
+    const wantsAppt = dispo==="appt";
+    $("#sp-next").classList.toggle("show", wantsNext);
+    $("#sp-appt").classList.toggle("show", wantsAppt);
+    if(wantsAppt){ const d=new Date(Date.now()+DAY); d.setMinutes(0); $("#a-at").value=new Date(d-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16); }
+  });
+  // quick next buttons
+  $("#quick-next").addEventListener("click",e=>{
+    const b=e.target.closest(".chip"); if(!b) return;
+    $$("#quick-next .chip").forEach(x=>x.classList.remove("sel")); b.classList.add("sel");
+    const d=new Date(Date.now()+(+b.dataset.h)*3600e3);
+    $("#c-next").value = new Date(d-new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
+  });
+
+  $("#c-save").onclick = ()=>{
+    if(!dispo){ toast("Pick how the call went"); return; }
+    // record the call
+    DB.calls.push({id:uid(),contactId:c.id,userId:DB.currentUserId,at:Date.now(),disposition:dispo,note:$("#c-note").value.trim(),durationSec:0});
+    c.lastDisposition = dispo;
+
+    // apply outcome
+    if(dispo==="dnc"){ c.doNotCall=true; c.nextCallAt=null; }
+    else if(dispo==="notint"||dispo==="wrong"){ c.nextCallAt=null; }
+    else if(dispo==="won"){ c.stage="won"; c.nextCallAt=null; }
+    else if($("#sp-next").classList.contains("show")){
+      const v=$("#c-next").value; c.nextCallAt = v? new Date(v).getTime() : Date.now()+DAY;
+    } else if(dispo!=="appt"){ c.nextCallAt=null; }
+
+    // if interested-ish, nudge stage forward
+    if((dispo==="answered") && c.stage==="new") c.stage="contacted";
+
+    // appointment
+    if(dispo==="appt"){
+      const at=$("#a-at").value;
+      if(at){
+        DB.appointments.push({id:uid(),contactId:c.id,userId:$("#a-user").value,title:$("#a-type").value,type:$("#a-type").value,at:new Date(at).getTime(),durationMin:+$("#a-dur").value||60,location:$("#a-loc").value.trim(),notes:$("#c-note").value.trim(),status:"scheduled"});
+        c.nextCallAt=null;
+        if(c.stage==="new"||c.stage==="contacted") c.stage="qualified";
+      }
+    }
+    save(DB); closeModal(); toast(`Call logged — ${dispoLabel(dispo)}`); draw();
+  };
+}
+
+/* =================================================================
+   GLOBAL EVENTS
+   ================================================================= */
+$("#content").addEventListener("click",e=>{
+  const call=e.target.closest("[data-call]");
+  const open=e.target.closest("[data-open]");
+  const done=e.target.closest("[data-appt-done]");
+  if(call){ logCallForm(contact(call.dataset.call)); }
+  else if(open){ contactForm(contact(open.dataset.open)); }
+  else if(done){ const a=DB.appointments.find(x=>x.id===done.dataset.apptDone); if(a){a.status="done";save(DB);toast("Appointment done");draw();} }
+});
+document.body.addEventListener("click",e=>{
+  if(e.target.closest("[data-close]")) closeModal();
+  const del=e.target.closest("[data-del]");
+  if(del){ if(confirm("Delete this contact?")){ DB.contacts=DB.contacts.filter(c=>c.id!==del.dataset.del); save(DB); closeModal(); toast("Contact deleted"); draw(); } }
+});
+$("#nav").addEventListener("click",e=>{ const b=e.target.closest("button[data-view]"); if(b) go(b.dataset.view); });
+$("#add-contact").onclick = ()=>contactForm(null);
+$("#search").addEventListener("input",e=>{ SEARCH=e.target.value.trim(); draw(); });
+
+/* acting-as switcher */
+function buildMe(){
+  const sel=$("#me-select"); sel.innerHTML = DB.users.map(u=>`<option value="${u.id}" ${u.id===DB.currentUserId?'selected':''}>${u.name} — ${u.role}</option>`).join("");
+  const me=user(DB.currentUserId); $("#me-av").textContent=me.initials; $("#me-av").style.background=me.color;
+}
+$("#me-select").addEventListener("change",e=>{ DB.currentUserId=e.target.value; save(DB); buildMe(); toast("Now acting as "+user(DB.currentUserId).name); });
+
+/* badges */
+function refreshBadges(){
+  const now=Date.now();
+  const due = DB.contacts.filter(c=>!c.doNotCall && c.nextCallAt && (c.nextCallAt<now || new Date(c.nextCallAt).toDateString()===new Date().toDateString())).length;
+  const b=$("#badge-today"); b.textContent=due; b.classList.toggle("zero",due===0);
+  const ap = DB.appointments.filter(a=>a.status==="scheduled" && a.at>=now).length;
+  const ba=$("#badge-appt"); ba.textContent=ap; ba.classList.toggle("zero",ap===0);
+}
+
+/* toast */
+function toast(msg){
+  const t=document.createElement("div"); t.className="toast"; t.innerHTML=`<span class="tk"></span>${esc(msg)}`;
+  $("#toasts").appendChild(t);
+  setTimeout(()=>{ t.style.transition="opacity .3s,transform .3s"; t.style.opacity="0"; t.style.transform="translateX(20px)"; setTimeout(()=>t.remove(),300); }, 2600);
+}
+
+/* boot */
+buildMe();
+go("today");
+</script>
+</body>
+</html>
