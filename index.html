@@ -6,16 +6,15 @@
 <title>Univerz CRM — calls &amp; appointments</title>
 <meta name="description" content="Internal call queue and appointment CRM for the Univerz team. Track leads, log calls, book meetings and shoots." />
 <meta name="theme-color" content="#1f5c5a" />
-<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+<link rel="icon" href="/logo-placeholder.png" type="image/png" />
 <style>
 /* ----------------------------------------------------------------
-   Univerz CRM — single file prototype
-   Plain HTML / CSS / JS. No build step, no framework, no CDN.
-   Data lives in the browser (localStorage key: univerz_crm_v1).
+   Univerz CRM — Supabase-connected prototype
+   Plain HTML / CSS / JS + Supabase JS v2 (CDN).
+   Data lives in Supabase (shared database for all 6 team members)
+   with localStorage as a fallback cache for offline use.
    Design note: system fonts for UI, monospace for phone numbers,
-   times and counts — a CRM is read by scanning numbers, so the
-   numbers get the readable face. One accent (teal), one alarm
-   colour (clay) for overdue calls. Deliberately plain.
+   times and counts. One accent (teal), one alarm (clay).
    ----------------------------------------------------------------*/
 
 :root{
@@ -61,7 +60,6 @@ a{color:var(--teal)}
 }
 .brand{padding:18px 18px 14px;border-bottom:1px solid var(--line)}
 .brand .mark{display:flex;align-items:center;gap:9px}
-/* Logo placeholder — replace /logo-placeholder.png with your real logo file */
 .brand .logo-img{
   width:30px;height:30px;border-radius:6px;object-fit:contain;flex:none;
 }
@@ -291,6 +289,11 @@ td .num{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
 }
 .toast .tk{width:7px;height:7px;border-radius:50%;background:var(--green);flex:none}
 
+/* ---- connection status ---- */
+.conn-dot{width:7px;height:7px;border-radius:50%;flex:none;margin-left:4px;display:inline-block}
+.conn-dot.live{background:var(--green)}
+.conn-dot.offline{background:var(--clay)}
+
 /* ---- animations ---- */
 @keyframes rise{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
 @keyframes fade{from{opacity:0}to{opacity:1}}
@@ -325,8 +328,6 @@ td .num{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
           ║  LOGO PLACEHOLDER                               ║
           ║  Replace /logo-placeholder.png with your real   ║
           ║  Univerz logo file. Recommended size: 60×60px.  ║
-          ║  To revert to the "U" glyph, remove the <img>  ║
-          ║  and uncomment the <div class="glyph"> below.   ║
           ╚══════════════════════════════════════════════════╝
         -->
         <img
@@ -338,7 +339,7 @@ td .num{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
         />
         <div class="glyph" style="display:none;">U</div>
         <div>
-          <div class="name">Univerz CRM</div>
+          <div class="name">Univerz CRM <span class="conn-dot offline" id="conn-dot" title="Connecting…"></span></div>
           <div class="sub">calls &amp; appointments</div>
         </div>
       </div>
@@ -379,11 +380,32 @@ td .num{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
 <div class="scrim" id="scrim"><div id="modal-mount"></div></div>
 <div class="toasts" id="toasts"></div>
 
+<!-- Supabase JS v2 from CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
 <script>
 /* =================================================================
-   STORE  — plain object kept in localStorage. No magic.
+   SUPABASE CONNECTION
    ================================================================= */
-const KEY = "univerz_crm_v1";
+const SUPABASE_URL  = "https://enyzjoiqzqcvvwxolzfv.supabase.co";
+const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVueXpqb2lxenFjdnZ3eG9semZ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE4Nzk0NzgsImV4cCI6MjA5NzQ1NTQ3OH0.yC8WKnSA2VMCcaSSYbZoRKe6ke17xhUlmr94cFwAVu8";
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+/* ---- Column-name mapping (JS camelCase ↔ Postgres snake_case) ---- */
+function toSnakeKey(k){ return k.replace(/[A-Z]/g, c => '_'+c.toLowerCase()); }
+function toCamelKey(k){ return k.replace(/_([a-z])/g, (_, c) => c.toUpperCase()); }
+function objToSnake(o){ const r={}; for(const[k,v] of Object.entries(o)) r[toSnakeKey(k)]=v; return r; }
+function objToCamel(o){ if(!o)return o; const r={}; for(const[k,v] of Object.entries(o)) r[toCamelKey(k)]=v; return r; }
+
+/* ---- Non-blocking Supabase write (fire-and-forget with logging) ---- */
+function sbWrite(promise){
+  promise.then(({error})=>{ if(error) console.error("Supabase write error:", error); });
+}
+
+/* =================================================================
+   STORE  — in-memory DB, persisted to Supabase (with localStorage cache)
+   ================================================================= */
+const LS_KEY = "univerz_crm_v1";
 const DAY = 86400000;
 
 const SERVICES = [
@@ -415,16 +437,14 @@ const APPT_TYPES = ["Discovery meeting","Shoot / site visit","Proposal review","
 
 function seed(){
   const now = Date.now();
-  /* ── The Univerz team ── */
   const users = [
     {id:"u1",name:"Subodha Kalhara",   role:"Director / Admin",              color:"#1f5c5a",initials:"SK"},
     {id:"u2",name:"Sadeepa Namarathna",role:"Account Manager",               color:"#bb472b",initials:"SN"},
     {id:"u3",name:"Sahan Madhawa",     role:"Telecaller",                    color:"#9a6a14",initials:"SM"},
     {id:"u4",name:"Pulasthi Wijayarathna",role:"Telecaller",                 color:"#3c7a4e",initials:"PW"},
     {id:"u5",name:"Ashan Indusara",    role:"Project Coordinator",           color:"#5a466a",initials:"AI"},
-    {id:"u6",name:"Videographer",      role:"Photographer / Videographer",   color:"#2b6178",initials:"VG"},
   ];
-  const C = (o)=>Object.assign({id:uid(),email:"",notes:"",doNotCall:false,lastDisposition:"",createdAt:now-Math.random()*40*DAY},o);
+  const C = (o)=>Object.assign({id:uid(),email:"",notes:"",doNotCall:false,lastDisposition:"",createdAt:Math.floor(now-Math.random()*40*DAY)},o);
   const contacts = [
     C({name:"Nimal Perera",company:"Sunrise Villas, Bentota",phone:"077 412 6650",service:"web",stage:"qualified",owner:"u3",source:"Referral",nextCallAt:now-2*DAY,lastDisposition:"callback"}),
     C({name:"Anushka Silva",company:"Cecrafto Kombucha",phone:"071 998 2210",service:"social",stage:"proposal",owner:"u2",source:"Instagram DM",nextCallAt:now-DAY+3*3600e3,lastDisposition:"answered"}),
@@ -439,7 +459,7 @@ function seed(){
   const cById = Object.fromEntries(contacts.map(c=>[c.name,c.id]));
   const appointments = [
     {id:uid(),contactId:cById["Anushka Silva"],userId:"u5",title:"Proposal review",type:"Proposal review",at:todayAt(15,30),durationMin:45,location:"Zoom",notes:"Walk through 3 content packages",status:"scheduled"},
-    {id:uid(),contactId:cById["Sanduni Fernando"],userId:"u6",title:"Villa photo shoot",type:"Shoot / site visit",at:Date.now()+2*DAY+ (10-new Date().getHours())*3600e3,durationMin:240,location:"Kandy",notes:"Bring drone + wide lens",status:"scheduled"},
+    {id:uid(),contactId:cById["Sanduni Fernando"],userId:"u5",title:"Villa photo shoot",type:"Shoot / site visit",at:Date.now()+2*DAY+(10-new Date().getHours())*3600e3,durationMin:240,location:"Kandy",notes:"Bring drone + wide lens",status:"scheduled"},
     {id:uid(),contactId:cById["Nimal Perera"],userId:"u1",title:"Discovery meeting",type:"Discovery meeting",at:Date.now()+DAY,durationMin:60,location:"Office",notes:"",status:"scheduled"},
   ];
   const calls = [
@@ -449,15 +469,56 @@ function seed(){
   return {users,contacts,appointments,calls,currentUserId:"u1"};
 }
 
-function load(){
-  try{
-    const raw = localStorage.getItem(KEY);
-    if(raw) return JSON.parse(raw);
-  }catch(e){}
-  const s = seed(); save(s); return s;
+/* ---- localStorage cache (fallback when Supabase unavailable) ---- */
+function cacheLocal(s){ try{ localStorage.setItem(LS_KEY, JSON.stringify(s)); }catch(e){} }
+function loadLocal(){
+  try{ const raw=localStorage.getItem(LS_KEY); if(raw) return JSON.parse(raw); }catch(e){}
+  return seed();
 }
-function save(s){ try{ localStorage.setItem(KEY, JSON.stringify(s)); }catch(e){} }
-let DB = load();
+
+/* ---- Supabase data functions ---- */
+async function loadFromSupabase(){
+  const [u,c,cl,a] = await Promise.all([
+    sb.from('app_user').select('*'),
+    sb.from('contact').select('*'),
+    sb.from('call').select('*'),
+    sb.from('appointment').select('*'),
+  ]);
+  if(u.error) throw u.error;
+  return {
+    users: (u.data||[]).map(objToCamel),
+    contacts: (c.data||[]).map(objToCamel),
+    calls: (cl.data||[]).map(objToCamel),
+    appointments: (a.data||[]).map(objToCamel),
+  };
+}
+
+async function seedToSupabase(data){
+  // Clear any existing rows to avoid primary key or foreign key conflicts
+  await Promise.all([
+    sb.from('appointment').delete().neq('id', ''),
+    sb.from('call').delete().neq('id', ''),
+    sb.from('contact').delete().neq('id', ''),
+  ]);
+  await sb.from('app_user').delete().neq('id', '');
+
+  const {error:e1} = await sb.from('app_user').insert(data.users.map(objToSnake));
+  if(e1) throw e1;
+  const {error:e2} = await sb.from('contact').insert(data.contacts.map(objToSnake));
+  if(e2) throw e2;
+  if(data.calls.length){
+    const {error:e3} = await sb.from('call').insert(data.calls.map(objToSnake));
+    if(e3) console.warn("Seed calls:", e3);
+  }
+  if(data.appointments.length){
+    const {error:e4} = await sb.from('appointment').insert(data.appointments.map(objToSnake));
+    if(e4) console.warn("Seed appointments:", e4);
+  }
+}
+
+/* ---- The in-memory database (hydrated at boot from Supabase or cache) ---- */
+let DB = {users:[],contacts:[],calls:[],appointments:[],currentUserId:"u1"};
+let ONLINE = false; // tracks whether Supabase is reachable
 
 /* helpers */
 function uid(){ return "id"+Math.random().toString(36).slice(2,9); }
@@ -471,7 +532,6 @@ function svc(id){ return (SERVICES.find(s=>s.id===id)||{}).label||id; }
 function stageLabel(id){ return (STAGES.find(s=>s.id===id)||{}).label||id; }
 function dispoLabel(id){ return (DISPOSITIONS.find(d=>d.id===id)||{}).label||"—"; }
 
-/* date formatting — kept human and short */
 function fmtWhen(ts){
   if(!ts) return "—";
   const d=new Date(ts), now=new Date();
@@ -494,7 +554,7 @@ function relOverdue(ts){
 }
 
 /* =================================================================
-   ROUTER / VIEWS
+   ROUTER / VIEWS  (unchanged — these read from in-memory DB)
    ================================================================= */
 let VIEW = "today";
 let SEARCH = "";
@@ -519,9 +579,8 @@ function draw(){
   refreshBadges();
 }
 
-/* ---- TODAY: the call queue (the heart of the tool) ---- */
+/* ---- TODAY ---- */
 function callQueue(){
-  const now = Date.now();
   return DB.contacts
     .filter(c=>!c.doNotCall && c.nextCallAt)
     .filter(matchSearch)
@@ -558,7 +617,7 @@ function queueSection(title, list, cls){
   let h = `<div class="sec-h"><h2>${title}</h2><span class="count">${list.length}</span><div class="rule"></div></div><div class="queue stagger">`;
   list.forEach((c,i)=>{
     const o = user(c.owner);
-    const overdue = cls==="overdue";
+    const isOverdue = cls==="overdue";
     h += `<div class="qcard ${cls}" style="--d:${i*.04}s">
       <div class="spine"></div>
       <div class="body">
@@ -570,7 +629,7 @@ function queueSection(title, list, cls){
         </div>
         <div class="meta">
           <span class="num"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.8 12.8 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>${esc(c.phone)}</span>
-          <span class="when">${overdue? relOverdue(c.nextCallAt) : fmtWhen(c.nextCallAt)}</span>
+          <span class="when">${isOverdue? relOverdue(c.nextCallAt) : fmtWhen(c.nextCallAt)}</span>
           <span><span class="dot" style="background:${o.color}"></span>${esc(o.name)}</span>
           ${c.lastDisposition?`<span style="color:var(--muted)">last: ${dispoLabel(c.lastDisposition)}</span>`:""}
         </div>
@@ -641,7 +700,7 @@ function renderAppointments(){
   $("#content").innerHTML = h+`</div>`;
 }
 
-/* ---- PIPELINE board (drag to move stage) ---- */
+/* ---- PIPELINE board ---- */
 function renderPipeline(){
   let h = `<div class="board">`;
   STAGES.forEach(st=>{
@@ -671,14 +730,21 @@ function wireDrag(){
     col.addEventListener("dragleave",()=>col.classList.remove("drop"));
     col.addEventListener("drop",e=>{
       e.preventDefault();
-      const c=contact(dragId); if(c){ c.stage=col.dataset.stage; save(DB); toast(`${c.name} → ${stageLabel(c.stage)}`); draw(); }
+      const c=contact(dragId);
+      if(c){
+        c.stage=col.dataset.stage;
+        cacheLocal(DB);
+        sbWrite(sb.from('contact').update({stage:col.dataset.stage}).eq('id',c.id));
+        toast(`${c.name} → ${stageLabel(c.stage)}`);
+        draw();
+      }
     });
   });
 }
 
 /* ---- TEAM / activity ---- */
 function renderTeam(){
-  let h = `<div class="sec-h"><h2>The team (6 seats)</h2><div class="rule"></div></div><div class="queue stagger">`;
+  let h = `<div class="sec-h"><h2>The team (${DB.users.length} seats)</h2><div class="rule"></div></div><div class="queue stagger">`;
   DB.users.forEach((u,i)=>{
     const owned = DB.contacts.filter(c=>c.owner===u.id).length;
     const callsToday = DB.calls.filter(c=>c.userId===u.id && new Date(c.at).toDateString()===new Date().toDateString()).length;
@@ -694,7 +760,6 @@ function renderTeam(){
     </div>`;
   });
   h += `</div>`;
-  // recent activity
   const acts = [...DB.calls.map(c=>({t:c.at,kind:"call",txt:`${user(c.userId).name} called ${contact(c.contactId)?.name||'—'} — ${dispoLabel(c.disposition)}`})),
                 ...DB.appointments.map(a=>({t:a.at,kind:"appt",txt:`${user(a.userId).name} has ${a.title} with ${contact(a.contactId)?.name||'—'}`}))]
                 .sort((a,b)=>b.t-a.t).slice(0,8);
@@ -767,9 +832,17 @@ function contactForm(c){
       owner:$("#f-owner").value, source:$("#f-source").value.trim(), notes:$("#f-notes").value.trim(),
       nextCallAt:next, doNotCall:$("#f-dnc").checked,
     };
-    if(isNew){ DB.contacts.push(Object.assign({id:uid(),createdAt:Date.now(),lastDisposition:""},data)); toast("Contact added"); }
-    else { Object.assign(c,data); toast("Contact saved"); }
-    save(DB); closeModal(); draw();
+    if(isNew){
+      const nc = Object.assign({id:uid(),createdAt:Date.now(),lastDisposition:""},data);
+      DB.contacts.push(nc);
+      toast("Contact added");
+      sbWrite(sb.from('contact').insert(objToSnake(nc)));
+    } else {
+      Object.assign(c,data);
+      toast("Contact saved");
+      sbWrite(sb.from('contact').update(objToSnake(data)).eq('id', c.id));
+    }
+    cacheLocal(DB); closeModal(); draw();
   };
 }
 
@@ -786,7 +859,6 @@ function logCallForm(c){
     </div>
     <div class="field"><label>Note</label><textarea id="c-note" placeholder="What was said, next step…"></textarea></div>
 
-    <!-- next call sub-panel -->
     <div class="subpanel" id="sp-next">
       <div class="ttl">Schedule the next call</div>
       <div class="chips" style="margin-bottom:10px" id="quick-next">
@@ -798,7 +870,6 @@ function logCallForm(c){
       <input id="c-next" class="num" type="datetime-local" style="width:100%;border:1px solid var(--line-strong);border-radius:7px;padding:9px 10px;font-family:var(--mono)">
     </div>
 
-    <!-- appointment sub-panel -->
     <div class="subpanel" id="sp-appt">
       <div class="ttl">Book the appointment</div>
       <div class="grid2">
@@ -822,7 +893,6 @@ function logCallForm(c){
     const b=e.target.closest(".chip"); if(!b) return;
     $$("#dispo .chip").forEach(x=>x.classList.remove("sel"));
     b.classList.add("sel"); dispo=b.dataset.d;
-    // show relevant sub-panel
     const wantsNext = ["callback","noanswer","busy","notnow"].includes(dispo);
     const wantsAppt = dispo==="appt";
     $("#sp-next").classList.toggle("show", wantsNext);
@@ -840,7 +910,8 @@ function logCallForm(c){
   $("#c-save").onclick = ()=>{
     if(!dispo){ toast("Pick how the call went"); return; }
     // record the call
-    DB.calls.push({id:uid(),contactId:c.id,userId:DB.currentUserId,at:Date.now(),disposition:dispo,note:$("#c-note").value.trim(),durationSec:0});
+    const callObj = {id:uid(),contactId:c.id,userId:DB.currentUserId,at:Date.now(),disposition:dispo,note:$("#c-note").value.trim(),durationSec:0};
+    DB.calls.push(callObj);
     c.lastDisposition = dispo;
 
     // apply outcome
@@ -851,19 +922,29 @@ function logCallForm(c){
       const v=$("#c-next").value; c.nextCallAt = v? new Date(v).getTime() : Date.now()+DAY;
     } else if(dispo!=="appt"){ c.nextCallAt=null; }
 
-    // if interested-ish, nudge stage forward
     if((dispo==="answered") && c.stage==="new") c.stage="contacted";
 
     // appointment
+    let apptObj = null;
     if(dispo==="appt"){
       const at=$("#a-at").value;
       if(at){
-        DB.appointments.push({id:uid(),contactId:c.id,userId:$("#a-user").value,title:$("#a-type").value,type:$("#a-type").value,at:new Date(at).getTime(),durationMin:+$("#a-dur").value||60,location:$("#a-loc").value.trim(),notes:$("#c-note").value.trim(),status:"scheduled"});
+        apptObj = {id:uid(),contactId:c.id,userId:$("#a-user").value,title:$("#a-type").value,type:$("#a-type").value,at:new Date(at).getTime(),durationMin:+$("#a-dur").value||60,location:$("#a-loc").value.trim(),notes:$("#c-note").value.trim(),status:"scheduled"};
+        DB.appointments.push(apptObj);
         c.nextCallAt=null;
         if(c.stage==="new"||c.stage==="contacted") c.stage="qualified";
       }
     }
-    save(DB); closeModal(); toast(`Call logged — ${dispoLabel(dispo)}`); draw();
+
+    // ── Supabase writes ──
+    sbWrite(sb.from('call').insert(objToSnake(callObj)));
+    sbWrite(sb.from('contact').update(objToSnake({
+      lastDisposition:c.lastDisposition, nextCallAt:c.nextCallAt,
+      stage:c.stage, doNotCall:c.doNotCall
+    })).eq('id', c.id));
+    if(apptObj) sbWrite(sb.from('appointment').insert(objToSnake(apptObj)));
+
+    cacheLocal(DB); closeModal(); toast(`Call logged — ${dispoLabel(dispo)}`); draw();
   };
 }
 
@@ -876,12 +957,29 @@ $("#content").addEventListener("click",e=>{
   const done=e.target.closest("[data-appt-done]");
   if(call){ logCallForm(contact(call.dataset.call)); }
   else if(open){ contactForm(contact(open.dataset.open)); }
-  else if(done){ const a=DB.appointments.find(x=>x.id===done.dataset.apptDone); if(a){a.status="done";save(DB);toast("Appointment done");draw();} }
+  else if(done){
+    const a=DB.appointments.find(x=>x.id===done.dataset.apptDone);
+    if(a){
+      a.status="done";
+      cacheLocal(DB);
+      sbWrite(sb.from('appointment').update({status:'done'}).eq('id',a.id));
+      toast("Appointment done");
+      draw();
+    }
+  }
 });
 document.body.addEventListener("click",e=>{
   if(e.target.closest("[data-close]")) closeModal();
   const del=e.target.closest("[data-del]");
-  if(del){ if(confirm("Delete this contact?")){ DB.contacts=DB.contacts.filter(c=>c.id!==del.dataset.del); save(DB); closeModal(); toast("Contact deleted"); draw(); } }
+  if(del){
+    if(confirm("Delete this contact?")){
+      const delId = del.dataset.del;
+      DB.contacts=DB.contacts.filter(c=>c.id!==delId);
+      cacheLocal(DB);
+      sbWrite(sb.from('contact').delete().eq('id', delId));
+      closeModal(); toast("Contact deleted"); draw();
+    }
+  }
 });
 $("#nav").addEventListener("click",e=>{ const b=e.target.closest("button[data-view]"); if(b) go(b.dataset.view); });
 $("#add-contact").onclick = ()=>contactForm(null);
@@ -892,7 +990,13 @@ function buildMe(){
   const sel=$("#me-select"); sel.innerHTML = DB.users.map(u=>`<option value="${u.id}" ${u.id===DB.currentUserId?'selected':''}>${u.name} — ${u.role}</option>`).join("");
   const me=user(DB.currentUserId); $("#me-av").textContent=me.initials; $("#me-av").style.background=me.color;
 }
-$("#me-select").addEventListener("change",e=>{ DB.currentUserId=e.target.value; save(DB); buildMe(); toast("Now acting as "+user(DB.currentUserId).name); });
+$("#me-select").addEventListener("change",e=>{
+  DB.currentUserId=e.target.value;
+  localStorage.setItem("crm_current_user", e.target.value);
+  cacheLocal(DB);
+  buildMe();
+  toast("Now acting as "+user(DB.currentUserId).name);
+});
 
 /* badges */
 function refreshBadges(){
@@ -910,9 +1014,73 @@ function toast(msg){
   setTimeout(()=>{ t.style.transition="opacity .3s,transform .3s"; t.style.opacity="0"; t.style.transform="translateX(20px)"; setTimeout(()=>t.remove(),300); }, 2600);
 }
 
-/* boot */
-buildMe();
-go("today");
+/* connection indicator */
+function setOnline(v){
+  ONLINE=v;
+  const dot=$("#conn-dot");
+  dot.classList.toggle("live",v);
+  dot.classList.toggle("offline",!v);
+  dot.title = v?"Connected to Supabase":"Offline — using local cache";
+}
+
+/* =================================================================
+   REALTIME — live sync across all 6 browsers
+   ================================================================= */
+function subscribeRealtime(){
+  let refreshing = false;
+  sb.channel('crm-live')
+    .on('postgres_changes', {event:'*', schema:'public'}, async ()=>{
+      if(refreshing) return;
+      refreshing = true;
+      try{
+        const data = await loadFromSupabase();
+        DB.users = data.users;
+        DB.contacts = data.contacts;
+        DB.calls = data.calls;
+        DB.appointments = data.appointments;
+        cacheLocal(DB);
+        draw();
+      }catch(e){ console.warn("Realtime refresh failed:", e); }
+      refreshing = false;
+    })
+    .subscribe((status)=>{
+      if(status==='SUBSCRIBED') setOnline(true);
+    });
+}
+
+/* =================================================================
+   BOOT  — load from Supabase, fall back to localStorage
+   ================================================================= */
+async function boot(){
+  $("#content").innerHTML = '<div class="empty"><b>Connecting…</b>Loading data from the shared database.</div>';
+
+  try{
+    const data = await loadFromSupabase();
+    if(!data.contacts.length || !data.users.length){
+      // Database is empty of contacts/users → seed it with sample data
+      const seedData = seed();
+      await seedToSupabase(seedData);
+      DB = seedData;
+      toast("Database seeded with sample data");
+    } else {
+      DB = data;
+    }
+    setOnline(true);
+    cacheLocal(DB);
+  }catch(e){
+    console.warn("Supabase unavailable, using localStorage cache:", e);
+    DB = loadLocal();
+    setOnline(false);
+    toast("Offline — using local cache");
+  }
+
+  DB.currentUserId = localStorage.getItem("crm_current_user") || DB.users[0]?.id || "u1";
+  buildMe();
+  go("today");
+  subscribeRealtime();
+}
+
+boot();
 </script>
 </body>
 </html>
