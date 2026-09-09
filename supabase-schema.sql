@@ -61,6 +61,21 @@ create table if not exists appointment (
   status text default 'scheduled' check (status is null or status in ('scheduled', 'done', 'cancelled'))
 );
 
+-- ── 5. ACCOUNTS RECORDS TABLE ──
+create table if not exists account_record (
+  id text primary key,
+  kind text not null check (kind in ('director-loan', 'reimbursement')),
+  person text not null,
+  amount numeric not null check (amount >= 0),
+  date bigint not null,
+  due_date bigint,
+  description text default '',
+  status text not null check (status in ('recorded', 'pending', 'settled')),
+  created_by text references app_user(id),
+  settled_at bigint,
+  settled_by text references app_user(id)
+);
+
 -- ── 5. ROW-LEVEL SECURITY (permissive for prototype — no auth) ──
 -- When you add real authentication later, replace these with proper
 -- role-based policies (see Univerz-CRM-Code-Guide.md §8.2)
@@ -77,8 +92,12 @@ create policy "anon full access" on call for all to anon using (true) with check
 alter table appointment enable row level security;
 create policy "anon full access" on appointment for all to anon using (true) with check (true);
 
+alter table account_record enable row level security;
+create policy "anon full access" on account_record for all to anon using (true) with check (true);
+
 -- ── 6. REALTIME (enables live sync across all 6 browsers) ──
 alter publication supabase_realtime add table app_user;
 alter publication supabase_realtime add table contact;
 alter publication supabase_realtime add table call;
 alter publication supabase_realtime add table appointment;
+alter publication supabase_realtime add table account_record;
