@@ -1116,7 +1116,6 @@ function seed(){
     {id:"u5",name:"Ashan Indusara",    role:"member",pin:"1234",password:"",title:"Social & Operations",color:"#5a466a",initials:"AI"},
     {id:"u6",name:"Widura Bandara",    role:"member",pin:"1234",password:"",title:"Team Member",color:"#2b6cb0",initials:"WB"},
   ];
-<<<<<<< HEAD
   return {
     users,
     contacts:[],
@@ -1267,16 +1266,6 @@ function getAiConfig(){
 function saveAiConfig(cfg){
   localStorage.setItem("crm_ai_config", JSON.stringify(cfg));
   if(cfg.apiKey) localStorage.setItem("crm_ai_api_key", cfg.apiKey);
-=======
-  const now=Date.now();
-  const accounts=[
-    {id:uid(),kind:"director-loan",person:"Subodha Kalhara",amount:185000,date:now-14*DAY,description:"Director advance — operating expenses",status:"recorded",createdBy:"u1",settledAt:null},
-    {id:uid(),kind:"director-loan",person:"Subodha Kalhara",amount:75000,date:now-4*DAY,description:"Director advance — supplier payment",status:"recorded",createdBy:"u1",settledAt:null},
-    {id:uid(),kind:"reimbursement",person:"Ashan Indusara",amount:12450,date:now-3*DAY,dueDate:nextMonthly25th(),description:"Client shoot transport and refreshments",status:"pending",createdBy:"u5",settledAt:null},
-    {id:uid(),kind:"reimbursement",person:"Pulasthi Wijayarathna",amount:8900,date:now-2*DAY,dueDate:nextMonthly25th(),description:"Private spend — shoot equipment transport",status:"pending",createdBy:"u4",settledAt:null}
-  ];
-  return {users,contacts:[],appointments:[],calls:[],accounts,currentUserId:"u1"};
->>>>>>> 886ed5da9e1ab2ca5afe0c2224145b9abc2d66bb
 }
 
 /* ---- localStorage cache (fallback when Supabase unavailable) ---- */
@@ -1301,7 +1290,6 @@ function loadLocal(){
 
 /* ---- Supabase data functions ---- */
 async function loadFromSupabase(){
-<<<<<<< HEAD
   const [u,c,cl,a,acc,tx,fl,ln,bl,cm] = await Promise.all([
     sb.from('app_user').select('*'),
     sb.from('contact').select('*'),
@@ -1313,10 +1301,6 @@ async function loadFromSupabase(){
     sb.from('finance_loan').select('*').then(r=>r).catch(()=>({data:[]})),
     sb.from('finance_bill').select('*').then(r=>r).catch(()=>({data:[]})),
     sb.from('finance_claim').select('*').then(r=>r).catch(()=>({data:[]})),
-=======
-  const [u,c,cl,a,ac] = await Promise.all([
-    sb.from('app_user').select('*'), sb.from('contact').select('*'), sb.from('call').select('*'), sb.from('appointment').select('*'), sb.from('account_record').select('*'),
->>>>>>> 886ed5da9e1ab2ca5afe0c2224145b9abc2d66bb
   ]);
   if(u.error) throw u.error;
   return {
@@ -1324,16 +1308,12 @@ async function loadFromSupabase(){
     contacts: (c.data||[]).map(objToCamel),
     calls: (cl.data||[]).map(objToCamel),
     appointments: (a.data||[]).map(objToCamel),
-<<<<<<< HEAD
     accounts: (acc.data || []).map(objToCamel),
     transactions: (tx.data || []).map(objToCamel),
     financeLogs: (fl.data || []).map(objToCamel),
     loans: (ln.data || []).map(objToCamel),
     bills: (bl.data || []).map(objToCamel),
     claims: (cm.data || []).map(objToCamel),
-=======
-    accounts: ac.error ? [] : (ac.data||[]).map(objToCamel),
->>>>>>> 886ed5da9e1ab2ca5afe0c2224145b9abc2d66bb
   };
 }
 
@@ -1379,13 +1359,8 @@ async function seedToSupabase(data){
   if(data.claims && data.claims.length){
     await sb.from('finance_claim').insert(data.claims.map(objToSnake)).catch(()=>{});
   }
-  if(data.accounts.length){
-    const {error:e5} = await sb.from('account_record').insert(data.accounts.map(objToSnake));
-    if(e5) console.warn("Seed account records:", e5);
-  }
 }
 
-<<<<<<< HEAD
 /* ---- The in-memory database ---- */
 let DB = {users:[],contacts:[],calls:[],appointments:[],accounts:[],transactions:[],financeLogs:[],loans:[],bills:[],claims:[],currentUserId:"u3"};
 let ONLINE = false;
@@ -1609,11 +1584,6 @@ begin
   end loop;
 end $$;
 `;
-=======
-/* ---- The in-memory database (hydrated at boot from Supabase or cache) ---- */
-let DB = {users:[],contacts:[],calls:[],appointments:[],accounts:[],currentUserId:"u1"};
-let ONLINE = false; // tracks whether Supabase is reachable
->>>>>>> 886ed5da9e1ab2ca5afe0c2224145b9abc2d66bb
 
 /* helpers */
 function uid(){ return "id"+Math.random().toString(36).slice(2,9); }
@@ -3219,6 +3189,7 @@ function renderAccount(){
       </div>`;
     }
 
+    h += `
     <!-- Action Hero Bar (Sahan Only) or Protected View Banner (Team Members) -->
     ${isSahanUser ? `
     <div class="action-hero">
@@ -6230,7 +6201,6 @@ $("#content").addEventListener("click",e=>{
   const call=e.target.closest("[data-call]");
   const open=e.target.closest("[data-open]");
   const done=e.target.closest("[data-appt-done]");
-<<<<<<< HEAD
   const inAcc=e.target.closest("[data-in-acc]");
   const outAcc=e.target.closest("[data-out-acc]");
   const editAcc=e.target.closest("[data-edit-acc]");
@@ -6304,13 +6274,6 @@ $("#content").addEventListener("click",e=>{
   else if(shareLoanBtn){ shareLoanReminder(shareLoanBtn.dataset.shareLoan, 'modal'); }
   else if(shareLoanWa){ shareLoanReminder(shareLoanWa.dataset.shareLoanWa, 'whatsapp'); }
   else if(shareLoanCopy){ shareLoanReminder(shareLoanCopy.dataset.shareLoanCopy, 'copy'); }
-=======
-  const accountTab=e.target.closest("[data-account-tab]"), accountAdd=e.target.closest("[data-account-add]"), accountEdit=e.target.closest("[data-account-edit]"), accountSettle=e.target.closest("[data-account-settle]");
-  if(accountTab){ ACCOUNTS_TAB=accountTab.dataset.accountTab; draw(); }
-  else if(accountAdd){ accountForm(null,accountAdd.dataset.accountAdd); }
-  else if(accountEdit){ accountForm(DB.accounts.find(x=>x.id===accountEdit.dataset.accountEdit)); }
-  else if(accountSettle){ const x=DB.accounts.find(x=>x.id===accountSettle.dataset.accountSettle); if(x && isAccountsEditor()){x.status="settled";x.settledAt=Date.now();x.settledBy=DB.currentUserId;cacheLocal(DB);sbWrite(sb.from("account_record").update(objToSnake(x)).eq("id",x.id));toast("Account record settled");draw();} }
->>>>>>> 886ed5da9e1ab2ca5afe0c2224145b9abc2d66bb
   else if(call){ logCallForm(contact(call.dataset.call)); }
   else if(open){ contactForm(contact(open.dataset.open)); }
   else if(done){
@@ -6722,16 +6685,12 @@ function subscribeRealtime(){
         DB.contacts = data.contacts;
         DB.calls = data.calls;
         DB.appointments = data.appointments;
-<<<<<<< HEAD
         if(data.accounts) DB.accounts = data.accounts;
         if(data.transactions) DB.transactions = data.transactions;
         if(data.financeLogs) DB.financeLogs = data.financeLogs;
         if(data.loans) DB.loans = data.loans;
         if(data.bills) DB.bills = data.bills;
         if(data.claims) DB.claims = data.claims;
-=======
-        DB.accounts = data.accounts;
->>>>>>> 886ed5da9e1ab2ca5afe0c2224145b9abc2d66bb
         cacheLocal(DB);
         draw();
       }catch(e){ console.warn("Realtime refresh failed:", e); }
