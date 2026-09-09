@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Univerz CRM — calls &amp; appointments</title>
+<title>Univerz CRM — calls, appointments &amp; finance</title>
 <meta name="description" content="Internal call queue and appointment CRM for the Univerz team. Track leads, log calls, book meetings and shoots." />
 <meta name="theme-color" content="#1f5c5a" />
 <link rel="icon" href="/logo-placeholder.png" type="image/png" />
@@ -806,6 +806,21 @@ td .num{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
 .whoami-name{font-weight:650;font-size:12.5px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .whoami-sub{font-size:10.5px;color:var(--muted);display:flex;align-items:center;gap:4px;margin-top:1px}
 
+.topbar-profile{
+  display:flex;align-items:center;gap:10px;padding:4px 12px 4px 6px;border:1.5px solid var(--amber);
+  border-radius:24px;background:var(--surface);cursor:pointer;transition:all .15s ease;
+  box-shadow:0 1px 4px rgba(0,0,0,.04);
+}
+.topbar-profile:hover{
+  background:var(--surface-2);border-color:var(--amber);box-shadow:0 3px 10px rgba(154,106,20,.16);
+}
+.topbar-profile-info{display:flex;flex-direction:column;gap:1px;text-align:left}
+.topbar-profile-name-row{display:flex;align-items:center;gap:6px}
+.topbar-profile-name{font-weight:700;font-size:12.5px;color:var(--ink);letter-spacing:-.2px;white-space:nowrap}
+.topbar-profile-sub{font-size:10.5px;color:var(--muted);display:flex;align-items:center;gap:5px;white-space:nowrap}
+.topbar-profile-action{color:var(--teal-deep);font-weight:600;text-decoration:underline;cursor:pointer}
+.topbar-profile-action:hover{color:var(--teal)}
+
 .topbar-user{
   display:flex;align-items:center;gap:7px;padding:4px 9px;border:1px solid var(--line-strong);
   border-radius:20px;background:var(--surface);cursor:pointer;transition:background .12s,border-color .12s;
@@ -882,7 +897,7 @@ td .num{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
         <div class="glyph" style="display:none;">U</div>
         <div>
           <div class="name">Univerz CRM <span class="conn-dot offline" id="conn-dot" title="Connecting…"></span></div>
-          <div class="sub">calls &amp; appointments</div>
+          <div class="sub">calls, appointments &amp; finance</div>
         </div>
       </div>
     </div>
@@ -891,7 +906,6 @@ td .num{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
       <button data-view="today" class="on"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Today's calls<span class="badge" id="badge-today">0</span></button>
       <button data-view="contacts"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Contacts</button>
       <button data-view="appointments"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Appointments<span class="badge zero" id="badge-appt">0</span></button>
-      <button data-view="accounts"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="15" rx="2"/><path d="M3 10h18M7 15h4"/></svg>Accounts</button>
       <button data-view="pipeline"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg>Pipeline</button>
       <div class="group-label">Finance</div>
       <button data-view="account"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>Accounts &amp; Balances<span class="badge zero" id="badge-debt-reminders" title="Loan &amp; Bill Reminders">0</span></button>
@@ -943,10 +957,18 @@ td .num{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
         <span class="pulse-dot"></span>
         <span id="topbar-debt-txt">⚠️ Debt Reminders</span>
       </button>
-      <div class="topbar-user" id="topbar-user-btn" title="Account &amp; Security Settings">
-        <div class="avatar" id="topbar-me-av" style="width:24px;height:24px;font-size:10px">SM</div>
-        <span style="font-size:12.5px;font-weight:600;color:var(--ink)" id="topbar-me-name">Sahan</span>
-        <span class="role-pill admin" id="topbar-me-role">Admin</span>
+      <div class="topbar-profile" id="topbar-user-btn" title="Click to view profile &amp; change credentials">
+        <div class="avatar" id="topbar-me-av" style="width:30px;height:30px;font-size:11.5px;font-weight:750">SM</div>
+        <div class="topbar-profile-info">
+          <div class="topbar-profile-name-row">
+            <span class="topbar-profile-name" id="topbar-me-name">Sahan Madhawa</span>
+            <span class="role-guard sahan" id="topbar-me-role" style="font-size:10px;padding:2px 7px">🔒 Sahan Admin (Full Edit Access)</span>
+          </div>
+          <div class="topbar-profile-sub">
+            <span id="topbar-me-title">Managing Director &amp; Finance</span> · 
+            <span class="topbar-profile-action" id="btn-topbar-change-pwd">👤 Change Password / PIN</span>
+          </div>
+        </div>
       </div>
       <button class="btn primary" id="add-contact">+ New contact</button>
     </div>
@@ -1002,7 +1024,6 @@ td .num{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
   <button data-view="contacts"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Contacts</span></button>
   <button data-view="account"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg><span>Accounts</span><span class="badge zero" id="badge-debt-reminders-mobile">0</span></button>
   <button data-view="appointments"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>Appts</span><span class="badge zero" id="badge-appt-mobile">0</span></button>
-  <button data-view="accounts"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="15" rx="2"/><path d="M3 10h18M7 15h4"/></svg><span>Accounts</span></button>
   <button data-view="pipeline"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg><span>Pipeline</span></button>
   <button data-view="team"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Team</span></button>
 </nav>
@@ -1656,7 +1677,7 @@ const PAGES = {
   contacts:{title:"Contacts", crumb:"Everyone in the pipeline", render:renderContacts},
   account:{title:"Accounts & Balances", crumb:"Cashflow, agency balances, expenses and audit logs", render:renderAccount},
   appointments:{title:"Appointments", crumb:"Meetings, shoots and site visits", render:renderAppointments},
-  accounts:{title:"Accounts", crumb:"Director loans and employee reimbursements", render:renderAccounts},
+  accounts:{title:"Accounts & Balances", crumb:"Cashflow, agency balances, expenses and audit logs", render:renderAccount},
   pipeline:{title:"Pipeline", crumb:"Drag a card to move its stage", render:renderPipeline},
   team:{title:"People & activity", crumb:"Who is doing what", render:renderTeam},
 };
@@ -1884,37 +1905,6 @@ function renderAppointments(){
   });
   $("#content").innerHTML = h+`</div>`;
 }
-
-/* ---- ACCOUNTS: separate from CRM contact records ---- */
-let ACCOUNTS_TAB="loans";
-function renderAccounts(){
-  ensureAccounts();
-  const loans=DB.accounts.filter(x=>x.kind==="director-loan");
-  const expenses=DB.accounts.filter(x=>x.kind==="reimbursement");
-  const current=ACCOUNTS_TAB==="loans"?loans:expenses;
-  const outstanding=current.filter(x=>x.status!=="settled").reduce((sum,x)=>sum+Number(x.amount||0),0);
-  const settled=current.filter(x=>x.status==="settled").reduce((sum,x)=>sum+Number(x.amount||0),0);
-  const title=ACCOUNTS_TAB==="loans"?"Director loans / advances":"Employee private expenses";
-  const expl=ACCOUNTS_TAB==="loans"?"New director advances are recorded only; settle them when payment is ready.":"Private company expenses due for reimbursement by the 25th are tracked per employee.";
-  let h=`<div class="tabs"><button class="tab ${ACCOUNTS_TAB==='loans'?'on':''}" data-account-tab="loans">Director loans / advances <span class="count">${loans.length}</span></button><button class="tab ${ACCOUNTS_TAB==='expenses'?'on':''}" data-account-tab="expenses">Employee reimbursements <span class="count">${expenses.length}</span></button></div>`;
-  if(!isAccountsEditor()) h+=`<div class="lock-note">Accounts are view-only while acting as ${esc(user(DB.currentUserId).name)}. Only Sahan can add, edit, or settle account records.</div>`;
-  h+=`<div class="account-summary"><div class="account-card"><div class="label">Outstanding</div><div class="amount">${money(outstanding)}</div><div class="hint">${ACCOUNTS_TAB==='loans'?'Recorded and awaiting settlement':'Awaiting reimbursement'}</div></div><div class="account-card"><div class="label">Settled</div><div class="amount">${money(settled)}</div><div class="hint">Completed payments</div></div><div class="account-card"><div class="label">Records</div><div class="amount">${current.length}</div><div class="hint">${expl}</div></div></div>`;
-  h+=`<div class="sec-h"><h2>${title}</h2><span class="count">${current.length} records</span><div class="rule"></div>${isAccountsEditor()?`<button class="btn primary sm" data-account-add="${ACCOUNTS_TAB}">+ Add record</button>`:""}</div>`;
-  if(!current.length){ h+=`<div class="empty"><b>No records yet</b>${expl}</div>`; }
-  else { h+=`<div class="tablewrap"><table><thead><tr><th>${ACCOUNTS_TAB==='loans'?'Director':'Employee'}</th><th>Description</th><th>Recorded</th>${ACCOUNTS_TAB==='expenses'?'<th>Due by</th>':''}<th>Amount</th><th>Status</th><th></th></tr></thead><tbody>`;
-  current.sort((a,b)=>b.date-a.date).forEach(x=>{ h+=`<tr><td><span class="nm">${esc(x.person)}</span></td><td>${esc(x.description)}</td><td><span class="num">${new Date(x.date).toLocaleDateString([], {day:'numeric',month:'short',year:'numeric'})}</span></td>${ACCOUNTS_TAB==='expenses'?`<td><span class="num">${x.dueDate?new Date(x.dueDate).toLocaleDateString([], {day:'numeric',month:'short'}):'—'}</span></td>`:''}<td><span class="num">${money(x.amount)}</span></td><td><span class="status ${x.status}">${x.status==='settled'?'Settled':x.status==='pending'?'Awaiting reimbursement':'Recorded'}</span></td><td style="text-align:right;white-space:nowrap">${isAccountsEditor()?`<button class="btn ghost sm" data-account-edit="${x.id}">Edit</button>${x.status!=='settled'?` <button class="btn sm" data-account-settle="${x.id}">Settle</button>`:''}`:''}</td></tr>`; }); h+=`</tbody></table></div>`; }
-  $("#content").innerHTML=h;
-}
-function accountForm(record, tab){
-  if(!isAccountsEditor()){ toast("Only Sahan can edit Accounts"); return; }
-  const isNew=!record, kind=record?.kind || (tab==="expenses"?"reimbursement":"director-loan");
-  const r=record||{person:"",amount:"",date:Date.now(),description:"",dueDate:nextMonthly25th(),status:kind==='reimbursement'?'pending':'recorded'};
-  const date=new Date(r.date-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
-  const due=r.dueDate?new Date(r.dueDate-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10):"";
-  openModal(`<div class="modal"><header><h3>${isNew?'Add':'Edit'} ${kind==='director-loan'?'director loan / advance':'employee reimbursement'}</h3><button class="x" data-close>×</button></header><div class="pad"><div class="grid2"><div class="field"><label>${kind==='director-loan'?'Director':'Employee'}</label><select id="ac-person">${DB.users.map(u=>`<option ${u.name===r.person?'selected':''}>${esc(u.name)}</option>`).join('')}</select></div><div class="field"><label>Amount (LKR)</label><input id="ac-amount" class="num" type="number" min="0" value="${esc(String(r.amount))}"></div></div><div class="grid2"><div class="field"><label>Recorded date</label><input id="ac-date" type="date" value="${date}"></div>${kind==='reimbursement'?`<div class="field"><label>Due by</label><input id="ac-due" type="date" value="${due}"></div>`:'<div></div>'}</div><div class="field"><label>Description</label><textarea id="ac-description" placeholder="What was paid personally?">${esc(r.description)}</textarea></div></div><footer><button class="btn" data-close>Cancel</button><button class="btn primary" id="ac-save">${isNew?'Add record':'Save changes'}</button></footer></div>`);
-  $("#ac-save").onclick=()=>{ const amount=Number($("#ac-amount").value); if(!amount||amount<0){ $("#ac-amount").focus(); return; } const data={kind,person:$("#ac-person").value,amount,date:new Date($("#ac-date").value).getTime(),description:$("#ac-description").value.trim(),dueDate:kind==='reimbursement'&&$("#ac-due").value?new Date($("#ac-due").value).getTime():null}; if(isNew){DB.accounts.push({...data,id:uid(),status:kind==='reimbursement'?'pending':'recorded',createdBy:DB.currentUserId,settledAt:null});}else Object.assign(r,data); cacheLocal(DB); sbWrite(sb.from("account_record").upsert([objToSnake(isNew ? DB.accounts[DB.accounts.length-1] : r)])); closeModal(); toast(isNew?"Account record added":"Account record saved");draw(); };
-}
-
 
 /* ---- PIPELINE board ---- */
 function renderPipeline(){
@@ -6530,28 +6520,29 @@ function buildMe(){
     }
   }
 
-  // Topbar username & role
-  const topNameEl=$("#topbar-me-name"); if(topNameEl) topNameEl.textContent = me.name.split(" ")[0];
+  // Topbar profile: full name, badge, title
+  const topNameEl=$("#topbar-me-name"); if(topNameEl) topNameEl.textContent = me.name;
+  const topTitleEl=$("#topbar-me-title"); if(topTitleEl) topTitleEl.textContent = me.title || (isSahanUser ? "Managing Director & Finance" : "Team Member");
   const topRoleEl=$("#topbar-me-role");
   if(topRoleEl){
     if(isSahanUser){
-      topRoleEl.className = "role-pill admin";
-      topRoleEl.textContent = "Admin";
-      topRoleEl.style.background = "";
-      topRoleEl.style.color = "";
-      topRoleEl.style.border = "";
+      topRoleEl.className = "role-guard sahan";
+      topRoleEl.style.background = "var(--amber-wash)";
+      topRoleEl.style.color = "var(--amber)";
+      topRoleEl.style.border = "1px solid rgba(154,106,20,.35)";
+      topRoleEl.textContent = "🔒 Sahan Admin (Full Edit Access)";
     } else if(isSubodhaUser){
-      topRoleEl.className = "role-pill good";
+      topRoleEl.className = "role-guard good";
       topRoleEl.style.background = "var(--teal-wash)";
       topRoleEl.style.color = "var(--teal)";
       topRoleEl.style.border = "1px solid var(--teal)";
-      topRoleEl.textContent = "Work Mgr";
+      topRoleEl.textContent = "🎨 Creative Director (Work Mgr)";
     } else {
-      topRoleEl.className = "role-pill member";
-      topRoleEl.style.background = "";
-      topRoleEl.style.color = "";
-      topRoleEl.style.border = "";
-      topRoleEl.textContent = "Member";
+      topRoleEl.className = "role-guard viewer";
+      topRoleEl.style.background = "var(--surface-2)";
+      topRoleEl.style.color = "var(--muted)";
+      topRoleEl.style.border = "1px solid var(--line)";
+      topRoleEl.textContent = `👁️ ${me.title || 'Team Member'}`;
     }
   }
 }
