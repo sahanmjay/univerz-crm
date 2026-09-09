@@ -91,6 +91,7 @@ create table if not exists appointment (
   status text default 'scheduled' check (status is null or status in ('scheduled', 'done', 'cancelled'))
 );
 
+<<<<<<< HEAD
 -- ── 6. FINANCE ACCOUNTS TABLE ──
 create table if not exists finance_account (
   id text primary key,
@@ -106,6 +107,26 @@ create table if not exists finance_account (
 alter table finance_account add column if not exists currency text default 'Rs.';
 alter table finance_account add column if not exists color text default '#1f5c5a';
 alter table finance_account add column if not exists is_default boolean default false;
+=======
+-- ── 5. ACCOUNTS RECORDS TABLE ──
+create table if not exists account_record (
+  id text primary key,
+  kind text not null check (kind in ('director-loan', 'reimbursement')),
+  person text not null,
+  amount numeric not null check (amount >= 0),
+  date bigint not null,
+  due_date bigint,
+  description text default '',
+  status text not null check (status in ('recorded', 'pending', 'settled')),
+  created_by text references app_user(id),
+  settled_at bigint,
+  settled_by text references app_user(id)
+);
+
+-- ── 5. ROW-LEVEL SECURITY (permissive for prototype — no auth) ──
+-- When you add real authentication later, replace these with proper
+-- role-based policies (see Univerz-CRM-Code-Guide.md §8.2)
+>>>>>>> 886ed5da9e1ab2ca5afe0c2224145b9abc2d66bb
 
 -- ── 7. FINANCE TRANSACTIONS TABLE ──
 create table if not exists finance_transaction (
@@ -174,6 +195,7 @@ alter table finance_bill add column if not exists last_paid_at bigint;
 alter table finance_bill add column if not exists last_paid_cycle text default '';
 alter table finance_bill add column if not exists notes text default '';
 
+<<<<<<< HEAD
 -- ── 11. FINANCE CLAIMS (EMPLOYEE OUT-OF-POCKET EXPENSES REIMBURSEMENTS) ──
 -- For company work expenses paid with personal funds by team members, due by the 25th
 create table if not exists finance_claim (
@@ -240,3 +262,14 @@ begin
     end if;
   end loop;
 end $$;
+=======
+alter table account_record enable row level security;
+create policy "anon full access" on account_record for all to anon using (true) with check (true);
+
+-- ── 6. REALTIME (enables live sync across all 6 browsers) ──
+alter publication supabase_realtime add table app_user;
+alter publication supabase_realtime add table contact;
+alter publication supabase_realtime add table call;
+alter publication supabase_realtime add table appointment;
+alter publication supabase_realtime add table account_record;
+>>>>>>> 886ed5da9e1ab2ca5afe0c2224145b9abc2d66bb

@@ -639,6 +639,8 @@ td .num{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
   display: none;
 }
 
+.tabs{display:flex;gap:7px;border-bottom:1px solid var(--line);margin-bottom:16px}.tab{border:0;border-bottom:2px solid transparent;background:transparent;padding:9px 12px;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer}.tab.on{color:var(--teal);border-color:var(--teal)}.account-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}.account-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow)}.account-card .label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}.account-card .amount{font:600 22px var(--mono);margin-top:5px}.account-card .hint{font-size:12px;color:var(--muted);margin-top:4px}.status{font-size:10.5px;font-weight:650;padding:3px 8px;border-radius:20px;white-space:nowrap}.status.recorded{background:var(--amber-wash);color:var(--amber)}.status.settled{background:var(--green-wash);color:var(--green)}.status.pending{background:var(--clay-wash);color:var(--clay)}.lock-note{background:var(--amber-wash);border:1px solid #ead8af;color:#76530e;border-radius:7px;padding:10px 12px;margin-bottom:15px;font-size:12.5px}
+
 @media (max-width:880px){
   .app{
     grid-template-columns:1fr;
@@ -671,7 +673,7 @@ td .num{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
   .content{
     padding:12px 12px 60px;
   }
-  .stats{
+  .stats,.account-summary{
     grid-template-columns:1fr 1fr;
     gap:8px;
     margin-bottom:14px;
@@ -889,6 +891,7 @@ td .num{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
       <button data-view="today" class="on"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Today's calls<span class="badge" id="badge-today">0</span></button>
       <button data-view="contacts"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Contacts</button>
       <button data-view="appointments"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Appointments<span class="badge zero" id="badge-appt">0</span></button>
+      <button data-view="accounts"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="15" rx="2"/><path d="M3 10h18M7 15h4"/></svg>Accounts</button>
       <button data-view="pipeline"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg>Pipeline</button>
       <div class="group-label">Finance</div>
       <button data-view="account"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>Accounts &amp; Balances<span class="badge zero" id="badge-debt-reminders" title="Loan &amp; Bill Reminders">0</span></button>
@@ -999,6 +1002,7 @@ td .num{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
   <button data-view="contacts"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Contacts</span></button>
   <button data-view="account"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg><span>Accounts</span><span class="badge zero" id="badge-debt-reminders-mobile">0</span></button>
   <button data-view="appointments"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>Appts</span><span class="badge zero" id="badge-appt-mobile">0</span></button>
+  <button data-view="accounts"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="15" rx="2"/><path d="M3 10h18M7 15h4"/></svg><span>Accounts</span></button>
   <button data-view="pipeline"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg><span>Pipeline</span></button>
   <button data-view="team"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Team</span></button>
 </nav>
@@ -1112,6 +1116,7 @@ function seed(){
     {id:"u5",name:"Ashan Indusara",    role:"member",pin:"1234",password:"",title:"Social & Operations",color:"#5a466a",initials:"AI"},
     {id:"u6",name:"Widura Bandara",    role:"member",pin:"1234",password:"",title:"Team Member",color:"#2b6cb0",initials:"WB"},
   ];
+<<<<<<< HEAD
   return {
     users,
     contacts:[],
@@ -1262,6 +1267,16 @@ function getAiConfig(){
 function saveAiConfig(cfg){
   localStorage.setItem("crm_ai_config", JSON.stringify(cfg));
   if(cfg.apiKey) localStorage.setItem("crm_ai_api_key", cfg.apiKey);
+=======
+  const now=Date.now();
+  const accounts=[
+    {id:uid(),kind:"director-loan",person:"Subodha Kalhara",amount:185000,date:now-14*DAY,description:"Director advance — operating expenses",status:"recorded",createdBy:"u1",settledAt:null},
+    {id:uid(),kind:"director-loan",person:"Subodha Kalhara",amount:75000,date:now-4*DAY,description:"Director advance — supplier payment",status:"recorded",createdBy:"u1",settledAt:null},
+    {id:uid(),kind:"reimbursement",person:"Ashan Indusara",amount:12450,date:now-3*DAY,dueDate:nextMonthly25th(),description:"Client shoot transport and refreshments",status:"pending",createdBy:"u5",settledAt:null},
+    {id:uid(),kind:"reimbursement",person:"Pulasthi Wijayarathna",amount:8900,date:now-2*DAY,dueDate:nextMonthly25th(),description:"Private spend — shoot equipment transport",status:"pending",createdBy:"u4",settledAt:null}
+  ];
+  return {users,contacts:[],appointments:[],calls:[],accounts,currentUserId:"u1"};
+>>>>>>> 886ed5da9e1ab2ca5afe0c2224145b9abc2d66bb
 }
 
 /* ---- localStorage cache (fallback when Supabase unavailable) ---- */
@@ -1286,6 +1301,7 @@ function loadLocal(){
 
 /* ---- Supabase data functions ---- */
 async function loadFromSupabase(){
+<<<<<<< HEAD
   const [u,c,cl,a,acc,tx,fl,ln,bl,cm] = await Promise.all([
     sb.from('app_user').select('*'),
     sb.from('contact').select('*'),
@@ -1297,6 +1313,10 @@ async function loadFromSupabase(){
     sb.from('finance_loan').select('*').then(r=>r).catch(()=>({data:[]})),
     sb.from('finance_bill').select('*').then(r=>r).catch(()=>({data:[]})),
     sb.from('finance_claim').select('*').then(r=>r).catch(()=>({data:[]})),
+=======
+  const [u,c,cl,a,ac] = await Promise.all([
+    sb.from('app_user').select('*'), sb.from('contact').select('*'), sb.from('call').select('*'), sb.from('appointment').select('*'), sb.from('account_record').select('*'),
+>>>>>>> 886ed5da9e1ab2ca5afe0c2224145b9abc2d66bb
   ]);
   if(u.error) throw u.error;
   return {
@@ -1304,12 +1324,16 @@ async function loadFromSupabase(){
     contacts: (c.data||[]).map(objToCamel),
     calls: (cl.data||[]).map(objToCamel),
     appointments: (a.data||[]).map(objToCamel),
+<<<<<<< HEAD
     accounts: (acc.data || []).map(objToCamel),
     transactions: (tx.data || []).map(objToCamel),
     financeLogs: (fl.data || []).map(objToCamel),
     loans: (ln.data || []).map(objToCamel),
     bills: (bl.data || []).map(objToCamel),
     claims: (cm.data || []).map(objToCamel),
+=======
+    accounts: ac.error ? [] : (ac.data||[]).map(objToCamel),
+>>>>>>> 886ed5da9e1ab2ca5afe0c2224145b9abc2d66bb
   };
 }
 
@@ -1355,8 +1379,13 @@ async function seedToSupabase(data){
   if(data.claims && data.claims.length){
     await sb.from('finance_claim').insert(data.claims.map(objToSnake)).catch(()=>{});
   }
+  if(data.accounts.length){
+    const {error:e5} = await sb.from('account_record').insert(data.accounts.map(objToSnake));
+    if(e5) console.warn("Seed account records:", e5);
+  }
 }
 
+<<<<<<< HEAD
 /* ---- The in-memory database ---- */
 let DB = {users:[],contacts:[],calls:[],appointments:[],accounts:[],transactions:[],financeLogs:[],loans:[],bills:[],claims:[],currentUserId:"u3"};
 let ONLINE = false;
@@ -1580,10 +1609,16 @@ begin
   end loop;
 end $$;
 `;
+=======
+/* ---- The in-memory database (hydrated at boot from Supabase or cache) ---- */
+let DB = {users:[],contacts:[],calls:[],appointments:[],accounts:[],currentUserId:"u1"};
+let ONLINE = false; // tracks whether Supabase is reachable
+>>>>>>> 886ed5da9e1ab2ca5afe0c2224145b9abc2d66bb
 
 /* helpers */
 function uid(){ return "id"+Math.random().toString(36).slice(2,9); }
 function todayAt(h,m){ const d=new Date(); d.setHours(h,m,0,0); return d.getTime(); }
+function nextMonthly25th(){ const d=new Date(); d.setHours(0,0,0,0); d.setDate(25); if(d.getTime()<Date.now()) d.setMonth(d.getMonth()+1); return d.getTime(); }
 function $(s,r=document){ return r.querySelector(s); }
 function $$(s,r=document){ return [...r.querySelectorAll(s)]; }
 function esc(s){ return (s||"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
@@ -1615,6 +1650,9 @@ function logFinanceAction(action, details, amount = 0, userId = DB.currentUserId
 function svc(id){ return (SERVICES.find(s=>s.id===id)||{}).label||id; }
 function stageLabel(id){ return (STAGES.find(s=>s.id===id)||{}).label||id; }
 function dispoLabel(id){ return (DISPOSITIONS.find(d=>d.id===id)||{}).label||"—"; }
+function money(amount){ return "LKR " + new Intl.NumberFormat("en-LK",{maximumFractionDigits:0}).format(Number(amount)||0); }
+function isAccountsEditor(){ return DB.currentUserId==="u3"; }
+function ensureAccounts(){ if(!Array.isArray(DB.accounts)) DB.accounts=[]; }
 
 function fmtWhen(ts){
   if(!ts) return "—";
@@ -1648,6 +1686,7 @@ const PAGES = {
   contacts:{title:"Contacts", crumb:"Everyone in the pipeline", render:renderContacts},
   account:{title:"Accounts & Balances", crumb:"Cashflow, agency balances, expenses and audit logs", render:renderAccount},
   appointments:{title:"Appointments", crumb:"Meetings, shoots and site visits", render:renderAppointments},
+  accounts:{title:"Accounts", crumb:"Director loans and employee reimbursements", render:renderAccounts},
   pipeline:{title:"Pipeline", crumb:"Drag a card to move its stage", render:renderPipeline},
   team:{title:"People & activity", crumb:"Who is doing what", render:renderTeam},
 };
@@ -1875,6 +1914,37 @@ function renderAppointments(){
   });
   $("#content").innerHTML = h+`</div>`;
 }
+
+/* ---- ACCOUNTS: separate from CRM contact records ---- */
+let ACCOUNTS_TAB="loans";
+function renderAccounts(){
+  ensureAccounts();
+  const loans=DB.accounts.filter(x=>x.kind==="director-loan");
+  const expenses=DB.accounts.filter(x=>x.kind==="reimbursement");
+  const current=ACCOUNTS_TAB==="loans"?loans:expenses;
+  const outstanding=current.filter(x=>x.status!=="settled").reduce((sum,x)=>sum+Number(x.amount||0),0);
+  const settled=current.filter(x=>x.status==="settled").reduce((sum,x)=>sum+Number(x.amount||0),0);
+  const title=ACCOUNTS_TAB==="loans"?"Director loans / advances":"Employee private expenses";
+  const expl=ACCOUNTS_TAB==="loans"?"New director advances are recorded only; settle them when payment is ready.":"Private company expenses due for reimbursement by the 25th are tracked per employee.";
+  let h=`<div class="tabs"><button class="tab ${ACCOUNTS_TAB==='loans'?'on':''}" data-account-tab="loans">Director loans / advances <span class="count">${loans.length}</span></button><button class="tab ${ACCOUNTS_TAB==='expenses'?'on':''}" data-account-tab="expenses">Employee reimbursements <span class="count">${expenses.length}</span></button></div>`;
+  if(!isAccountsEditor()) h+=`<div class="lock-note">Accounts are view-only while acting as ${esc(user(DB.currentUserId).name)}. Only Sahan can add, edit, or settle account records.</div>`;
+  h+=`<div class="account-summary"><div class="account-card"><div class="label">Outstanding</div><div class="amount">${money(outstanding)}</div><div class="hint">${ACCOUNTS_TAB==='loans'?'Recorded and awaiting settlement':'Awaiting reimbursement'}</div></div><div class="account-card"><div class="label">Settled</div><div class="amount">${money(settled)}</div><div class="hint">Completed payments</div></div><div class="account-card"><div class="label">Records</div><div class="amount">${current.length}</div><div class="hint">${expl}</div></div></div>`;
+  h+=`<div class="sec-h"><h2>${title}</h2><span class="count">${current.length} records</span><div class="rule"></div>${isAccountsEditor()?`<button class="btn primary sm" data-account-add="${ACCOUNTS_TAB}">+ Add record</button>`:""}</div>`;
+  if(!current.length){ h+=`<div class="empty"><b>No records yet</b>${expl}</div>`; }
+  else { h+=`<div class="tablewrap"><table><thead><tr><th>${ACCOUNTS_TAB==='loans'?'Director':'Employee'}</th><th>Description</th><th>Recorded</th>${ACCOUNTS_TAB==='expenses'?'<th>Due by</th>':''}<th>Amount</th><th>Status</th><th></th></tr></thead><tbody>`;
+  current.sort((a,b)=>b.date-a.date).forEach(x=>{ h+=`<tr><td><span class="nm">${esc(x.person)}</span></td><td>${esc(x.description)}</td><td><span class="num">${new Date(x.date).toLocaleDateString([], {day:'numeric',month:'short',year:'numeric'})}</span></td>${ACCOUNTS_TAB==='expenses'?`<td><span class="num">${x.dueDate?new Date(x.dueDate).toLocaleDateString([], {day:'numeric',month:'short'}):'—'}</span></td>`:''}<td><span class="num">${money(x.amount)}</span></td><td><span class="status ${x.status}">${x.status==='settled'?'Settled':x.status==='pending'?'Awaiting reimbursement':'Recorded'}</span></td><td style="text-align:right;white-space:nowrap">${isAccountsEditor()?`<button class="btn ghost sm" data-account-edit="${x.id}">Edit</button>${x.status!=='settled'?` <button class="btn sm" data-account-settle="${x.id}">Settle</button>`:''}`:''}</td></tr>`; }); h+=`</tbody></table></div>`; }
+  $("#content").innerHTML=h;
+}
+function accountForm(record, tab){
+  if(!isAccountsEditor()){ toast("Only Sahan can edit Accounts"); return; }
+  const isNew=!record, kind=record?.kind || (tab==="expenses"?"reimbursement":"director-loan");
+  const r=record||{person:"",amount:"",date:Date.now(),description:"",dueDate:nextMonthly25th(),status:kind==='reimbursement'?'pending':'recorded'};
+  const date=new Date(r.date-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
+  const due=r.dueDate?new Date(r.dueDate-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10):"";
+  openModal(`<div class="modal"><header><h3>${isNew?'Add':'Edit'} ${kind==='director-loan'?'director loan / advance':'employee reimbursement'}</h3><button class="x" data-close>×</button></header><div class="pad"><div class="grid2"><div class="field"><label>${kind==='director-loan'?'Director':'Employee'}</label><select id="ac-person">${DB.users.map(u=>`<option ${u.name===r.person?'selected':''}>${esc(u.name)}</option>`).join('')}</select></div><div class="field"><label>Amount (LKR)</label><input id="ac-amount" class="num" type="number" min="0" value="${esc(String(r.amount))}"></div></div><div class="grid2"><div class="field"><label>Recorded date</label><input id="ac-date" type="date" value="${date}"></div>${kind==='reimbursement'?`<div class="field"><label>Due by</label><input id="ac-due" type="date" value="${due}"></div>`:'<div></div>'}</div><div class="field"><label>Description</label><textarea id="ac-description" placeholder="What was paid personally?">${esc(r.description)}</textarea></div></div><footer><button class="btn" data-close>Cancel</button><button class="btn primary" id="ac-save">${isNew?'Add record':'Save changes'}</button></footer></div>`);
+  $("#ac-save").onclick=()=>{ const amount=Number($("#ac-amount").value); if(!amount||amount<0){ $("#ac-amount").focus(); return; } const data={kind,person:$("#ac-person").value,amount,date:new Date($("#ac-date").value).getTime(),description:$("#ac-description").value.trim(),dueDate:kind==='reimbursement'&&$("#ac-due").value?new Date($("#ac-due").value).getTime():null}; if(isNew){DB.accounts.push({...data,id:uid(),status:kind==='reimbursement'?'pending':'recorded',createdBy:DB.currentUserId,settledAt:null});}else Object.assign(r,data); cacheLocal(DB); sbWrite(sb.from("account_record").upsert([objToSnake(isNew ? DB.accounts[DB.accounts.length-1] : r)])); closeModal(); toast(isNew?"Account record added":"Account record saved");draw(); };
+}
+
 
 /* ---- PIPELINE board ---- */
 function renderPipeline(){
@@ -6160,6 +6230,7 @@ $("#content").addEventListener("click",e=>{
   const call=e.target.closest("[data-call]");
   const open=e.target.closest("[data-open]");
   const done=e.target.closest("[data-appt-done]");
+<<<<<<< HEAD
   const inAcc=e.target.closest("[data-in-acc]");
   const outAcc=e.target.closest("[data-out-acc]");
   const editAcc=e.target.closest("[data-edit-acc]");
@@ -6233,6 +6304,13 @@ $("#content").addEventListener("click",e=>{
   else if(shareLoanBtn){ shareLoanReminder(shareLoanBtn.dataset.shareLoan, 'modal'); }
   else if(shareLoanWa){ shareLoanReminder(shareLoanWa.dataset.shareLoanWa, 'whatsapp'); }
   else if(shareLoanCopy){ shareLoanReminder(shareLoanCopy.dataset.shareLoanCopy, 'copy'); }
+=======
+  const accountTab=e.target.closest("[data-account-tab]"), accountAdd=e.target.closest("[data-account-add]"), accountEdit=e.target.closest("[data-account-edit]"), accountSettle=e.target.closest("[data-account-settle]");
+  if(accountTab){ ACCOUNTS_TAB=accountTab.dataset.accountTab; draw(); }
+  else if(accountAdd){ accountForm(null,accountAdd.dataset.accountAdd); }
+  else if(accountEdit){ accountForm(DB.accounts.find(x=>x.id===accountEdit.dataset.accountEdit)); }
+  else if(accountSettle){ const x=DB.accounts.find(x=>x.id===accountSettle.dataset.accountSettle); if(x && isAccountsEditor()){x.status="settled";x.settledAt=Date.now();x.settledBy=DB.currentUserId;cacheLocal(DB);sbWrite(sb.from("account_record").update(objToSnake(x)).eq("id",x.id));toast("Account record settled");draw();} }
+>>>>>>> 886ed5da9e1ab2ca5afe0c2224145b9abc2d66bb
   else if(call){ logCallForm(contact(call.dataset.call)); }
   else if(open){ contactForm(contact(open.dataset.open)); }
   else if(done){
@@ -6644,12 +6722,16 @@ function subscribeRealtime(){
         DB.contacts = data.contacts;
         DB.calls = data.calls;
         DB.appointments = data.appointments;
+<<<<<<< HEAD
         if(data.accounts) DB.accounts = data.accounts;
         if(data.transactions) DB.transactions = data.transactions;
         if(data.financeLogs) DB.financeLogs = data.financeLogs;
         if(data.loans) DB.loans = data.loans;
         if(data.bills) DB.bills = data.bills;
         if(data.claims) DB.claims = data.claims;
+=======
+        DB.accounts = data.accounts;
+>>>>>>> 886ed5da9e1ab2ca5afe0c2224145b9abc2d66bb
         cacheLocal(DB);
         draw();
       }catch(e){ console.warn("Realtime refresh failed:", e); }
