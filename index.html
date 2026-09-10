@@ -859,7 +859,7 @@ td .num{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
 /* ---- Monthly Report Print & Presentation ---- */
 @media print {
   body { background: #fff !important; font-size: 11pt !important; color: #000 !important; }
-  .side, .mobile-bar, .topbar, .bottom-nav, .toasts, #scrim, .no-print, button, .tab-bar, .cycle-nav { display: none !important; }
+  .side, .mobile-bar, .topbar, .bottom-nav, .toasts, #scrim, .no-print, button, .tab-bar, .cycle-nav, #ai-chat-widget { display: none !important; }
   .app { display: block !important; }
   .main { display: block !important; margin: 0 !important; padding: 0 !important; }
   .content { padding: 0 !important; overflow: visible !important; }
@@ -879,6 +879,225 @@ td .num{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
 .score-badge.high{background:var(--green-wash);color:var(--green);border:2px solid var(--green)}
 .score-badge.med{background:var(--amber-wash);color:var(--amber);border:2px solid var(--amber)}
 .score-badge.low{background:var(--clay-wash);color:var(--clay);border:2px solid var(--clay)}
+
+/* ---- Floating AI Chatbot Widget ---- */
+#ai-chat-widget {
+  position: fixed;
+  bottom: 22px;
+  right: 22px;
+  z-index: 9999;
+  font-family: inherit;
+}
+#ai-fab-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #1f5c5a 0%, #2b6cb0 100%);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.25);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35), 0 0 16px rgba(43,108,176,0.3);
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 13.5px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+#ai-fab-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.45), 0 0 20px rgba(49,151,149,0.5);
+}
+#ai-fab-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+.ai-fab-icon {
+  font-size: 16px;
+  display: inline-block;
+  animation: ai-pulse 2.2s infinite ease-in-out;
+}
+@keyframes ai-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.22); }
+}
+.ai-fab-ping {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  width: 9px;
+  height: 9px;
+  background: #38bdf8;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #38bdf8;
+}
+
+#ai-chat-panel {
+  position: fixed;
+  bottom: 78px;
+  right: 22px;
+  width: 400px;
+  max-width: calc(100vw - 32px);
+  height: 560px;
+  max-height: calc(100vh - 100px);
+  background: var(--surface);
+  border: 1.5px solid var(--line-strong);
+  border-radius: 18px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5), 0 0 30px rgba(31,92,90,0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 10000;
+  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.25s;
+}
+#ai-chat-panel.ai-panel-hidden {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(18px) scale(0.96);
+  pointer-events: none;
+}
+.ai-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--line);
+  flex: none;
+}
+.ai-avatar-badge {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--teal-wash);
+  color: var(--teal-deep);
+  border: 1px solid var(--teal);
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+}
+.ai-chat-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  scroll-behavior: smooth;
+}
+.ai-msg {
+  display: flex;
+  flex-direction: column;
+  max-width: 86%;
+  animation: rise .2s ease both;
+}
+.ai-msg.user {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+.ai-msg.assistant {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+.ai-bubble {
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 12.5px;
+  line-height: 1.55;
+  word-break: break-word;
+}
+.ai-msg.user .ai-bubble {
+  background: var(--teal);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+.ai-msg.assistant .ai-bubble {
+  background: var(--surface-2);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-bottom-left-radius: 4px;
+}
+.ai-bubble p { margin: 0 0 6px; }
+.ai-bubble p:last-child { margin-bottom: 0; }
+.ai-bubble ul, .ai-bubble ol { margin: 4px 0 6px 18px; padding: 0; }
+.ai-bubble li { margin-bottom: 3px; }
+.ai-bubble code { background: rgba(0,0,0,0.2); padding: 1px 4px; border-radius: 4px; font-size: 11.5px; font-family: var(--mono); }
+.ai-chips-bar {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 8px 14px;
+  background: var(--surface);
+  border-top: 1px solid var(--line);
+  flex: none;
+  scrollbar-width: none;
+}
+.ai-chips-bar::-webkit-scrollbar { display: none; }
+.ai-chip {
+  flex: none;
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--ink-soft);
+  border: 1px solid var(--line);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all .15s;
+}
+.ai-chip:hover {
+  background: var(--teal-wash);
+  color: var(--teal-deep);
+  border-color: var(--teal);
+}
+.ai-panel-footer {
+  padding: 10px 14px 12px;
+  background: var(--surface-2);
+  border-top: 1px solid var(--line);
+  flex: none;
+}
+.ai-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+#ai-input-text {
+  flex: 1;
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 12.5px;
+  color: var(--ink);
+  font-family: inherit;
+  resize: none;
+  max-height: 80px;
+  line-height: 1.4;
+}
+#ai-input-text:focus {
+  outline: none;
+  border-color: var(--teal);
+}
+#ai-btn-send {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--teal);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  flex: none;
+  transition: transform .15s;
+}
+#ai-btn-send:hover {
+  transform: scale(1.05);
+}
+#ai-btn-send:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 </style>
 </head>
 <body>
@@ -1237,6 +1456,35 @@ function getCustomSettings(){
 function saveCustomSettings(cfg){
   localStorage.setItem("crm_custom_finance_settings", JSON.stringify(cfg));
   sbWrite(sb.from('app_setting').upsert({key: 'finance_settings', value: cfg, updated_at: Date.now()}));
+}
+
+/* ---- OpenRouter AI & Gemini Flash Configuration ---- */
+function getAiConfig(){
+  if(window.DB && window.DB.aiConfig && window.DB.aiConfig.apiKey){
+    return window.DB.aiConfig;
+  }
+  try{
+    const raw = localStorage.getItem("crm_openrouter_config");
+    if(raw){
+      const parsed = JSON.parse(raw);
+      if(window.DB) window.DB.aiConfig = parsed;
+      return parsed;
+    }
+  }catch(e){}
+  return {
+    apiKey: "",
+    model: "google/gemini-2.0-flash-001"
+  };
+}
+
+function saveAiConfig(cfg){
+  if(window.DB) window.DB.aiConfig = cfg;
+  try{
+    localStorage.setItem("crm_openrouter_config", JSON.stringify(cfg));
+  }catch(e){}
+  if(ONLINE && sb){
+    sbWrite(sb.from('app_setting').upsert({key: 'ai_config', value: cfg, updated_at: Date.now()}));
+  }
 }
 
 function getExpenseCategories(){
@@ -2727,7 +2975,7 @@ function monthlyReportsModal(){
         <div style="font-weight:700;font-size:12.5px;color:var(--ink);margin-bottom:4px">💼 Founder Remuneration &amp; Net Surplus</div>
         <div style="font-size:12px;color:var(--ink-soft);line-height:1.5">
           • <b>Founder Remuneration:</b> ${fmtMoney(founderPayroll)} disbursed this cycle (Designated: Rs. 240,000 for 6 partners).<br>
-          • <b>Distributable Net Surplus:</b> ${netProfit > 0 ? `Net surplus of ${fmtMoney(netProfit)} qualified for quarterly 1/7 Company Reserve retention (${fmtMoney(Math.round(netProfit/7))}) and 6/7 Partner division.` : 'No net distributable surplus in this cycle.'}<br>
+          • <b>Distributable Net Surplus:</b> ${netProfit > 0 ? `Net surplus of ${fmtMoney(netProfit)} qualified for 6-Way Equal Founder Split (${fmtMoney(Math.round(netProfit/6))} each to all 6 partners).` : 'No net distributable surplus in this cycle.'}<br>
           • <b>Debt Serviced:</b> ${fmtMoney(debtServiced)} paid towards loans and liabilities.
         </div>
       </div>
@@ -2816,7 +3064,7 @@ function aiAdvisorModal(){
             ${totalBalance >= 240000 
               ? '• Cash flow allows full disbursement of monthly Rs. 40,000 founder remunerations.' 
               : '• Cash flow buffer is tight. Stage founder remunerations as receivables settle.'}
-            <br>• On quarterly profit review, reserve <b>1/7 (14.286%)</b> for company working capital before dividing 6/7 among founders.
+            <br>• On profit review, net surplus is distributed strictly 6-ways equally among all 6 founders (1/6 or 16.667% each), with zero company reserve retention.
           </div>
         </div>
 
@@ -2847,20 +3095,23 @@ function accountsCustomizerModal(){
   const currentStartDay = cfg.cycleStartDay || 26;
   const currentEndDay = cfg.cycleEndDay || 25;
   const currentCurrency = cfg.currency || "Rs.";
+  const aiCfg = getAiConfig();
 
   openModal(`
-  <div class="modal" style="max-width:540px">
+  <div class="modal" style="max-width:560px">
     <header style="background:var(--surface-2);border-bottom:1px solid var(--line);padding:14px 18px">
       <div style="display:flex;align-items:center;gap:10px">
         <span style="font-size:24px">⚙️</span>
         <div>
-          <h3 style="margin:0;font-size:16px">Finance &amp; Accounts Settings</h3>
-          <div style="font-size:12px;color:var(--muted)">Configure billing cycles, currency &amp; preferences</div>
+          <h3 style="margin:0;font-size:16px">Finance, Accounts &amp; AI Settings</h3>
+          <div style="font-size:12px;color:var(--muted)">Configure billing cycles, OpenRouter AI assistant &amp; preferences</div>
         </div>
       </div>
       <button class="x" data-close>×</button>
     </header>
     <div class="pad">
+      <!-- Billing Cycle & Currency Section -->
+      <div style="font-weight:700;font-size:13px;color:var(--ink);margin-bottom:8px">📅 Billing Cycle &amp; Currency</div>
       <div class="field">
         <label>Billing Cycle Mode</label>
         <select id="cfg-cycle-mode">
@@ -2885,8 +3136,52 @@ function accountsCustomizerModal(){
         <input id="cfg-currency" value="${esc(currentCurrency)}" placeholder="e.g. Rs. or LKR">
       </div>
 
+      <!-- OpenRouter AI Settings Section -->
+      <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--line)">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <span style="font-size:18px">🤖</span>
+          <div>
+            <div style="font-weight:700;font-size:13px;color:var(--ink)">OpenRouter AI Assistant Configuration</div>
+            <div style="font-size:11.5px;color:var(--muted)">Connect Gemini Flash for floating financial chat &amp; executive report drafting</div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>OpenRouter API Key</label>
+          <div style="position:relative;display:flex;align-items:center">
+            <input id="cfg-openrouter-key" type="password" value="${esc(aiCfg.apiKey || '')}" placeholder="sk-or-v1-..." style="padding-right:75px" />
+            <button type="button" id="btn-toggle-ai-key" style="position:absolute;right:6px;padding:4px 8px;font-size:11px;background:var(--surface-2);border:1px solid var(--line);border-radius:4px;cursor:pointer;color:var(--ink-soft)">Show</button>
+          </div>
+          <div style="font-size:11px;color:var(--muted);margin-top:4px">
+            Enter your key from <a href="https://openrouter.ai/keys" target="_blank" style="color:var(--teal);text-decoration:underline">openrouter.ai/keys</a>. Stored securely in your browser &amp; CRM.
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="field">
+            <label>AI Model</label>
+            <select id="cfg-ai-model">
+              <option value="google/gemini-2.0-flash-001" ${aiCfg.model==='google/gemini-2.0-flash-001' || !aiCfg.model ? 'selected':''}>Google Gemini 2.0 Flash (Recommended)</option>
+              <option value="google/gemini-2.5-flash" ${aiCfg.model==='google/gemini-2.5-flash'?'selected':''}>Google Gemini 2.5 Flash</option>
+              <option value="google/gemini-flash-1.5" ${aiCfg.model==='google/gemini-flash-1.5'?'selected':''}>Google Gemini 1.5 Flash</option>
+              <option value="meta-llama/llama-3.3-70b-instruct" ${aiCfg.model==='meta-llama/llama-3.3-70b-instruct'?'selected':''}>Llama 3.3 70B Instruct</option>
+              <option value="custom" ${!['google/gemini-2.0-flash-001','google/gemini-2.5-flash','google/gemini-flash-1.5','meta-llama/llama-3.3-70b-instruct'].includes(aiCfg.model) && aiCfg.model ? 'selected':''}>Custom Model ID</option>
+            </select>
+          </div>
+          <div class="field" id="cfg-custom-model-box" style="${['google/gemini-2.0-flash-001','google/gemini-2.5-flash','google/gemini-flash-1.5','meta-llama/llama-3.3-70b-instruct'].includes(aiCfg.model) || !aiCfg.model ? 'display:none;':''}">
+            <label>Custom Model ID</label>
+            <input id="cfg-custom-model" value="${esc(aiCfg.model || '')}" placeholder="e.g. google/gemini-2.0-flash-001" />
+          </div>
+        </div>
+
+        <div style="display:flex;gap:8px;align-items:center;margin-top:6px;flex-wrap:wrap">
+          <button type="button" class="btn sm" id="btn-test-ai-key" style="background:var(--surface-2);border:1px solid var(--line-strong);font-size:11.5px">⚡ Test OpenRouter Connection</button>
+          <span id="test-ai-status" style="font-size:11.5px;color:var(--muted)"></span>
+        </div>
+      </div>
+
       ${isSahan() ? `
-      <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center">
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center">
         <div>
           <div style="font-weight:650;font-size:12.5px;color:var(--clay)">Reset / Wipe Test Data</div>
           <div style="font-size:11px;color:var(--muted)">Clears dummy demo accounts and transactions</div>
@@ -2900,6 +3195,74 @@ function accountsCustomizerModal(){
     </footer>
   </div>`);
 
+  // Show / Hide password toggle
+  const toggleKeyBtn = $("#btn-toggle-ai-key");
+  const keyInput = $("#cfg-openrouter-key");
+  if(toggleKeyBtn && keyInput){
+    toggleKeyBtn.onclick = () => {
+      if(keyInput.type === "password"){
+        keyInput.type = "text";
+        toggleKeyBtn.textContent = "Hide";
+      } else {
+        keyInput.type = "password";
+        toggleKeyBtn.textContent = "Show";
+      }
+    };
+  }
+
+  // Model select change handler
+  const modelSelect = $("#cfg-ai-model");
+  const customBox = $("#cfg-custom-model-box");
+  if(modelSelect && customBox){
+    modelSelect.onchange = () => {
+      customBox.style.display = modelSelect.value === 'custom' ? 'block' : 'none';
+    };
+  }
+
+  // Test OpenRouter connection
+  const testBtn = $("#btn-test-ai-key");
+  const testStatus = $("#test-ai-status");
+  const customModelInput = $("#cfg-custom-model");
+  if(testBtn){
+    testBtn.onclick = async () => {
+      const key = keyInput ? keyInput.value.trim() : "";
+      if(!key){
+        testStatus.innerHTML = '<span style="color:var(--clay)">⚠️ Please enter an API key first</span>';
+        return;
+      }
+      const chosenModel = modelSelect.value === 'custom' ? (customModelInput.value.trim() || 'google/gemini-2.0-flash-001') : modelSelect.value;
+      testBtn.disabled = true;
+      testStatus.innerHTML = '<span style="color:var(--teal)">Connecting to OpenRouter...</span>';
+      try {
+        const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${key}`,
+            "Content-Type": "application/json",
+            "HTTP-Referer": window.location.origin || "https://univerz.agency",
+            "X-Title": "Univerz CRM"
+          },
+          body: JSON.stringify({
+            model: chosenModel,
+            messages: [{ role: "user", content: "Respond with: OK - Connected to Univerz CRM" }],
+            max_tokens: 30
+          })
+        });
+        if(!res.ok){
+          const errJson = await res.json().catch(() => ({}));
+          throw new Error(errJson.error?.message || `HTTP ${res.status}`);
+        }
+        const data = await res.json();
+        const reply = data.choices?.[0]?.message?.content || "Connected";
+        testStatus.innerHTML = `<span style="color:var(--teal)">🟢 Connected: ${esc(reply.slice(0, 45))}</span>`;
+      } catch(err){
+        testStatus.innerHTML = `<span style="color:var(--clay)">🔴 Failed: ${esc(err.message)}</span>`;
+      } finally {
+        testBtn.disabled = false;
+      }
+    };
+  }
+
   if($("#btn-cfg-wipe-data")){
     $("#btn-cfg-wipe-data").onclick = () => { closeModal(); wipeDummyData(); };
   }
@@ -2911,9 +3274,19 @@ function accountsCustomizerModal(){
     DB.financeConfig.cycleEndDay = Number($("#cfg-end-day").value) || 25;
     DB.financeConfig.currency = $("#cfg-currency").value.trim() || "Rs.";
 
+    // Save OpenRouter AI configuration
+    const chosenModel = $("#cfg-ai-model").value === 'custom' 
+      ? ($("#cfg-custom-model").value.trim() || 'google/gemini-2.0-flash-001')
+      : $("#cfg-ai-model").value;
+
+    saveAiConfig({
+      apiKey: $("#cfg-openrouter-key") ? $("#cfg-openrouter-key").value.trim() : "",
+      model: chosenModel
+    });
+
     cacheLocal(DB);
     closeModal();
-    toast("Finance settings saved successfully!");
+    toast("Settings saved successfully!");
     renderAccount();
   };
 }
@@ -3202,7 +3575,7 @@ function renderAccount(){
                     <span class="pill" style="background:var(--teal-wash);color:var(--teal-deep);font-size:11px;font-weight:700">Rs. 40,000 / mo</span>
                   </div>
                   <div style="font-size:12px;color:var(--muted);line-height:1.5">
-                    Fixed monthly partner remuneration disbursed when company cash flow permits, plus quarterly 6/7 profit distributions after 1/7 company reserve retention.
+                    Fixed monthly partner remuneration disbursed when company cash flow permits, plus 6-way equal founder profit split (1/6 or 16.667% each) with zero company reserve retention.
                   </div>
                   <div style="font-size:11.5px;color:var(--teal-deep);margin-top:6px;font-weight:600">
                     Cycle: ${esc(cycle.label)} · 6 Founder Partners
@@ -3743,9 +4116,8 @@ function renderAccount(){
     const remainingPayrollNeeded = unpaidFounders.length * 40000;
     const isLiquiditySufficient = totalBalance >= (totalPendingCommitments + remainingPayrollNeeded);
 
-    const defaultProfitCalc = Math.max(0, cycleNet) > 0 ? Math.max(0, cycleNet) : 700000;
-    const calcReserveShare = Math.round(defaultProfitCalc / 7);
-    const calcFounderShare = Math.round(defaultProfitCalc / 7);
+    const defaultProfitCalc = Math.max(0, cycleNet) > 0 ? Math.max(0, cycleNet) : 600000;
+    const calcFounderShare = Math.round(defaultProfitCalc / 6);
 
     h += `
     <!-- Top Policy Summary Card -->
@@ -3761,14 +4133,15 @@ function renderAccount(){
               <span class="pill good" style="font-size:11px">Company Policy Active</span>
             </div>
             <div style="font-size:12.5px;color:var(--ink-soft);margin-top:3px">
-              Agreed company rules governing monthly fixed founder remunerations, quarterly profit distribution, and salary revisions.
+              Agreed company rules governing monthly fixed founder remunerations, 6-way equal profit distribution, and salary revisions. Originally founded with Rs. 50,000 seed equity per partner; all business assets and equipment organically funded by company earnings.
             </div>
           </div>
         </div>
         <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
           <span class="pill" style="background:var(--surface);border:1px solid var(--line);font-size:11.5px">👥 6 Equal Partners</span>
+          <span class="pill" style="background:var(--surface);border:1px solid var(--line);font-size:11.5px">🌱 Rs. 50k Seed / Partner</span>
           <span class="pill" style="background:var(--surface);border:1px solid var(--line);font-size:11.5px">💼 Rs. 40,000 / mo Remuneration</span>
-          <span class="pill" style="background:var(--surface);border:1px solid var(--line);font-size:11.5px">⚖️ 1/7 Reserve + 6/7 Split</span>
+          <span class="pill" style="background:var(--surface);border:1px solid var(--line);font-size:11.5px">⚖️ 6-Way Equal Founder Split (1/6 Each)</span>
         </div>
       </div>
     </div>
@@ -3893,17 +4266,17 @@ function renderAccount(){
       </div>
     </div>
 
-    <!-- Quarterly Profit Distribution & Company Reserve -->
+    <!-- Profit Distribution: 6-Way Equal Founder Split -->
     <div class="agreement-card">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px">
         <div>
           <div style="display:flex;align-items:center;gap:8px">
             <span style="font-size:18px">⚖️</span>
-            <b style="font-size:15px;color:var(--ink)">Quarterly Profit Distribution &amp; Company Reserve</b>
-            <span class="pill good" style="font-size:11px">1/7 Reserve + 6/7 Founders</span>
+            <b style="font-size:15px;color:var(--ink)">Profit Distribution (6-Way Equal Founder Split)</b>
+            <span class="pill good" style="font-size:11px">6 Equal Partners (1/6 Each)</span>
           </div>
           <div style="font-size:12px;color:var(--muted);margin-top:2px">
-            Quarterly reviewed distributable net profit after taxes, debts, and working capital obligations.
+            All distributable net surplus is divided into 6 equal parts among founders. Company holds no shares.
           </div>
         </div>
         <div>
@@ -3915,18 +4288,18 @@ function renderAccount(){
         </div>
       </div>
 
-      <!-- Interactive 7-Way Split Calculator -->
+      <!-- Interactive 6-Way Split Calculator -->
       <div style="background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;margin-top:14px">
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px">
           <div>
-            <div style="font-weight:700;font-size:13px;color:var(--ink)">Interactive 7-Way Profit Split Calculator</div>
-            <div style="font-size:11.5px;color:var(--muted)">Change the net profit amount to view the exact 1/7 allocations in real time</div>
+            <div style="font-weight:700;font-size:13px;color:var(--ink)">Interactive 6-Way Profit Split Calculator</div>
+            <div style="font-size:11.5px;color:var(--muted)">Change the net profit amount to view the exact 1/6 allocations in real time (Zero company reserve)</div>
           </div>
           <div style="display:flex;gap:6px;flex-wrap:wrap">
-            <button class="preset-chip" data-calc-preset="350000">Rs. 350k</button>
-            <button class="preset-chip" data-calc-preset="700000">Rs. 700k</button>
-            <button class="preset-chip" data-calc-preset="1400000">Rs. 1.4M</button>
-            <button class="preset-chip" data-calc-preset="2100000">Rs. 2.1M</button>
+            <button class="preset-chip" data-calc-preset="300000">Rs. 300k</button>
+            <button class="preset-chip" data-calc-preset="600000">Rs. 600k</button>
+            <button class="preset-chip" data-calc-preset="1200000">Rs. 1.2M</button>
+            <button class="preset-chip" data-calc-preset="1800000">Rs. 1.8M</button>
             ${cycleNet > 0 ? `<button class="preset-chip" data-calc-preset="${Math.round(cycleNet)}" style="border-color:var(--teal);color:var(--teal-deep)">Current Cycle Net (${fmtMoney(cycleNet)})</button>` : ''}
           </div>
         </div>
@@ -3937,20 +4310,19 @@ function renderAccount(){
             <input id="calc-profit-input" class="num" type="number" value="${defaultProfitCalc}" style="width:100%;font-size:16px;font-weight:700;padding:8px 12px;border:1.5px solid var(--teal);border-radius:7px;background:var(--surface);color:var(--ink)">
           </div>
           <div style="background:var(--surface-2);border-radius:7px;padding:8px 14px;border:1px solid var(--line);text-align:right">
-            <div style="font-size:11px;color:var(--muted)">Each Individual Share (1/7)</div>
+            <div style="font-size:11px;color:var(--muted)">Each Founder Share (1/6 · 16.667%)</div>
             <div id="calc-founder-amt" class="num" style="font-size:16px;font-weight:750;color:var(--teal)">${fmtMoney(calcFounderShare)}</div>
           </div>
         </div>
 
-        <!-- Visual 7-segment ratio bar -->
+        <!-- Visual 6-segment ratio bar -->
         <div class="ratio-bar">
-          <div class="ratio-segment" style="width:14.286%;background:#1f5c5a" title="Company Reserve: 1/7 (14.286%)">1/7 Reserve</div>
-          <div class="ratio-segment" style="width:14.286%;background:#2b6cb0" title="Subodha: 1/7">1/7 Subodha</div>
-          <div class="ratio-segment" style="width:14.286%;background:#bb472b" title="Sadeepa: 1/7">1/7 Sadeepa</div>
-          <div class="ratio-segment" style="width:14.286%;background:#9a6a14" title="Sahan: 1/7">1/7 Sahan</div>
-          <div class="ratio-segment" style="width:14.286%;background:#3c7a4e" title="Pulasthi: 1/7">1/7 Pulasthi</div>
-          <div class="ratio-segment" style="width:14.286%;background:#5a466a" title="Ashan: 1/7">1/7 Ashan</div>
-          <div class="ratio-segment" style="width:14.286%;background:#319795" title="Widura: 1/7">1/7 Widura</div>
+          <div class="ratio-segment" style="width:16.666%;background:#2b6cb0" title="Subodha: 1/6 (16.667%)">1/6 Subodha</div>
+          <div class="ratio-segment" style="width:16.666%;background:#bb472b" title="Sadeepa: 1/6 (16.667%)">1/6 Sadeepa</div>
+          <div class="ratio-segment" style="width:16.666%;background:#9a6a14" title="Sahan: 1/6 (16.667%)">1/6 Sahan</div>
+          <div class="ratio-segment" style="width:16.666%;background:#3c7a4e" title="Pulasthi: 1/6 (16.667%)">1/6 Pulasthi</div>
+          <div class="ratio-segment" style="width:16.666%;background:#5a466a" title="Ashan: 1/6 (16.667%)">1/6 Ashan</div>
+          <div class="ratio-segment" style="width:16.666%;background:#319795" title="Widura: 1/6 (16.667%)">1/6 Widura</div>
         </div>
 
         <!-- Profit breakdown table -->
@@ -3958,19 +4330,13 @@ function renderAccount(){
           <table style="font-size:12px">
             <thead>
               <tr>
-                <th>Beneficiary / Entity</th>
+                <th>Beneficiary / Founder</th>
                 <th>Designation</th>
-                <th>Ratio</th>
+                <th>Ownership Ratio</th>
                 <th style="text-align:right">Calculated Share</th>
               </tr>
             </thead>
             <tbody>
-              <tr style="background:var(--surface-2)">
-                <td><span style="font-weight:700">🏛️ Company Reserve (Working Capital Buffer)</span></td>
-                <td><span class="pill good" style="font-size:10.5px">Retained Reserve Buffer</span></td>
-                <td><span class="num">1/7 (14.286%)</span></td>
-                <td style="text-align:right"><b id="calc-res-amt" class="num" style="color:var(--teal-deep)">${fmtMoney(calcReserveShare)}</b></td>
-              </tr>
               ${founders.map(f => `
                 <tr>
                   <td>
@@ -3978,14 +4344,14 @@ function renderAccount(){
                       <span class="dot" style="background:${f.color}"></span>${esc(f.name)}
                     </span>
                   </td>
-                  <td><span style="color:var(--muted)">Equal Founder Dividend (1/7)</span></td>
-                  <td><span class="num">1/7 (14.286%)</span></td>
+                  <td><span style="color:var(--muted)">Equal Partner Dividend (1/6)</span></td>
+                  <td><span class="num">1/6 (16.667%)</span></td>
                   <td style="text-align:right"><b class="num calc-f-share" style="color:var(--ink)">${fmtMoney(calcFounderShare)}</b></td>
                 </tr>
               `).join('')}
               <tr style="border-top:2px solid var(--line-strong);font-weight:700">
-                <td colspan="2">Total Profit Allocated</td>
-                <td><span class="num">7/7 (100.0%)</span></td>
+                <td colspan="2">Total Distributable Profit Allocated</td>
+                <td><span class="num">6/6 (100.0%)</span></td>
                 <td style="text-align:right"><b id="calc-total-amt" class="num" style="color:var(--teal);font-size:13.5px">${fmtMoney(defaultProfitCalc)}</b></td>
               </tr>
             </tbody>
@@ -4108,8 +4474,27 @@ function renderAccount(){
       <div style="font-weight:700;font-size:13.5px;color:var(--ink);margin-bottom:6px">💼 Founder Remuneration &amp; Net Surplus Breakdown</div>
       <div style="font-size:12.5px;color:var(--ink-soft);line-height:1.6">
         • <b>Founder Remuneration Serviced:</b> ${fmtMoney(founderPayroll)} disbursed this cycle (Target: Rs. 240,000 for 6 founders).<br>
-        • <b>Distributable Net Surplus:</b> ${netProfit > 0 ? `Net surplus of ${fmtMoney(netProfit)} qualified for quarterly 1/7 Company Reserve buffer (${fmtMoney(Math.round(netProfit/7))}) and 6/7 Partner distribution.` : 'No distributable net surplus in this cycle.'}<br>
+        • <b>Distributable Net Surplus:</b> ${netProfit > 0 ? `Net surplus of ${fmtMoney(netProfit)} qualified for 6-Way Equal Founder Split (${fmtMoney(Math.round(netProfit/6))} each to all 6 partners).` : 'No distributable net surplus in this cycle.'}<br>
         • <b>Debt Serviced:</b> ${fmtMoney(debtServiced)} paid towards loan facilities and commitments.
+      </div>
+    </div>
+
+    <!-- AI Executive Financial Commentary Card -->
+    <div style="background:linear-gradient(135deg, var(--surface) 0%, var(--surface-2) 100%);border:1.5px solid var(--teal);border-radius:8px;padding:16px 18px;margin-bottom:18px;box-shadow:var(--shadow)">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:20px">✨</span>
+          <div>
+            <div style="font-weight:750;font-size:14px;color:var(--ink)">AI Executive Financial Commentary &amp; Report Draft</div>
+            <div style="font-size:11.5px;color:var(--muted)">Synthesizes cycle profitability, cost drivers &amp; 6-way partner distributions via Gemini Flash</div>
+          </div>
+        </div>
+        <button class="btn sm" id="btn-generate-ai-report" style="background:var(--teal);color:#fff;font-weight:700;display:flex;align-items:center;gap:6px">
+          <span>✨</span> <span id="ai-rep-btn-text">Generate AI Executive Commentary</span>
+        </button>
+      </div>
+      <div id="ai-report-output" style="background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:14px 16px;font-size:12.5px;color:var(--ink-soft);line-height:1.6">
+        <span style="color:var(--muted)">Click <b>"Generate AI Executive Commentary"</b> to synthesize this cycle's financial performance, founder split projections, and executive recommendations using OpenRouter AI.</span>
       </div>
     </div>
 
@@ -4173,7 +4558,7 @@ function renderAccount(){
           ${totalBalance >= 240000 
             ? '• Liquid balance is sufficient to cover full monthly Rs. 40,000 founder remunerations.' 
             : '• Cash flow is tight relative to obligations. Stage founder remunerations as client receivables clear.'}
-          <br>• On quarterly profit review, reserve <b>1/7 (14.286%)</b> for company working capital buffer before dividing 6/7 among founders.
+          <br>• On profit review, net surplus is distributed strictly 6-ways equally among all 6 founders (1/6 or 16.667% each), with zero company reserve retention.
         </div>
       </div>
 
@@ -4305,12 +4690,9 @@ function renderAccount(){
     if(calcInput){
       const updateCalc = () => {
         const pAmt = Math.max(0, Number(calcInput.value) || 0);
-        const resAmt = Math.round(pAmt / 7);
-        const fAmt = Math.round(pAmt / 7);
-        const resEl = $("#calc-res-amt");
+        const fAmt = Math.round(pAmt / 6);
         const fEl = $("#calc-founder-amt");
         const totEl = $("#calc-total-amt");
-        if(resEl) resEl.textContent = fmtMoney(resAmt);
         if(fEl) fEl.textContent = fmtMoney(fAmt);
         if(totEl) totEl.textContent = fmtMoney(pAmt);
         $$(".calc-f-share").forEach(el => { el.textContent = fmtMoney(fAmt); });
@@ -4322,6 +4704,60 @@ function renderAccount(){
           updateCalc();
         };
       });
+    }
+  }
+
+  // Wire AI report commentary generator in Reports tab
+  if(ACCOUNT_TAB === "reports"){
+    const aiRepBtn = $("#btn-generate-ai-report");
+    const aiRepOut = $("#ai-report-output");
+    const aiRepBtnText = $("#ai-rep-btn-text");
+    if(aiRepBtn && aiRepOut){
+      aiRepBtn.onclick = async () => {
+        const cfg = getAiConfig();
+        if(!cfg.apiKey || !cfg.apiKey.trim()){
+          toast("Please configure your OpenRouter API Key in Settings (⚙️)");
+          accountsCustomizerModal();
+          return;
+        }
+        aiRepBtn.disabled = true;
+        if(aiRepBtnText) aiRepBtnText.textContent = "Analyzing Financials...";
+        aiRepOut.innerHTML = `
+          <div style="display:flex;align-items:center;gap:10px;padding:12px;color:var(--teal)">
+            <span class="ai-fab-icon" style="font-size:20px">✨</span>
+            <span>Synthesizing cycle transactions, profit margin &amp; 6-way founder distributions via Gemini Flash...</span>
+          </div>`;
+        try {
+          const prompt = `Draft a comprehensive executive financial commentary and performance report for Univerz for this billing cycle. Focus on:
+1. Executive Summary & Revenue Health
+2. Operational Expense Analysis & Key Cost Drivers
+3. 6-Way Equal Founder Profit Split Breakdown (Reminder: company holds 0 shares, 100% net surplus divided equally into 6 parts)
+4. Liquidity, Debt Liabilities & Solvency Assessment
+5. Actionable Strategic Recommendations for Sahan Madhawa (Finance Lead) and the 6 partners.
+Use bold highlights for currency amounts (Rs.), clean markdown bullet points, and maintain a sharp, professional executive tone. Strictly do not use any Sinhala characters.`;
+          const reply = await callOpenRouter(prompt);
+          aiRepOut.innerHTML = `
+            <div style="display:flex;justify-content:flex-end;margin-bottom:8px">
+              <button class="btn sm" id="btn-copy-ai-commentary" style="font-size:11px">📋 Copy Commentary</button>
+            </div>
+            <div class="ai-rendered-commentary">${renderMarkdown(reply)}</div>`;
+          const copyBtn = $("#btn-copy-ai-commentary");
+          if(copyBtn){
+            copyBtn.onclick = () => {
+              navigator.clipboard.writeText(reply).then(() => toast("AI Commentary copied to clipboard!"));
+            };
+          }
+        } catch(err){
+          aiRepOut.innerHTML = `
+            <div style="color:var(--clay);padding:8px">
+              ⚠️ <b>Failed to generate AI commentary:</b> ${esc(err.message)}<br>
+              <span style="font-size:11.5px;color:var(--muted)">Check your OpenRouter API Key in Settings (⚙️).</span>
+            </div>`;
+        } finally {
+          aiRepBtn.disabled = false;
+          if(aiRepBtnText) aiRepBtnText.textContent = "Re-generate AI Commentary";
+        }
+      };
     }
   }
 }
@@ -5832,9 +6268,8 @@ function executeProfitDistributionModal(distAmount){
     toast("Accounts restricted: Only Sahan Madhawa can execute quarterly profit distributions.");
     return;
   }
-  const amt = Number(distAmount) || 700000;
-  const reserveAmt = Math.round(amt / 7);
-  const founderAmt = Math.round(amt / 7);
+  const amt = Number(distAmount) || 600000;
+  const founderAmt = Math.round(amt / 6);
   const totalFoundersAmt = founderAmt * 6;
   const defaultAccId = DB.accounts[0]?.id || "";
   const nowDt = new Date(Date.now() - new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
@@ -5843,8 +6278,8 @@ function executeProfitDistributionModal(distAmount){
   <div class="modal" style="max-width:580px">
     <header>
       <div>
-        <h3>💰 Record Quarterly Profit Distribution</h3>
-        <div style="font-size:11.5px;color:var(--muted)">1/7 Company Reserve + 6/7 Founders Split</div>
+        <h3>💰 Record Profit Distribution</h3>
+        <div style="font-size:11.5px;color:var(--muted)">6-Way Equal Founder Profit Split (1/6 Each)</div>
       </div>
       <button class="x" data-close>×</button>
     </header>
@@ -5853,18 +6288,18 @@ function executeProfitDistributionModal(distAmount){
         <div style="display:flex;justify-content:space-between;align-items:center">
           <div>
             <div style="font-weight:700;font-size:13.5px;color:var(--ink)">Distributable Net Profit</div>
-            <div style="font-size:11.5px;color:var(--muted)">Quarterly Distribution Formula</div>
+            <div style="font-size:11.5px;color:var(--muted)">Equal Founder Split Formula (100% to 6 Founders)</div>
           </div>
           <div class="num" style="font-size:19px;font-weight:800;color:var(--teal)">${fmtMoney(amt)}</div>
         </div>
         <div style="margin-top:10px;font-size:12px;color:var(--ink-soft);line-height:1.6">
-          • <b>1/7 Company Reserve (Retained):</b> <span class="num">${fmtMoney(reserveAmt)}</span> (stays in company buffer)<br>
-          • <b>6/7 Distributed to 6 Founders:</b> <span class="num">${fmtMoney(totalFoundersAmt)}</span> (<span class="num">${fmtMoney(founderAmt)}</span> each)
+          • <b>Ownership:</b> Distributed equally across all 6 founders (16.667% / 1/6 each)<br>
+          • <b>Per Founder Payout:</b> <span class="num">${fmtMoney(founderAmt)}</span> each (Total payout: <span class="num">${fmtMoney(totalFoundersAmt)}</span>)
         </div>
       </div>
 
       <div class="field">
-        <label>Disburse Founders' Share (${fmtMoney(totalFoundersAmt)}) from Account</label>
+        <label>Disburse Founders' Payout (${fmtMoney(totalFoundersAmt)}) from Account</label>
         <select id="pdm-account">
           ${DB.accounts.map(a => `<option value="${a.id}" ${a.id===defaultAccId?'selected':''}>${esc(a.name)} (${fmtMoney(a.balance)})</option>`).join("")}
         </select>
@@ -5872,8 +6307,8 @@ function executeProfitDistributionModal(distAmount){
 
       <div class="grid2">
         <div class="field">
-          <label>Quarter Reference</label>
-          <input id="pdm-ref" value="Q-PROFIT-${new Date().getFullYear()}-M${new Date().getMonth()+1}">
+          <label>Quarter / Cycle Reference</label>
+          <input id="pdm-ref" value="PROFIT-${new Date().getFullYear()}-M${new Date().getMonth()+1}">
         </div>
         <div class="field">
           <label>Execution Date</label>
@@ -5883,7 +6318,7 @@ function executeProfitDistributionModal(distAmount){
 
       <div class="field">
         <label>Distribution Memo</label>
-        <input id="pdm-memo" value="Quarterly profit distribution (1/7 Reserve retained, 6/7 split)">
+        <input id="pdm-memo" value="6-Way equal founder profit split (1/6 each)">
       </div>
     </div>
     <footer>
@@ -5901,7 +6336,7 @@ function executeProfitDistributionModal(distAmount){
         return;
       }
     }
-    const ref = $("#pdm-ref").value.trim() || `Q-PROFIT`;
+    const ref = $("#pdm-ref").value.trim() || `PROFIT`;
     const at = $("#pdm-at").value ? new Date($("#pdm-at").value).getTime() : Date.now();
     const memo = $("#pdm-memo").value.trim();
 
@@ -5918,7 +6353,7 @@ function executeProfitDistributionModal(distAmount){
         amount: founderAmt,
         category: "salary",
         contactId: "",
-        description: `Quarterly Profit Distribution: ${u.name} (1/7 Share)${memo ? ' - '+memo : ''}`,
+        description: `Profit Distribution: ${u.name} (1/6 Share)${memo ? ' - '+memo : ''}`,
         receiptRef: `${ref}-${u.initials}`,
         userId: u.id,
         at
@@ -5928,8 +6363,8 @@ function executeProfitDistributionModal(distAmount){
     });
 
     logFinanceAction(
-      "Quarterly Profit Distribution",
-      `Distributed 6/7 net profit (${fmtMoney(totalFoundersAmt)}) to 6 founders (${fmtMoney(founderAmt)} each); 1/7 (${fmtMoney(reserveAmt)}) retained in reserve`,
+      "Profit Distribution",
+      `Distributed net profit (${fmtMoney(totalFoundersAmt)}) equally to 6 founders (${fmtMoney(founderAmt)} each)`,
       -totalFoundersAmt,
       DB.currentUserId
     );
@@ -6653,7 +7088,7 @@ $("#content").addEventListener("click",e=>{
   }
   else if(execProfitSplitBtn){
     const pInput = $("#calc-profit-input");
-    const val = pInput ? pInput.value : 700000;
+    const val = pInput ? pInput.value : 600000;
     executeProfitDistributionModal(val);
   }
   else if(quickSahan){
@@ -7011,6 +7446,343 @@ window.addEventListener("popstate", () => {
 });
 
 /* =================================================================
+   OPENROUTER AI ENGINE & FLOATING ASSISTANT CONTROLLER
+   ================================================================= */
+function renderMarkdown(md){
+  if(!md) return "";
+  let s = String(md)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
+  // Headers
+  s = s.replace(/^### (.*$)/gim, '<h4 style="margin:10px 0 4px;font-size:13px;color:var(--ink);font-weight:750">$1</h4>');
+  s = s.replace(/^## (.*$)/gim, '<h3 style="margin:12px 0 6px;font-size:14px;color:var(--ink);font-weight:800">$1</h3>');
+  s = s.replace(/^# (.*$)/gim, '<h2 style="margin:14px 0 8px;font-size:15.5px;color:var(--ink);font-weight:800">$1</h2>');
+
+  // Bold & Italics
+  s = s.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+  s = s.replace(/\*(.*?)\*/g, '<i>$1</i>');
+
+  // Inline code
+  s = s.replace(/`([^`]+)`/g, '<code style="background:var(--surface-2);border:1px solid var(--line);padding:1px 5px;border-radius:4px;font-size:11.5px;font-family:var(--mono)">$1</code>');
+
+  // Bullet items
+  s = s.replace(/^[•\-\*]\s+(.*$)/gim, '<li style="margin-bottom:3px">$1</li>');
+  s = s.replace(/(<li[\s\S]*?<\/li>)/g, '<ul style="margin:4px 0 8px 18px;padding:0">$1</ul>');
+  s = s.replace(/<\/ul>\s*<ul style="margin:4px 0 8px 18px;padding:0">/g, '');
+
+  // Paragraphs
+  const paras = s.split(/\n{2,}/);
+  s = paras.map(p => {
+    p = p.trim();
+    if(!p) return '';
+    if(p.startsWith('<h') || p.startsWith('<ul') || p.startsWith('<li')) return p;
+    return `<p style="margin:0 0 6px">${p.replace(/\n/g, '<br>')}</p>`;
+  }).join('');
+
+  return s;
+}
+
+function buildAiCrmContext(){
+  const cycle = getCycleBounds(CYCLE_OFFSET);
+  const totalBalance = (DB.accounts || []).reduce((sum, a) => sum + (Number(a.balance)||0), 0);
+  const cycleTxs = (DB.transactions || []).filter(t => t.at >= cycle.start && t.at <= cycle.end);
+  const totalInc = cycleTxs.filter(t => t.type === 'income').reduce((s,t) => s + (Number(t.amount)||0), 0);
+  const totalExp = cycleTxs.filter(t => t.type === 'expense').reduce((s,t) => s + (Number(t.amount)||0), 0);
+  const netProfit = totalInc - totalExp;
+
+  const activeLoans = (DB.loans || []).filter(l => (Number(l.remainingAmount)||0) > 0);
+  const totalDebt = activeLoans.reduce((s,l) => s + (Number(l.remainingAmount)||0), 0);
+  const monthlyInstallments = activeLoans.filter(l => l.loanType !== 'director' && !l.isDeferred).reduce((s,l) => s + (Number(l.monthlyInstallment)||0), 0);
+  const pendingClaimsTotal = (DB.claims || []).filter(c => c.status === 'pending' || c.status === 'approved').reduce((s,c) => s + (Number(c.amount)||0), 0);
+
+  const founderPayroll = cycleTxs.filter(t => t.type === 'expense' && (t.category === 'salary' || (t.description||'').toLowerCase().includes('founder remuneration'))).reduce((s,t) => s + Number(t.amount), 0);
+
+  const founderShareIfProfit = netProfit > 0 ? Math.round(netProfit / 6) : 0;
+  const currentUser = (DB.users || []).find(u => u.id === DB.currentUserId);
+
+  return `LIVE UNIVERZ CRM FINANCIAL & OPERATIONAL CONTEXT:
+- Company: Univerz (Creative agency / media production house)
+- Active Cycle: ${cycle.label} (26th to 25th monthly rhythm, ${cycle.daysRemaining} days remaining)
+- Total Cash Reserves across Agency Accounts: Rs. ${totalBalance.toLocaleString()}
+- Current Cycle Client Revenue: Rs. ${totalInc.toLocaleString()}
+- Current Cycle Operational Expenses: Rs. ${totalExp.toLocaleString()}
+- Current Cycle Net Profit / Surplus: Rs. ${netProfit.toLocaleString()}
+- Distributable Profit Split Policy: Strict 6-Way Equal Founder Split (1/6 or 16.667% each to all 6 founders). The company holds NO shares/reserves. All distributable net surplus is divided equally among the 6 founders. If current cycle surplus was split today, each founder receives Rs. ${founderShareIfProfit.toLocaleString()}.
+- The 6 Founders / Equal Partners:
+  1. Subodha Kalhara (u1) - Creative Director
+  2. Sadeepa Oshada (u2) - Cinematographer & Drone
+  3. Sahan Madhawa (u3) - Managing Director & Finance Lead (Controls finance, bank accounts, and payouts)
+  4. Pulasthi (u4) - Senior Editor & Colorist
+  5. Janith Ashan (u5) - Head of Production
+  6. Widura (u6) - Photographer & Visual Media
+- Initial Capital & Equity Foundation: The agency was seeded by an initial capital investment of Rs. 50,000 from each of the 6 founders (Total initial seed pool: Rs. 300,000). All subsequent company assets, cameras, production gear, and setup were funded 100% organically from business profits and cash flow generated through the team's ongoing client work. There are no external investors or company-held shares.
+- Monthly Founder Remuneration Policy: Rs. 40,000 / month each (Total commitment: Rs. 240,000 per cycle), disbursed subject to liquidity. Disbursed so far this cycle: Rs. ${founderPayroll.toLocaleString()}.
+- Active Liabilities & Debt: Total active debt Rs. ${totalDebt.toLocaleString()}, scheduled monthly loan installments Rs. ${monthlyInstallments.toLocaleString()}/mo.
+- Pending Staff Out-of-Pocket Claims: Rs. ${pendingClaimsTotal.toLocaleString()}.
+- Current Logged-in User: ${currentUser ? currentUser.name : 'Team Member'} (${DB.currentUserId}).
+
+ASSISTANT GUIDELINES:
+1. You are the financial and operational intelligence AI assistant for Univerz CRM.
+2. Provide direct, highly accurate, executive answers using the live data above.
+3. Strict Rule: The company itself holds NO shares. All 6 founders hold 100% equal ownership (1/6 each). Profit is split 6-ways.
+4. Strict Rule: Never output any Sinhala script or characters. Always answer in clear, articulate English.
+5. Format numbers cleanly in Rs. with commas. Use clean markdown bullet points, bold highlights, and concise structure.`;
+}
+
+async function callOpenRouter(promptOrMessages, systemPromptOverride){
+  const cfg = getAiConfig();
+  if(!cfg.apiKey || !cfg.apiKey.trim()){
+    const err = new Error("NO_API_KEY");
+    err.code = "NO_API_KEY";
+    throw err;
+  }
+  const model = cfg.model || "google/gemini-2.0-flash-001";
+  const systemPrompt = systemPromptOverride || buildAiCrmContext();
+
+  const messages = Array.isArray(promptOrMessages)
+    ? [{ role: "system", content: systemPrompt }, ...promptOrMessages]
+    : [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: String(promptOrMessages) }
+      ];
+
+  const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${cfg.apiKey.trim()}`,
+      "Content-Type": "application/json",
+      "HTTP-Referer": window.location.origin || "https://univerz.agency",
+      "X-Title": "Univerz CRM"
+    },
+    body: JSON.stringify({
+      model: model,
+      messages: messages,
+      temperature: 0.3,
+      max_tokens: 1400
+    })
+  });
+
+  if(!res.ok){
+    let errorDetail = `HTTP ${res.status} ${res.statusText}`;
+    try {
+      const errData = await res.json();
+      if(errData && errData.error && errData.error.message){
+        errorDetail = errData.error.message;
+      }
+    } catch(e){}
+    throw new Error(errorDetail);
+  }
+
+  const data = await res.json();
+  const reply = data.choices?.[0]?.message?.content || "No response generated.";
+  return reply;
+}
+
+let AI_CHAT_OPEN = false;
+let AI_CHAT_HISTORY = [];
+
+function initAiChatWidget(){
+  if(document.getElementById("ai-chat-widget")) return;
+
+  const widget = document.createElement("div");
+  widget.id = "ai-chat-widget";
+  widget.innerHTML = `
+    <button id="ai-fab-btn" title="Open Univerz AI Assistant" aria-label="Open AI Assistant">
+      <span class="ai-fab-icon">✨</span>
+      <span class="ai-fab-label">AI Chat</span>
+      <span class="ai-fab-ping"></span>
+    </button>
+    
+    <div id="ai-chat-panel" class="ai-panel-hidden" role="dialog" aria-label="Univerz AI Chat Assistant">
+      <div class="ai-panel-header">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div class="ai-avatar-badge">🤖</div>
+          <div>
+            <div style="display:flex;align-items:center;gap:6px">
+              <span style="font-weight:750;font-size:13.5px;color:var(--ink)">Univerz Financial AI</span>
+              <span class="pill good" style="font-size:9.5px;padding:1px 5px" id="ai-header-model-badge">Gemini Flash</span>
+            </div>
+            <div style="font-size:11px;color:var(--muted)">Live CRM Knowledge · 6-Way Equal Split</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:4px">
+          <button id="ai-btn-cfg" class="iconbtn" title="AI Settings &amp; API Key" style="font-size:13px;padding:4px">⚙️</button>
+          <button id="ai-btn-clear" class="iconbtn" title="Clear Chat History" style="font-size:13px;padding:4px">🗑️</button>
+          <button id="ai-btn-close" class="iconbtn" title="Close Chat" style="font-size:15px;font-weight:700;padding:4px 8px">✕</button>
+        </div>
+      </div>
+
+      <div id="ai-chat-messages" class="ai-chat-body"></div>
+
+      <div id="ai-chat-chips" class="ai-chips-bar">
+        <button class="ai-chip" data-ai-prompt="How is profit split among the 6 founders?">⚖️ 6-Way Split</button>
+        <button class="ai-chip" data-ai-prompt="What was each founder's initial investment and how were company assets funded?">🌱 Seed Capital &amp; Assets</button>
+        <button class="ai-chip" data-ai-prompt="What is our current cycle net profit and cash balance?">💰 Current Net &amp; Cash</button>
+        <button class="ai-chip" data-ai-prompt="What are our active loan installments and remaining debts?">🏛️ Loan Debts</button>
+        <button class="ai-chip" data-ai-prompt="Summarize our expense breakdown for this cycle">📊 Expenses</button>
+        <button class="ai-chip" data-ai-prompt="Explain the monthly founder remuneration policy and status">💼 Remuneration</button>
+      </div>
+
+      <div class="ai-panel-footer">
+        <div class="ai-input-row">
+          <textarea id="ai-input-text" rows="1" placeholder="Ask AI about profit split, cash flow, debts..." maxlength="1000"></textarea>
+          <button id="ai-btn-send" title="Send message" aria-label="Send">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+          </button>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:10.5px;color:var(--muted)">
+          <span>Powered by OpenRouter &amp; Gemini Flash</span>
+          <span id="ai-typing-indicator" style="display:none;color:var(--teal);font-weight:600">✨ AI is thinking...</span>
+        </div>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(widget);
+
+  const fab = $("#ai-fab-btn");
+  const panel = $("#ai-chat-panel");
+  const closeBtn = $("#ai-btn-close");
+  const clearBtn = $("#ai-btn-clear");
+  const cfgBtn = $("#ai-btn-cfg");
+  const sendBtn = $("#ai-btn-send");
+  const inputEl = $("#ai-input-text");
+  const messagesEl = $("#ai-chat-messages");
+  const typingEl = $("#ai-typing-indicator");
+
+  const togglePanel = (open) => {
+    AI_CHAT_OPEN = typeof open === "boolean" ? open : !AI_CHAT_OPEN;
+    if(AI_CHAT_OPEN){
+      panel.classList.remove("ai-panel-hidden");
+      inputEl.focus();
+      if(!AI_CHAT_HISTORY.length){
+        renderGreeting();
+      }
+    } else {
+      panel.classList.add("ai-panel-hidden");
+    }
+  };
+
+  fab.onclick = () => togglePanel();
+  closeBtn.onclick = () => togglePanel(false);
+  cfgBtn.onclick = () => accountsCustomizerModal();
+
+  clearBtn.onclick = () => {
+    AI_CHAT_HISTORY = [];
+    messagesEl.innerHTML = "";
+    renderGreeting();
+  };
+
+  const renderGreeting = () => {
+    const cfg = getAiConfig();
+    let initialHtml = `
+      <div class="ai-msg assistant">
+        <div class="ai-bubble">
+          <p>👋 <b>Hello! I am your Univerz Financial AI Assistant</b> powered by Google Gemini.</p>
+          <p>Ask me anything about:</p>
+          <ul>
+            <li>Our <b>6-Way Equal Founder Profit Split</b> (1/6 each, zero company reserve)</li>
+            <li>Current cycle revenue, expenses, and net profit</li>
+            <li>Agency bank balances and cash liquidity</li>
+            <li>Scheduled loan installments and liabilities</li>
+            <li>Monthly founder remuneration status (Rs. 40,000 / mo each)</li>
+          </ul>
+        </div>
+      </div>
+    `;
+
+    if(!cfg.apiKey || !cfg.apiKey.trim()){
+      initialHtml += `
+        <div class="ai-msg assistant">
+          <div class="ai-bubble" style="border-left:3px solid var(--amber);background:var(--surface)">
+            <p style="color:var(--amber);font-weight:700">🔑 OpenRouter API Key Required</p>
+            <p style="font-size:11.5px;color:var(--ink-soft)">To enable live AI answers with Google Gemini Flash, please save your OpenRouter API Key in Settings.</p>
+            <button class="btn sm primary" id="ai-btn-open-settings-banner" style="margin-top:6px;font-size:11px;padding:4px 10px">⚙️ Configure API Key</button>
+          </div>
+        </div>
+      `;
+    }
+
+    messagesEl.innerHTML = initialHtml;
+    const bannerBtn = $("#ai-btn-open-settings-banner");
+    if(bannerBtn){
+      bannerBtn.onclick = () => accountsCustomizerModal();
+    }
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  };
+
+  const appendMessage = (role, text) => {
+    const msgDiv = document.createElement("div");
+    msgDiv.className = `ai-msg ${role}`;
+    msgDiv.innerHTML = `
+      <div class="ai-bubble">
+        ${role === 'user' ? esc(text).replace(/\n/g, '<br>') : renderMarkdown(text)}
+      </div>
+    `;
+    messagesEl.appendChild(msgDiv);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  };
+
+  const sendMessage = async (customText) => {
+    const text = (customText || inputEl.value).trim();
+    if(!text) return;
+
+    const cfg = getAiConfig();
+    if(!cfg.apiKey || !cfg.apiKey.trim()){
+      appendMessage("user", text);
+      inputEl.value = "";
+      appendMessage("assistant", "⚠️ **OpenRouter API Key Required**\nPlease configure your API key in **Settings (⚙️)** to chat with Gemini Flash. [Click here to open Settings](#)");
+      const links = messagesEl.querySelectorAll("a");
+      const lastLink = links[links.length - 1];
+      if(lastLink){
+        lastLink.onclick = (e) => { e.preventDefault(); accountsCustomizerModal(); };
+      }
+      return;
+    }
+
+    appendMessage("user", text);
+    AI_CHAT_HISTORY.push({ role: "user", content: text });
+    inputEl.value = "";
+    inputEl.style.height = "auto";
+
+    sendBtn.disabled = true;
+    inputEl.disabled = true;
+    typingEl.style.display = "inline";
+
+    try {
+      const reply = await callOpenRouter(AI_CHAT_HISTORY);
+      AI_CHAT_HISTORY.push({ role: "assistant", content: reply });
+      appendMessage("assistant", reply);
+    } catch(err){
+      appendMessage("assistant", `⚠️ **Error communicating with OpenRouter:**\n${err.message}\n\n*Please verify your API key and quota in Settings (⚙️).*`);
+    } finally {
+      sendBtn.disabled = false;
+      inputEl.disabled = false;
+      typingEl.style.display = "none";
+      inputEl.focus();
+    }
+  };
+
+  sendBtn.onclick = () => sendMessage();
+  inputEl.onkeydown = (e) => {
+    if(e.key === "Enter" && !e.shiftKey){
+      e.preventDefault();
+      sendMessage();
+    }
+  };
+
+  // Wire suggestion chips
+  $$("[data-ai-prompt]").forEach(btn => {
+    btn.onclick = () => {
+      const prompt = btn.dataset.aiPrompt;
+      sendMessage(prompt);
+    };
+  });
+}
+
+/* =================================================================
    BOOT  — load from Supabase, fall back to localStorage
    ================================================================= */
 async function boot(){
@@ -7035,6 +7807,9 @@ async function boot(){
     setOnline(false);
     toast("Offline — using local cache");
   }
+
+  // Initialize floating AI chatbot widget
+  initAiChatWidget();
 
   // Authenticate user session & check remembered login
   const session = getAuthSession();
