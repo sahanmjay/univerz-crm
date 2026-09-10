@@ -73,14 +73,15 @@ a{color:var(--teal)}
 
 .nav{padding:10px 10px;display:flex;flex-direction:column;gap:1px;flex:1}
 .nav .group-label{font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);padding:12px 9px 5px}
-.nav button{
+.nav button, .nav a.nav-link{
   display:flex;align-items:center;gap:10px;width:100%;text-align:left;
   background:none;border:0;padding:8px 9px;border-radius:6px;color:var(--ink-soft);
   cursor:pointer;font-size:13.5px;position:relative;transition:background .12s,color .12s;
+  text-decoration:none;box-sizing:border-box;
 }
-.nav button:hover{background:var(--surface-2)}
-.nav button.on{background:var(--teal-wash);color:var(--teal-deep);font-weight:600}
-.nav button .ic{width:17px;height:17px;flex:none;opacity:.85}
+.nav button:hover, .nav a.nav-link:hover{background:var(--surface-2);color:var(--ink)}
+.nav button.on, .nav a.nav-link.on{background:var(--teal-wash);color:var(--teal-deep);font-weight:600}
+.nav button .ic, .nav a.nav-link .ic{width:17px;height:17px;flex:none;opacity:.85}
 .nav .badge{
   margin-left:auto;font-family:var(--mono);font-size:11px;background:var(--clay);
   color:#fff;border-radius:20px;padding:1px 7px;min-width:20px;text-align:center;
@@ -1518,8 +1519,13 @@ body.auth-locked #auth-overlay {
       <button data-view="pipeline"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg>Pipeline</button>
       <div class="group-label">Finance</div>
       <button data-view="account"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>Accounts &amp; Balances<span class="badge zero" id="badge-debt-reminders" title="Loan &amp; Bill Reminders">0</span></button>
-      <div class="group-label">Team</div>
+      <div class="group-label">Team &amp; HR</div>
       <button data-view="team"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>People &amp; activity</button>
+      <a href="/humanresource" target="_self" class="nav-link" id="nav-hr-link" title="Open Univerz HR System (/humanresource)">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        <span>HR System</span>
+        <span class="badge zero" style="margin-left:auto;font-size:10px;padding:1px 6px;font-family:var(--sans);font-weight:600;background:var(--teal-wash);color:var(--teal-deep)" title="Redirects to /humanresource">➔</span>
+      </a>
     </nav>
     <div class="whoami" id="sidebar-user-btn" title="Account profile &amp; options">
       <div class="avatar" id="me-av">SM</div>
@@ -7652,7 +7658,15 @@ document.addEventListener("keydown", e => {
   }
 });
 
-$("#nav").addEventListener("click",e=>{ const b=e.target.closest("button[data-view]"); if(b) go(b.dataset.view); });
+$("#nav").addEventListener("click",e=>{
+  const hr = e.target.closest("#nav-hr-link");
+  if(hr){
+    window.location.href = "https://team-task-manager-teal-iota.vercel.app/";
+    return;
+  }
+  const b=e.target.closest("button[data-view]");
+  if(b) go(b.dataset.view);
+});
 $("#bottom-nav").addEventListener("click",e=>{ const b=e.target.closest("button[data-view]"); if(b) go(b.dataset.view); });
 $("#add-contact").onclick = ()=>{
   if(VIEW === "account"){
@@ -7907,6 +7921,10 @@ function subscribeRealtime(){
 function getInitialView(){
   const hash = window.location.hash.replace(/^#\/?/, "").toLowerCase();
   const path = window.location.pathname.replace(/^\//, "").replace(/\/$/, "").toLowerCase();
+  if(path === "humanresource" || hash === "humanresource" || path.endsWith("/humanresource")){
+    window.location.href = "https://team-task-manager-teal-iota.vercel.app/";
+    return "today";
+  }
   if(hash && PAGES[hash]) return hash;
   if(path && PAGES[path]) return path;
   return "today";
