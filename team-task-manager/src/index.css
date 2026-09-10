@@ -1,0 +1,246 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --paper: #faf8f4;
+  --surface: #ffffff;
+  --surface-2: #f3f0e9;
+  --ink: #20262e;
+  --ink-soft: #444b54;
+  --muted: #6f6a60;
+  --line: #e7e1d6;
+  --line-strong: #d8d1c2;
+  --teal: #1f5c5a;
+  --teal-deep: #174644;
+  --teal-wash: #e8f0ef;
+  --amber: #9a6a14;
+  --amber-wash: #f4ecd9;
+  --green: #3c7a4e;
+  --green-wash: #e6f0e8;
+  --clay: #bb472b;
+  --clay-wash: #f7e7e1;
+}
+
+body {
+  margin: 0;
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--paper);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom Scrollbars in Light Theme */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f3f0e9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d8d1c2;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1aa;
+}
+
+/* Card & Surface Classes tailored to Univerz CRM */
+.glass-panel {
+  background: #ffffff !important;
+  border: 1px solid #e7e1d6 !important;
+  box-shadow: 0 1px 3px rgba(32, 38, 46, 0.05), 0 4px 12px rgba(32, 38, 46, 0.03) !important;
+}
+
+.glass-panel-interactive {
+  background: #ffffff !important;
+  border: 1px solid #e7e1d6 !important;
+  box-shadow: 0 1px 2px rgba(32, 38, 46, 0.04) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-panel-interactive:hover {
+  background: #faf8f4 !important;
+  border-color: #1f5c5a !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(31, 92, 90, 0.08) !important;
+}
+
+.glass-input {
+  background: #ffffff !important;
+  border: 1px solid #e7e1d6 !important;
+  color: #20262e !important;
+  transition: all 0.2s ease;
+}
+
+.glass-input:focus {
+  border-color: #1f5c5a !important;
+  box-shadow: 0 0 0 3px rgba(31, 92, 90, 0.15) !important;
+  outline: none;
+}
+
+/* Light text & border adjustments */
+.text-slate-100,
+.text-slate-200,
+.text-slate-300 {
+  color: #20262e;
+}
+
+.text-slate-400,
+.text-slate-500 {
+  color: #6f6a60;
+}
+
+.border-slate-800,
+.border-slate-700 {
+  border-color: #e7e1d6;
+}
+
+/* Ensure text-white on headings and text blocks defaults to ink (#20262e) unless inside a solid dark button/badge */
+h1.text-white,
+h2.text-white,
+h3.text-white,
+h4.text-white,
+h5.text-white,
+h6.text-white,
+div.text-white:not([class*="bg-indigo-"]):not([class*="bg-purple-"]):not([class*="bg-emerald-"]):not([class*="bg-rose-"]):not([class*="bg-amber-"]):not([class*="bg-[#1f5c5a]"]),
+span.text-white:not([class*="bg-indigo-"]):not([class*="bg-purple-"]):not([class*="bg-emerald-"]):not([class*="bg-rose-"]):not([class*="bg-amber-"]):not([class*="bg-[#1f5c5a]"]),
+input.text-white {
+  color: #20262e !important;
+}
+
+/* Ensure buttons with dark/teal background maintain crisp white text */
+button.bg-gradient-to-r,
+button.bg-indigo-600,
+button.bg-\[\#1f5c5a\],
+.btn-primary-teal {
+  color: #ffffff !important;
+}
+button.bg-gradient-to-r *,
+button.bg-indigo-600 *,
+button.bg-\[\#1f5c5a\] * {
+  color: #ffffff !important;
+}
+
+/* Improve contrast for light theme status labels and pills */
+.text-emerald-300, .text-emerald-400 { color: #2e6930 !important; }
+.text-amber-300, .text-amber-400 { color: #855b14 !important; }
+.text-rose-300, .text-rose-400 { color: #a82e2e !important; }
+.text-sky-300, .text-sky-400 { color: #1e5e80 !important; }
+.text-purple-300, .text-purple-400 { color: #6b21a8 !important; }
+.text-indigo-300, .text-indigo-400 { color: #1f5c5a !important; }
+.text-cyan-300, .text-cyan-400 { color: #0e6b72 !important; }
+
+/* Light pastel washes for pill backgrounds */
+.bg-emerald-500\/10, .bg-emerald-500\/15, .bg-emerald-500\/20 { background-color: #e6f0e8 !important; border-color: #c2dfc8 !important; }
+.bg-amber-500\/10, .bg-amber-500\/15, .bg-amber-500\/20 { background-color: #f4ecd9 !important; border-color: #e5d2ac !important; }
+.bg-rose-500\/10, .bg-rose-500\/15, .bg-rose-500\/20 { background-color: #f7e7e1 !important; border-color: #f0cac0 !important; }
+.bg-sky-500\/10, .bg-sky-500\/15, .bg-sky-500\/20 { background-color: #e3eff7 !important; border-color: #bde0f3 !important; }
+.bg-purple-500\/10, .bg-purple-500\/15, .bg-purple-500\/20 { background-color: #f1e8f8 !important; border-color: #dec8f0 !important; }
+.bg-indigo-500\/10, .bg-indigo-500\/15, .bg-indigo-500\/20, .bg-indigo-600\/20 { background-color: #e8f0ef !important; border-color: #c4ddd9 !important; }
+.bg-pink-500\/10, .bg-pink-500\/15, .bg-pink-500\/20 { background-color: #fce7f3 !important; border-color: #fbcfe8 !important; }
+
+/* Ensure base container and surface colors strictly light */
+.bg-slate-950,
+[class*="bg-slate-950"],
+[class*="bg-zinc-950"],
+[class*="bg-neutral-950"] { 
+  background-color: #faf8f4 !important; 
+}
+
+.bg-slate-900,
+[class*="bg-slate-900"],
+[class*="bg-zinc-900"],
+[class*="bg-neutral-900"] { 
+  background-color: #ffffff !important; 
+}
+
+/* Modal overlays: keep translucent backdrop */
+.fixed.inset-0[class*="bg-slate-950"],
+.fixed.inset-0[class*="bg-black"],
+div[class*="fixed inset-0"][class*="bg-"] {
+  background-color: rgba(32, 38, 46, 0.45) !important;
+}
+
+/* Gradients with dark stops */
+[class*="from-zinc-950"],
+[class*="from-slate-900"],
+[class*="from-slate-950"],
+[class*="via-neutral-900"],
+[class*="to-zinc-950"],
+[class*="to-purple-950"] {
+  background-image: none !important;
+  background-color: #ffffff !important;
+}
+
+.border-slate-800,
+[class*="border-slate-800"] { border-color: #e7e1d6 !important; }
+.border-slate-700,
+[class*="border-slate-700"] { border-color: #d8d1c2 !important; }
+
+/* Strikethrough Animation */
+.completed-strike {
+  position: relative;
+  display: inline-block;
+}
+
+.completed-strike::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 2px;
+  background: #94a3b8;
+  transform-origin: left;
+  animation: strikeThrough 0.25s ease-out forwards;
+}
+
+@keyframes strikeThrough {
+  0% { transform: scaleX(0); }
+  100% { transform: scaleX(1); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-8px); }
+  40%, 80% { transform: translateX(8px); }
+}
+
+.animate-shake {
+  animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(16, 185, 129, 0.45);
+  }
+}
+
+.glow-emerald {
+  animation: pulseGlow 2.5s infinite;
+}
+
