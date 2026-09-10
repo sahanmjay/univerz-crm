@@ -827,34 +827,424 @@ td .num{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
 }
 .topbar-user:hover{background:var(--surface-2);border-color:var(--teal)}
 
-/* ---- Authentication Overlay ---- */
-#auth-overlay{
-  position:fixed;inset:0;z-index:9999;background:rgba(23,70,68,.75);
-  backdrop-filter:blur(10px) saturate(1.2);display:flex;align-items:center;justify-content:center;
-  padding:20px;overflow-y:auto;
+/* ---- Dedicated Login Page & Auth Lock ---- */
+body.auth-locked {
+  overflow: hidden !important;
+  background: #080d12 !important;
 }
-.auth-card{
-  background:var(--surface);border-radius:12px;box-shadow:0 20px 45px rgba(0,0,0,.25);
-  width:100%;max-width:440px;overflow:hidden;border:1px solid var(--line);animation:rise .2s ease both;
+body.auth-locked .app,
+body.auth-locked .bottom-nav,
+body.auth-locked #ai-chat-widget,
+body.auth-locked .mobile-bar {
+  display: none !important;
 }
-.auth-head{
-  background:linear-gradient(135deg, var(--teal-deep) 0%, var(--teal) 100%);
-  color:#fff;padding:26px 24px 22px;text-align:center;position:relative;
+body.auth-locked #auth-overlay {
+  display: flex !important;
 }
-.auth-body{padding:22px 24px}
-.user-select-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(110px, 1fr));gap:8px;margin-bottom:16px}
-.user-card{
-  border:1.5px solid var(--line);border-radius:8px;padding:10px 8px;text-align:center;
-  cursor:pointer;transition:all .15s;background:var(--surface);
+
+#auth-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  min-height: 100vh;
+  width: 100vw;
+  background: radial-gradient(ellipse at 50% 12%, #193f3d 0%, #0d1720 58%, #080d12 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  overflow-y: auto;
+  box-sizing: border-box;
 }
-.user-card:hover{border-color:var(--teal);background:var(--teal-wash)}
-.user-card.selected{border-color:var(--teal);background:var(--teal-wash);box-shadow:0 0 0 2px rgba(31,92,90,.2)}
-.pin-input-wrap{position:relative;margin-top:6px}
-.pin-input{
-  width:100%;font-family:var(--mono);font-size:20px;letter-spacing:6px;text-align:center;
-  padding:10px 14px;border:1.5px solid var(--line-strong);border-radius:8px;background:var(--paper);
+
+.auth-page-container {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin: auto;
 }
-.pin-input:focus{outline:none;border-color:var(--teal);background:#fff}
+
+.auth-card {
+  background: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 30px 70px -10px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.12);
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  position: relative;
+  animation: authRise .32s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes authRise {
+  from { opacity: 0; transform: translateY(18px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes authShake {
+  0%, 100% { transform: translateX(0); }
+  18%, 58% { transform: translateX(-9px); }
+  38%, 78% { transform: translateX(9px); }
+}
+
+.auth-card.shake {
+  animation: authShake .36s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+.auth-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: all .15s ease;
+  z-index: 10;
+  line-height: 1;
+}
+.auth-close-btn:hover {
+  background: rgba(0, 0, 0, 0.45);
+  transform: scale(1.05);
+}
+
+.auth-head {
+  background: linear-gradient(135deg, #133e3c 0%, #1f5c5a 100%);
+  color: #fff;
+  padding: 26px 26px 22px;
+  position: relative;
+}
+.auth-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .02em;
+  margin-bottom: 12px;
+  backdrop-filter: blur(4px);
+}
+.auth-brand-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+}
+.auth-brand-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  display: grid;
+  place-items: center;
+  flex: none;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+.auth-brand-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.auth-brand-glyph {
+  font-family: var(--mono);
+  font-size: 20px;
+  font-weight: 800;
+  color: #fff;
+}
+.auth-brand-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -.3px;
+  line-height: 1.25;
+}
+.auth-brand-subtitle {
+  margin: 3px 0 0;
+  font-size: 12px;
+  opacity: .88;
+  letter-spacing: .01em;
+}
+
+.auth-body {
+  padding: 22px 24px;
+}
+
+.auth-step-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--ink-soft);
+  margin-bottom: 10px;
+}
+.auth-step-hint {
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.user-select-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+@media (max-width: 460px) {
+  .user-select-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.user-card {
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 11px 8px 9px;
+  text-align: center;
+  cursor: pointer;
+  transition: all .14s ease;
+  background: var(--surface);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.user-card:hover {
+  border-color: var(--teal);
+  background: var(--teal-wash);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(31,92,90,.08);
+}
+.user-card.selected {
+  border-color: var(--teal);
+  background: var(--teal-wash);
+  box-shadow: 0 0 0 2px rgba(31,92,90,.22);
+  transform: translateY(-2px);
+}
+.user-card.selected .user-card-check {
+  display: grid !important;
+}
+.user-card-check {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--teal);
+  color: #fff;
+  font-size: 10px;
+  display: none;
+  place-items: center;
+  font-weight: 700;
+}
+.user-card .avatar {
+  width: 38px;
+  height: 38px;
+  margin: 0 auto 6px;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(0,0,0,.1);
+}
+.user-card-name {
+  font-weight: 650;
+  font-size: 12px;
+  color: var(--ink);
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.user-card-role {
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.auth-form-wrap {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 15px;
+}
+
+.auth-selected-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 8px 12px;
+  margin-bottom: 14px;
+}
+.auth-sel-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: #fff;
+  font-weight: 700;
+  font-size: 12px;
+  display: grid;
+  place-items: center;
+  font-family: var(--mono);
+  background: var(--teal);
+  flex: none;
+}
+.auth-sel-meta {
+  flex: 1;
+  min-width: 0;
+}
+.auth-sel-name {
+  font-weight: 650;
+  font-size: 13px;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.auth-sel-role {
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.auth-sel-tag {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  padding: 2px 7px;
+  background: var(--teal-wash);
+  color: var(--teal-deep);
+  border-radius: 20px;
+}
+
+.auth-field-group {
+  margin-bottom: 12px;
+}
+.auth-field-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+.auth-field-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.auth-toggle-pwd-btn {
+  font-size: 11px;
+  padding: 2px 6px;
+  color: var(--teal);
+}
+.pin-input-wrap {
+  position: relative;
+}
+.pin-input {
+  width: 100%;
+  font-family: var(--mono);
+  font-size: 18px;
+  letter-spacing: 4px;
+  text-align: center;
+  padding: 10px 14px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--ink);
+  transition: all .15s ease;
+  box-sizing: border-box;
+}
+.pin-input:focus {
+  outline: none;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px var(--teal-wash);
+}
+.auth-error-msg {
+  color: var(--clay);
+  background: var(--clay-wash);
+  border: 1px solid rgba(187,71,43,0.25);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 8px;
+  text-align: center;
+}
+
+.auth-actions-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.auth-remember-label {
+  font-size: 12px;
+  color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  user-select: none;
+}
+
+.auth-submit-btn {
+  width: 100%;
+  justify-content: center;
+  padding: 11px;
+  font-size: 14px;
+  font-weight: 650;
+  border-radius: 9px;
+  letter-spacing: .01em;
+  box-shadow: 0 3px 10px rgba(31,92,90,.25);
+  transition: all .15s ease;
+}
+.auth-submit-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 16px rgba(31,92,90,.35);
+}
+.auth-arrow-icon {
+  margin-left: 6px;
+  transition: transform .15s;
+}
+.auth-submit-btn:hover .auth-arrow-icon {
+  transform: translateX(3px);
+}
+
+.auth-footer-notice {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 16px;
+}
+
+.auth-page-copyright {
+  font-size: 11.5px;
+  color: rgba(255, 255, 255, 0.45);
+  text-align: center;
+  letter-spacing: .02em;
+}
 
 /* ---- Monthly Report Print & Presentation ---- */
 @media print {
@@ -1100,7 +1490,7 @@ td .num{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
 }
 </style>
 </head>
-<body>
+<body class="auth-locked">
 <div class="app">
   <!-- ===================== SIDEBAR ===================== -->
   <aside class="side">
@@ -1195,40 +1585,90 @@ td .num{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
   </div>
 </div>
 
-<!-- ===================== AUTHENTICATION OVERLAY ===================== -->
-<div id="auth-overlay" style="display:none">
-  <div class="auth-card" style="position:relative">
-    <button type="button" id="auth-close-btn" style="position:absolute;top:12px;right:14px;background:none;border:none;color:#fff;font-size:24px;cursor:pointer;opacity:.8;z-index:2;line-height:1" title="Close">×</button>
-    <div class="auth-head">
-      <div style="font-size:32px;margin-bottom:6px">🏛️</div>
-      <h2 style="margin:0;font-size:18px;letter-spacing:-.2px;font-weight:700">Univerz Creative Agency</h2>
-      <div style="font-size:12.5px;opacity:.9;margin-top:3px">Team Workspace &amp; Financial Management</div>
-    </div>
-    <div class="auth-body">
-      <div style="font-size:12.5px;font-weight:600;color:var(--muted);margin-bottom:8px">1. Select your user account:</div>
-      <div class="user-select-grid" id="auth-user-grid"></div>
-
-      <div id="auth-form-wrap" style="margin-top:14px">
-        <div style="display:flex;justify-content:space-between;align-items:baseline">
-          <label style="font-size:12px;font-weight:600;color:var(--ink)" id="auth-pin-label">Enter PIN (4 digits):</label>
-          <span style="font-size:11px;color:var(--muted)" id="auth-role-desc">Admin Access</span>
+<!-- ===================== DEDICATED LOGIN PAGE ===================== -->
+<div id="auth-overlay">
+  <div class="auth-page-container">
+    <div class="auth-card" id="auth-main-card">
+      <button type="button" id="auth-close-btn" class="auth-close-btn" title="Return to Workspace">×</button>
+      
+      <!-- Brand Header -->
+      <div class="auth-head">
+        <div class="auth-badge">
+          <span>🔒</span>
+          <span>Founder &amp; Partner Portal</span>
         </div>
-        <div class="pin-input-wrap">
-          <input type="password" id="auth-pin-input" class="pin-input" maxlength="12" placeholder="••••" autofocus />
+        <div class="auth-brand-row">
+          <div class="auth-brand-logo">
+            <img src="/logo-placeholder.png" alt="Univerz" onerror="this.style.display='none';this.nextElementSibling.style.display='grid';" />
+            <div class="auth-brand-glyph" style="display:none;">U</div>
+          </div>
+          <div>
+            <h1 class="auth-brand-title">Univerz Creative Agency</h1>
+            <p class="auth-brand-subtitle">Private Workspace &amp; Financial Operating System</p>
+          </div>
         </div>
-        <div id="auth-error-msg" style="display:none;color:var(--clay);font-size:12px;font-weight:600;margin-top:6px;text-align:center"></div>
-
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:14px">
-          <label style="font-size:12px;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:6px">
-            <input type="checkbox" id="auth-remember-chk" checked /> Keep me signed in
-          </label>
-          <button class="btn ghost sm" type="button" id="auth-toggle-pwd" style="font-size:11px">Show PIN</button>
-        </div>
-
-        <button class="btn primary" id="auth-login-btn" style="width:100%;margin-top:16px;justify-content:center;padding:10px;font-size:13.5px;font-weight:650">
-          Sign In to Workspace ➔
-        </button>
       </div>
+
+      <!-- Main Login Body -->
+      <div class="auth-body">
+        <div class="auth-step-label">
+          <span>Choose your profile:</span>
+          <span class="auth-step-hint">6 Founder Accounts</span>
+        </div>
+        
+        <div class="user-select-grid" id="auth-user-grid"></div>
+
+        <!-- Selected Account & Credential Input -->
+        <div class="auth-form-wrap" id="auth-form-wrap">
+          <div class="auth-selected-banner">
+            <div class="auth-sel-avatar" id="auth-sel-avatar">SM</div>
+            <div class="auth-sel-meta">
+              <div class="auth-sel-name" id="auth-sel-name">Sahan Madhawa</div>
+              <div class="auth-sel-role" id="auth-role-desc">Admin (Managing Director &amp; Finance)</div>
+            </div>
+            <div class="auth-sel-tag" id="auth-sel-tag">Founder</div>
+          </div>
+
+          <div class="auth-field-group">
+            <div class="auth-field-header">
+              <label for="auth-pin-input" class="auth-field-label" id="auth-pin-label">Security PIN or Password:</label>
+              <button class="btn ghost sm auth-toggle-pwd-btn" type="button" id="auth-toggle-pwd">Show PIN</button>
+            </div>
+            <div class="pin-input-wrap">
+              <input
+                type="password"
+                id="auth-pin-input"
+                class="pin-input"
+                maxlength="20"
+                placeholder="••••"
+                autocomplete="current-password"
+                autofocus
+              />
+            </div>
+            <div id="auth-error-msg" class="auth-error-msg" style="display:none"></div>
+          </div>
+
+          <div class="auth-actions-row">
+            <label class="auth-remember-label">
+              <input type="checkbox" id="auth-remember-chk" checked />
+              <span>Remember this account on this device</span>
+            </label>
+          </div>
+
+          <button class="btn primary auth-submit-btn" id="auth-login-btn" type="button">
+            <span>Sign In to Workspace</span>
+            <span class="auth-arrow-icon">➔</span>
+          </button>
+        </div>
+
+        <div class="auth-footer-notice">
+          <span>🔒 Protected Internal CRM</span> · <span>Authorized Univerz Team Only</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="auth-page-copyright">
+      &copy; Univerz Creative Agency (Pvt) Ltd · Private &amp; Confidential
     </div>
   </div>
 </div>
@@ -6779,9 +7219,11 @@ function openAuthModal(opts = {}){
 
   AUTH_IS_FORCED = !!opts.forced;
   const closeBtn = $("#auth-close-btn");
-  if(closeBtn) closeBtn.style.display = AUTH_IS_FORCED ? "none" : "block";
+  if(closeBtn) closeBtn.style.display = AUTH_IS_FORCED ? "none" : "grid";
 
-  AUTH_SELECTED_USER_ID = DB.currentUserId || (DB.users[0]?.id) || "u3";
+  // Pre-select last used user if exists
+  const lastUser = localStorage.getItem("crm_last_user") || DB.currentUserId || (DB.users[0]?.id) || "u3";
+  AUTH_SELECTED_USER_ID = (DB.users || []).some(u => u.id === lastUser) ? lastUser : (DB.users[0]?.id || "u3");
   renderAuthUsers();
   setupAuthForm();
 }
@@ -6790,10 +7232,12 @@ function closeAuthModal(){
   if(AUTH_IS_FORCED) return;
   const overlay = $("#auth-overlay");
   if(overlay) overlay.style.display = "none";
+  document.body.classList.remove("auth-locked");
 }
 
 function signOut(){
   clearAuthSession();
+  document.body.classList.add("auth-locked");
   toast("Signed out of workspace");
   openAuthModal({ forced: true });
 }
@@ -6802,17 +7246,20 @@ function renderAuthUsers(){
   const grid = $("#auth-user-grid");
   if(!grid) return;
 
-  grid.innerHTML = DB.users.map(u => {
+  grid.innerHTML = (DB.users || []).map(u => {
     const isSel = u.id === AUTH_SELECTED_USER_ID;
     const isSahanUser = u.id === "u3" || (u.role === "admin");
     const isSubodhaUser = u.id === "u1" || (u.name||"").toLowerCase().includes("subodha");
+    let roleBadge = esc(u.title || "Partner");
+    if(isSahanUser) roleBadge = "Admin · Finance";
+    else if(isSubodhaUser) roleBadge = "Creative Lead";
+
     return `
-      <div class="user-card ${isSel?'selected':''}" data-auth-user="${u.id}">
-        <div class="avatar" style="background:${u.color};width:38px;height:38px;margin:0 auto 6px;font-size:13px;font-weight:700">${u.initials}</div>
-        <div style="font-weight:650;font-size:12px;color:var(--ink);line-height:1.2">${esc(u.name)}</div>
-        <div style="font-size:10px;color:var(--muted);margin-top:2px">
-          ${isSahanUser ? 'Admin · Finance' : (isSubodhaUser ? 'Work Manager' : esc(u.title||'Team Member'))}
-        </div>
+      <div class="user-card ${isSel?'selected':''}" data-auth-user="${u.id}" title="Login as ${esc(u.name)}">
+        <div class="user-card-check">✓</div>
+        <div class="avatar" style="background:${u.color};">${u.initials}</div>
+        <div class="user-card-name">${esc(u.name)}</div>
+        <div class="user-card-role">${roleBadge}</div>
       </div>
     `;
   }).join("");
@@ -6830,23 +7277,43 @@ function setupAuthForm(){
   const selUser = user(AUTH_SELECTED_USER_ID);
   if(!selUser) return;
 
+  const selAv = $("#auth-sel-avatar");
+  if(selAv){
+    selAv.textContent = selUser.initials;
+    selAv.style.background = selUser.color;
+  }
+
+  const selName = $("#auth-sel-name");
+  if(selName) selName.textContent = selUser.name;
+
+  const isSahanUser = selUser.id === "u3" || selUser.role === "admin";
+  const isSubodhaUser = selUser.id === "u1" || (selUser.name||"").toLowerCase().includes("subodha");
+  let roleText = selUser.title || "Partner";
+  if(isSahanUser) roleText = "Managing Director & Finance (Admin)";
+  else if(isSubodhaUser) roleText = "Creative Director · Work Manager";
+
   const roleDesc = $("#auth-role-desc");
-  if(roleDesc){
-    if(selUser.role === 'admin') roleDesc.textContent = "Admin (Finance & Payouts)";
-    else if(selUser.id === 'u1') roleDesc.textContent = "Creative Director · Work Manager";
-    else roleDesc.textContent = selUser.title || "Team Member";
+  if(roleDesc) roleDesc.textContent = roleText;
+
+  const selTag = $("#auth-sel-tag");
+  if(selTag){
+    selTag.textContent = isSahanUser ? "Admin" : "Founder";
+    selTag.style.background = isSahanUser ? "var(--amber-wash)" : "var(--teal-wash)";
+    selTag.style.color = isSahanUser ? "var(--amber)" : "var(--teal-deep)";
   }
 
   const pinLabel = $("#auth-pin-label");
   if(pinLabel){
-    pinLabel.textContent = selUser.password ? "Enter PIN or Password:" : "Enter PIN (4 digits):";
+    pinLabel.textContent = selUser.password ? "Security PIN or Password:" : "Security PIN (4 digits):";
   }
 
   const pinInput = $("#auth-pin-input");
   if(pinInput){
     pinInput.value = "";
-    pinInput.placeholder = selUser.password ? "PIN or Password" : "••••";
-    pinInput.focus();
+    pinInput.placeholder = selUser.password ? "Enter PIN or Password" : "••••";
+    setTimeout(() => {
+      try { pinInput.focus(); } catch(e){}
+    }, 60);
   }
 
   const errEl = $("#auth-error-msg");
@@ -6858,6 +7325,7 @@ function submitAuth(){
   if(!selUser) return;
   const val = ($("#auth-pin-input")?.value || "").trim();
   const errEl = $("#auth-error-msg");
+  const card = $("#auth-main-card");
 
   const isPinMatch = (val === selUser.pin);
   const isPassMatch = (selUser.password && val.toLowerCase() === selUser.password.toLowerCase());
@@ -6866,21 +7334,30 @@ function submitAuth(){
     const rememberChk = $("#auth-remember-chk");
     const remember = rememberChk ? rememberChk.checked : true;
     setAuthSession(selUser, remember);
+    localStorage.setItem("crm_last_user", selUser.id);
     AUTH_IS_FORCED = false;
+    document.body.classList.remove("auth-locked");
     const overlay = $("#auth-overlay");
     if(overlay) overlay.style.display = "none";
+    DB.currentUserId = selUser.id;
     buildMe();
+    go(getInitialView());
+    subscribeRealtime();
     toast(`Welcome back, ${selUser.name}!`);
-    draw();
   } else {
     if(errEl){
       errEl.textContent = "Incorrect PIN or Password. Please try again.";
       errEl.style.display = "block";
     }
+    if(card){
+      card.classList.remove("shake");
+      void card.offsetWidth;
+      card.classList.add("shake");
+    }
     const pinInput = $("#auth-pin-input");
     if(pinInput){
+      pinInput.value = "";
       pinInput.focus();
-      pinInput.select();
     }
   }
 }
@@ -7436,11 +7913,13 @@ function getInitialView(){
 }
 
 window.addEventListener("hashchange", () => {
+  if(document.body.classList.contains("auth-locked")) return;
   const h = window.location.hash.replace(/^#\/?/, "").toLowerCase();
   if(h && PAGES[h] && VIEW !== h) go(h);
 });
 
 window.addEventListener("popstate", () => {
+  if(document.body.classList.contains("auth-locked")) return;
   const v = getInitialView();
   if(v && PAGES[v] && VIEW !== v) go(v);
 });
@@ -7812,22 +8291,13 @@ async function boot(){
   initAiChatWidget();
 
   // Authenticate user session & check remembered login
+  // User requirement: Do not enter directly into system — present dedicated login page first
+  document.body.classList.add("auth-locked");
   const session = getAuthSession();
-  if(session && session.user && DB.users.some(u => u.id === session.user.id)){
-    DB.currentUserId = session.user.id;
-    buildMe();
-    const initialView = getInitialView();
-    go(initialView);
-    subscribeRealtime();
-  } else {
-    // No remembered session → present the login screen
-    DB.currentUserId = DB.users[0]?.id || "u3";
-    buildMe();
-    const initialView = getInitialView();
-    go(initialView);
-    subscribeRealtime();
-    openAuthModal({ forced: true });
-  }
+  const lastUserId = session?.user?.id || localStorage.getItem("crm_last_user") || "u3";
+  AUTH_SELECTED_USER_ID = (DB.users || []).some(u => u.id === lastUserId) ? lastUserId : (DB.users[0]?.id || "u3");
+  DB.currentUserId = AUTH_SELECTED_USER_ID;
+  openAuthModal({ forced: true });
 }
 
 boot();
