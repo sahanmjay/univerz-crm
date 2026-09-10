@@ -1521,11 +1521,11 @@ body.auth-locked #auth-overlay {
       <button data-view="account"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>Accounts &amp; Balances<span class="badge zero" id="badge-debt-reminders" title="Loan &amp; Bill Reminders">0</span></button>
       <div class="group-label">Team &amp; HR</div>
       <button data-view="team"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>People &amp; activity</button>
-      <a href="/humanresource" target="_self" class="nav-link" id="nav-hr-link" title="Open Univerz HR System (/humanresource)">
+      <button data-view="humanresource" id="nav-hr-link" title="Team Task Manager &amp; HR System">
         <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-        <span>HR System</span>
-        <span class="badge zero" style="margin-left:auto;font-size:10px;padding:1px 6px;font-family:var(--sans);font-weight:600;background:var(--teal-wash);color:var(--teal-deep)" title="Redirects to /humanresource">➔</span>
-      </a>
+        <span>HR &amp; Tasks</span>
+        <span class="badge zero" id="badge-hr-manager" style="margin-left:auto;font-size:9.5px;padding:1px 6px;font-family:var(--sans);font-weight:700;background:var(--teal-wash);color:var(--teal-deep)">LIVE</span>
+      </button>
     </nav>
     <div class="whoami" id="sidebar-user-btn" title="Account profile &amp; options">
       <div class="avatar" id="me-av">SM</div>
@@ -1691,6 +1691,7 @@ body.auth-locked #auth-overlay {
   <button data-view="appointments"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>Appts</span><span class="badge zero" id="badge-appt-mobile">0</span></button>
   <button data-view="pipeline"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg><span>Pipeline</span></button>
   <button data-view="team"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><span>Team</span></button>
+  <button data-view="humanresource"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg><span>HR</span></button>
 </nav>
 
 <!-- Supabase JS v2 from CDN -->
@@ -1795,12 +1796,12 @@ function seedClaims(){ return []; }
 
 function seed(){
   const users = [
-    {id:"u1",name:"Subodha Kalhara",   role:"member",pin:"1234",password:"",title:"Creative Director",color:"#1f5c5a",initials:"SK"},
-    {id:"u2",name:"Sadeepa Namarathna",role:"member",pin:"1234",password:"",title:"Video Production Lead",color:"#bb472b",initials:"SN"},
-    {id:"u3",name:"Sahan Madhawa",     role:"admin", pin:"2626",password:"sahan2026",title:"Managing Director & Finance",color:"#9a6a14",initials:"SM"},
-    {id:"u4",name:"Pulasthi Wijayarathna",role:"member",pin:"1234",password:"",title:"Web & Tech Lead",color:"#3c7a4e",initials:"PW"},
-    {id:"u5",name:"Ashan Indusara",    role:"member",pin:"1234",password:"",title:"Social & Operations",color:"#5a466a",initials:"AI"},
-    {id:"u6",name:"Widura Bandara",    role:"member",pin:"1234",password:"",title:"Team Member",color:"#2b6cb0",initials:"WB"},
+    {id:"u1",name:"Subodha Kalhara",   role:"member",pin:"1234",password:"",title:"Creative Director",color:"#1f5c5a",initials:"SK",avatar:"/subodha.png"},
+    {id:"u2",name:"Sadeepa Namarathna",role:"member",pin:"1234",password:"",title:"Video Production Lead",color:"#bb472b",initials:"SN",avatar:"/sadeepa.png"},
+    {id:"u3",name:"Sahan Madhawa",     role:"admin", pin:"2626",password:"sahan2026",title:"Managing Director & Finance",color:"#9a6a14",initials:"SM",avatar:"/sahan.png"},
+    {id:"u4",name:"Pulasthi Wijayarathna",role:"member",pin:"1234",password:"",title:"Web & Tech Lead",color:"#3c7a4e",initials:"PW",avatar:"/pulasthi.png"},
+    {id:"u5",name:"Ashan Indusara",    role:"member",pin:"1234",password:"",title:"Social & Operations Lead",color:"#5a466a",initials:"AI",avatar:"/Ashan.png"},
+    {id:"u6",name:"Widura Bandara",    role:"member",pin:"1234",password:"",title:"Social Media Marketing & HR",color:"#2b6cb0",initials:"WB",avatar:"/widura.png"},
   ];
   return {
     users,
@@ -1819,18 +1820,27 @@ function seed(){
 
 function normalizeUsers(usersList){
   const defaultMap = {
-    u1: {role:"member",pin:"1234",password:"",title:"Creative Director"},
-    u2: {role:"member",pin:"1234",password:"",title:"Video Production Lead"},
-    u3: {role:"admin", pin:"2626",password:"sahan2026",title:"Managing Director & Finance"},
-    u4: {role:"member",pin:"1234",password:"",title:"Web & Tech Lead"},
-    u5: {role:"member",pin:"1234",password:"",title:"Social & Operations"},
-    u6: {role:"member",pin:"1234",password:"",title:"Team Member"},
+    u1: {role:"member",pin:"1234",password:"",title:"Creative Director",avatar:"/subodha.png"},
+    u2: {role:"member",pin:"1234",password:"",title:"Video Production Lead",avatar:"/sadeepa.png"},
+    u3: {role:"admin", pin:"2626",password:"sahan2026",title:"Managing Director & Finance",avatar:"/sahan.png"},
+    u4: {role:"member",pin:"1234",password:"",title:"Web & Tech Lead",avatar:"/pulasthi.png"},
+    u5: {role:"member",pin:"1234",password:"",title:"Social & Operations Lead",avatar:"/Ashan.png"},
+    u6: {role:"member",pin:"1234",password:"",title:"Social Media Marketing & HR",avatar:"/widura.png"},
   };
   let list = (usersList||[]).map(u => {
-    const d = defaultMap[u.id] || {role:"member",pin:"1234",title:"Team Member"};
+    const d = defaultMap[u.id] || {role:"member",pin:"1234",title:"Partner"};
     if(!u.role) u.role = d.role;
     if(!u.pin) u.pin = d.pin;
-    if(!u.title) u.title = d.title;
+    if(!u.title || u.title === "Team Member" || u.title.toLowerCase() === "team member" || u.title.includes("Photographer")) u.title = d.title;
+    if(u.id === 'u6' || (u.name && u.name.toLowerCase().includes('widura'))){
+      u.title = "Social Media Marketing & HR";
+      u.avatar = "/widura.png";
+    }
+    if(u.id === 'u5' || (u.name && u.name.toLowerCase().includes('ashan'))){
+      u.title = "Social & Operations Lead";
+      u.avatar = "/Ashan.png";
+    }
+    if(!u.avatar) u.avatar = d.avatar;
     if(u.passwordHash && !u.password) u.password = u.passwordHash;
     if(d.password && !u.password) u.password = d.password;
     if(!u.initials && u.name) u.initials = makeInitials(u.name);
@@ -1838,7 +1848,7 @@ function normalizeUsers(usersList){
   });
   // Ensure Widura Bandara is always present in active team seats
   if(!list.some(x => x.id === 'u6' || (x.name && x.name.toLowerCase().includes('widura')))){
-    list.push({id:"u6",name:"Widura Bandara",role:"member",pin:"1234",password:"",title:"Team Member",color:"#2b6cb0",initials:"WB"});
+    list.push({id:"u6",name:"Widura Bandara",role:"member",pin:"1234",password:"",title:"Social Media Marketing & HR",color:"#2b6cb0",initials:"WB",avatar:"/widura.png"});
   }
   return list;
 }
@@ -2089,11 +2099,28 @@ function isSubodha(){
   const me = user(DB.currentUserId);
   return DB.currentUserId === "u1" || (me.name && me.name.toLowerCase().includes("subodha"));
 }
+function isWidura(){
+  const me = user(DB.currentUserId);
+  return DB.currentUserId === "u6" || (me.name && me.name.toLowerCase().includes("widura"));
+}
+function isAshan(){
+  const me = user(DB.currentUserId);
+  return DB.currentUserId === "u5" || (me.name && me.name.toLowerCase().includes("ashan"));
+}
 function canManageWork(){
   return isSahan() || isSubodha();
 }
 function isAdmin(){
   return isSahan();
+}
+function canManageHR(){
+  const me = user(DB.currentUserId);
+  const name = (me?.name || "").toLowerCase();
+  return isSahan() || 
+         DB.currentUserId === "u5" || 
+         DB.currentUserId === "u6" || 
+         name.includes("ashan") || 
+         name.includes("widura");
 }
 function makeInitials(name){
   if(!name) return "?";
@@ -2374,6 +2401,7 @@ const PAGES = {
   accounts:{title:"Accounts & Balances", crumb:"Cashflow, agency balances, expenses and audit logs", render:renderAccount},
   pipeline:{title:"Pipeline", crumb:"Drag a card to move its stage", render:renderPipeline},
   team:{title:"People & activity", crumb:"Who is doing what", render:renderTeam},
+  humanresource:{title:"HR System & Task Board", crumb:"Team task manager, duty roster, calendar and performance reports", render:renderHumanResource},
 };
 
 function go(v){
@@ -2408,6 +2436,20 @@ function go(v){
       topBtn.style.background = "";
       topBtn.style.color = "";
       topBtn.style.border = "";
+    } else if(v === "humanresource"){
+      if(canManageHR()){
+        topBtn.textContent = "⚡ HR Management";
+        topBtn.title = "Full administrative access (Ashan, Widura & Sahan)";
+        topBtn.style.background = "var(--teal)";
+        topBtn.style.color = "#fff";
+        topBtn.style.border = "none";
+      } else {
+        topBtn.textContent = "📋 My Tasks";
+        topBtn.title = "Viewing assigned tasks & personal roster";
+        topBtn.style.background = "var(--surface-2)";
+        topBtn.style.color = "var(--ink-soft)";
+        topBtn.style.border = "1px solid var(--line-strong)";
+      }
     } else {
       if(canManageWork()){
         topBtn.textContent = "+ New contact";
@@ -2430,6 +2472,59 @@ function go(v){
 function draw(){
   PAGES[VIEW].render();
   refreshBadges();
+}
+
+/* ---- HR & TEAM TASK MANAGER INTEGRATION ---- */
+function syncHRUserSession(){
+  const map = {
+    u1: { email: 'subodha@company.com', id: 'eb683a86-5664-43c9-9bd8-6590cf01d81a', username: 'subodha' },
+    u2: { email: 'sadeepa@company.com', id: '276585a2-6b0c-45b7-8840-7dbd2b714730', username: 'sadeepa' },
+    u3: { email: 'sahan@company.com', id: '5104abf7-3390-4271-af10-bab94bf26816', username: 'sahan' },
+    u4: { email: 'pulasthi@company.com', id: 'bc767381-0864-48c0-b004-6f0037dc8e02', username: 'pulasthi' },
+    u5: { email: 'ashan@company.com', id: 'b8807887-5805-4005-bea3-c77ec4472543', username: 'ashan' },
+    u6: { email: 'widura@company.com', id: '3b3b123b-a606-4a0e-a740-d6971398b4da', username: 'widura' },
+  };
+  const u = map[DB.currentUserId] || map.u3;
+  try {
+    localStorage.setItem('univerz_logged_user_email', u.email);
+    localStorage.setItem('teamsync_logged_user_email', u.email);
+    localStorage.setItem('univerz_last_selected_profile_id', u.id);
+  } catch(e){}
+
+  const frame = document.getElementById('hr-app-frame');
+  if(frame && frame.contentWindow){
+    try {
+      frame.contentWindow.postMessage({
+        type: 'UNIVERZ_SYNC_USER',
+        email: u.email,
+        username: u.username,
+        id: u.id
+      }, '*');
+    } catch(e){}
+  }
+}
+
+function renderHumanResource(){
+  syncHRUserSession();
+  const c = $("#content");
+  c.innerHTML = `
+    <div style="display:flex;flex-direction:column;height:calc(100vh - 58px);margin:-18px -20px -20px -20px;background:var(--paper, #faf8f4);position:relative;overflow:hidden">
+      <iframe 
+        id="hr-app-frame" 
+        src="/hr/index.html?t=${Date.now()}" 
+        style="width:100%;height:100%;border:none;flex:1;background:var(--paper, #faf8f4);display:block" 
+        title="Univerz Task Board &amp; HR System"
+        allow="clipboard-write">
+      </iframe>
+    </div>
+  `;
+
+  const frame = document.getElementById('hr-app-frame');
+  if(frame){
+    frame.addEventListener('load', () => {
+      setTimeout(syncHRUserSession, 300);
+    });
+  }
 }
 
 /* ---- TODAY ---- */
@@ -2703,18 +2798,33 @@ function renderTeam(){
     const appts = DB.appointments.filter(a=>a.userId===u.id && a.status==='scheduled').length;
     const isSelf = u.id === DB.currentUserId;
     const isSubodhaUser = u.id === "u1" || (u.name||"").toLowerCase().includes("subodha");
-    const isSahanAdmin = u.id === "u3" || (u.role === "admin");
+    const isSahanAdmin = u.id === "u3" || (u.role === "admin") || (u.name||"").toLowerCase().includes("sahan");
+    const isWiduraUser = u.id === "u6" || (u.name||"").toLowerCase().includes("widura");
+    const isAshanUser = u.id === "u5" || (u.name||"").toLowerCase().includes("ashan");
 
-    let roleBadge = `<span class="role-pill stage">${esc(u.title||'Member')}</span>`;
+    const displayTitle = isWiduraUser 
+      ? "Social Media Marketing & HR" 
+      : (isAshanUser ? "Social & Operations Lead" : (u.title || "Partner"));
+
+    let roleBadge = `<span class="role-pill stage" style="text-transform:none">${esc(displayTitle)}</span>`;
     if(isSahanAdmin){
-      roleBadge = `<span class="role-pill admin">🔒 Managing Director &amp; Finance</span>`;
+      roleBadge = `<span class="role-pill admin" style="text-transform:none">🔒 Managing Director &amp; Finance</span>`;
     } else if(isSubodhaUser){
-      roleBadge = `<span class="role-pill good" style="background:var(--teal-wash);color:var(--teal);border:1px solid var(--teal)">🎨 Creative Director · Work Manager</span>`;
+      roleBadge = `<span class="role-pill good" style="background:var(--teal-wash);color:var(--teal);border:1px solid var(--teal);text-transform:none">🎨 Creative Director · Work Manager</span>`;
+    } else if(isWiduraUser){
+      roleBadge = `<span class="role-pill good" style="background:#f1e8f8;color:#6b21a8;border:1px solid #dec8f0;text-transform:none;font-weight:700">📱 Social Media Marketing &amp; HR</span>`;
+    } else if(isAshanUser){
+      roleBadge = `<span class="role-pill good" style="background:#e8f0ef;color:#1f5c5a;border:1px solid #a3c7c4;text-transform:none;font-weight:700">⚡ Social &amp; Operations Lead</span>`;
     }
+
+    const pic = u.avatar || { u1:"/subodha.png", u2:"/sadeepa.png", u3:"/sahan.png", u4:"/pulasthi.png", u5:"/Ashan.png", u6:"/widura.png" }[u.id];
+    const avTeam = pic
+      ? `<div class="avatar" style="background:${u.color};width:44px;height:44px;overflow:hidden;padding:0;flex-shrink:0"><img src="${pic}" alt="${esc(u.name)}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;" onerror="this.parentElement.textContent='${u.initials}';" /></div>`
+      : `<div class="avatar" style="background:${u.color};width:44px;height:44px;font-size:15px;font-weight:700">${u.initials}</div>`;
 
     h += `
     <div class="appt" style="--d:${i*.04}s;display:flex;align-items:center;gap:14px;padding:12px 16px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);margin-bottom:10px">
-      <div class="avatar" style="background:${u.color};width:44px;height:44px;font-size:15px;font-weight:700">${u.initials}</div>
+      ${avTeam}
       <div style="flex:1;min-width:180px">
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
           <span style="font-weight:700;font-size:14px;color:var(--ink)">${esc(u.name)}</span>
@@ -2722,7 +2832,7 @@ function renderTeam(){
           ${isSelf ? '<span class="pill" style="font-size:10px;background:var(--amber-wash);color:var(--amber);border:1px solid var(--amber)">You</span>' : ''}
         </div>
         <div style="font-size:11.5px;color:var(--muted);margin-top:3px">
-          ${esc(u.title || "Team Member")} · PIN: <code style="font-family:var(--mono);color:var(--teal)">••••</code>
+          ${esc(displayTitle)} · PIN: <code style="font-family:var(--mono);color:var(--teal)">••••</code>
           ${u.password ? ' · <span style="color:var(--teal-deep)">Password configured</span>' : ''}
         </div>
       </div>
@@ -6970,6 +7080,10 @@ function userProfileModal(userId){
         </div>
       ` : ''}
 
+      const isTargetWidura = targetId === 'u6' || (targetUser.name||'').toLowerCase().includes('widura');
+      const isTargetAshan = targetId === 'u5' || (targetUser.name||'').toLowerCase().includes('ashan');
+      const targetDefaultTitle = isTargetWidura ? "Social Media Marketing & HR" : (isTargetAshan ? "Social & Operations Lead" : (targetUser.title||''));
+
       <div class="grid2">
         <div class="field">
           <label>Full Name / Username *</label>
@@ -6977,7 +7091,7 @@ function userProfileModal(userId){
         </div>
         <div class="field">
           <label>Professional Title</label>
-          <input id="prof-title" value="${esc(targetUser.title||'')}" placeholder="e.g. Creative Director" />
+          <input id="prof-title" value="${esc(targetDefaultTitle)}" placeholder="e.g. Creative Director" />
         </div>
       </div>
 
@@ -6995,9 +7109,9 @@ function userProfileModal(userId){
               <option value="member" ${targetUser.role!=='admin'?'selected':''}>Team Member</option>
             </select>
           ` : `
-            <input value="${targetUser.role==='admin'?'Admin (Full Access)':'Team Member'}" disabled style="background:var(--surface-2)" />
+            <input value="${targetUser.role==='admin'?'Admin (Full Access)':(isTargetWidura || isTargetAshan ? 'HR Manager' : 'Team Member')}" disabled style="background:var(--surface-2)" />
           `}
-          <div style="font-size:10.5px;color:var(--muted);margin-top:3px">${targetId==='u1'?'Creative Director (Manages Work Section)':(targetUser.role==='admin'?'Managing Director':'Standard Seat')}</div>
+          <div style="font-size:10.5px;color:var(--muted);margin-top:3px">${targetId==='u1'?'Creative Director (Manages Work Section)':(isTargetWidura?'Social Media Marketing & HR (Full HR Section Manager)':(isTargetAshan?'Social & Operations Lead (Full HR Section Manager)':(targetUser.role==='admin'?'Managing Director':'Partner')))}</div>
         </div>
       </div>
 
@@ -7155,7 +7269,13 @@ function userProfileModal(userId){
       return;
     }
 
-    const newTitle = $("#prof-title").value.trim();
+    let newTitle = $("#prof-title").value.trim();
+    if(isTargetWidura && (!newTitle || newTitle.toLowerCase() === 'team member')){
+      newTitle = "Social Media Marketing & HR";
+    }
+    if(isTargetAshan && (!newTitle || newTitle.toLowerCase() === 'team member')){
+      newTitle = "Social & Operations Lead";
+    }
     const newPin = $("#prof-pin").value.trim();
     if(!newPin || !/^\d{4,6}$/.test(newPin)){
       $("#prof-pin").focus();
@@ -7252,18 +7372,29 @@ function renderAuthUsers(){
   const grid = $("#auth-user-grid");
   if(!grid) return;
 
+  const avatarMap = { u1:"/subodha.png", u2:"/sadeepa.png", u3:"/sahan.png", u4:"/pulasthi.png", u5:"/Ashan.png", u6:"/widura.png" };
+
   grid.innerHTML = (DB.users || []).map(u => {
     const isSel = u.id === AUTH_SELECTED_USER_ID;
-    const isSahanUser = u.id === "u3" || (u.role === "admin");
+    const isSahanUser = u.id === "u3" || (u.role === "admin") || (u.name||"").toLowerCase().includes("sahan");
     const isSubodhaUser = u.id === "u1" || (u.name||"").toLowerCase().includes("subodha");
+    const isWiduraUser = u.id === "u6" || (u.name||"").toLowerCase().includes("widura");
+    const isAshanUser = u.id === "u5" || (u.name||"").toLowerCase().includes("ashan");
     let roleBadge = esc(u.title || "Partner");
     if(isSahanUser) roleBadge = "Admin · Finance";
     else if(isSubodhaUser) roleBadge = "Creative Lead";
+    else if(isWiduraUser) roleBadge = "Social Media Marketing & HR";
+    else if(isAshanUser) roleBadge = "Social & Operations Lead";
+
+    const pic = u.avatar || avatarMap[u.id];
+    const avContent = pic
+      ? `<img src="${pic}" alt="${esc(u.name)}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;" onerror="this.parentElement.textContent='${u.initials}';" />`
+      : u.initials;
 
     return `
       <div class="user-card ${isSel?'selected':''}" data-auth-user="${u.id}" title="Login as ${esc(u.name)}">
         <div class="user-card-check">✓</div>
-        <div class="avatar" style="background:${u.color};">${u.initials}</div>
+        <div class="avatar" style="background:${u.color};overflow:hidden;padding:0">${avContent}</div>
         <div class="user-card-name">${esc(u.name)}</div>
         <div class="user-card-role">${roleBadge}</div>
       </div>
@@ -7283,29 +7414,43 @@ function setupAuthForm(){
   const selUser = user(AUTH_SELECTED_USER_ID);
   if(!selUser) return;
 
+  const avatarMap = { u1:"/subodha.png", u2:"/sadeepa.png", u3:"/sahan.png", u4:"/pulasthi.png", u5:"/Ashan.png", u6:"/widura.png" };
+
   const selAv = $("#auth-sel-avatar");
   if(selAv){
-    selAv.textContent = selUser.initials;
-    selAv.style.background = selUser.color;
+    const pic = selUser.avatar || avatarMap[selUser.id];
+    if(pic){
+      selAv.innerHTML = `<img src="${pic}" alt="${esc(selUser.name)}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;" onerror="this.parentElement.textContent='${selUser.initials}';" />`;
+      selAv.style.overflow = "hidden";
+      selAv.style.padding = "0";
+      selAv.style.background = selUser.color;
+    } else {
+      selAv.textContent = selUser.initials;
+      selAv.style.background = selUser.color;
+    }
   }
 
   const selName = $("#auth-sel-name");
   if(selName) selName.textContent = selUser.name;
 
-  const isSahanUser = selUser.id === "u3" || selUser.role === "admin";
+  const isSahanUser = selUser.id === "u3" || selUser.role === "admin" || (selUser.name||"").toLowerCase().includes("sahan");
   const isSubodhaUser = selUser.id === "u1" || (selUser.name||"").toLowerCase().includes("subodha");
+  const isWiduraUser = selUser.id === "u6" || (selUser.name||"").toLowerCase().includes("widura");
+  const isAshanUser = selUser.id === "u5" || (selUser.name||"").toLowerCase().includes("ashan");
   let roleText = selUser.title || "Partner";
   if(isSahanUser) roleText = "Managing Director & Finance (Admin)";
   else if(isSubodhaUser) roleText = "Creative Director · Work Manager";
+  else if(isWiduraUser) roleText = "Social Media Marketing & HR";
+  else if(isAshanUser) roleText = "Social & Operations Lead";
 
   const roleDesc = $("#auth-role-desc");
   if(roleDesc) roleDesc.textContent = roleText;
 
   const selTag = $("#auth-sel-tag");
   if(selTag){
-    selTag.textContent = isSahanUser ? "Admin" : "Founder";
-    selTag.style.background = isSahanUser ? "var(--amber-wash)" : "var(--teal-wash)";
-    selTag.style.color = isSahanUser ? "var(--amber)" : "var(--teal-deep)";
+    selTag.textContent = isSahanUser ? "Admin" : ((isWiduraUser || isAshanUser) ? "HR Manager" : "Founder");
+    selTag.style.background = isSahanUser ? "var(--amber-wash)" : ((isWiduraUser || isAshanUser) ? "#f1e8f8" : "var(--teal-wash)");
+    selTag.style.color = isSahanUser ? "var(--amber)" : ((isWiduraUser || isAshanUser) ? "#6b21a8" : "var(--teal-deep)");
   }
 
   const pinLabel = $("#auth-pin-label");
@@ -7346,6 +7491,7 @@ function submitAuth(){
     const overlay = $("#auth-overlay");
     if(overlay) overlay.style.display = "none";
     DB.currentUserId = selUser.id;
+    syncHRUserSession();
     buildMe();
     go(getInitialView());
     subscribeRealtime();
@@ -7659,15 +7805,10 @@ document.addEventListener("keydown", e => {
 });
 
 $("#nav").addEventListener("click",e=>{
-  const hr = e.target.closest("#nav-hr-link");
-  if(hr){
-    window.location.href = "https://team-task-manager-teal-iota.vercel.app/";
-    return;
-  }
-  const b=e.target.closest("button[data-view]");
+  const b=e.target.closest("[data-view]");
   if(b) go(b.dataset.view);
 });
-$("#bottom-nav").addEventListener("click",e=>{ const b=e.target.closest("button[data-view]"); if(b) go(b.dataset.view); });
+$("#bottom-nav").addEventListener("click",e=>{ const b=e.target.closest("[data-view]"); if(b) go(b.dataset.view); });
 $("#add-contact").onclick = ()=>{
   if(VIEW === "account"){
     if(!isSahan()){
@@ -7677,6 +7818,9 @@ $("#add-contact").onclick = ()=>{
     }
   } else if(VIEW === "team"){
     userProfileModal(DB.currentUserId);
+  } else if(VIEW === "humanresource"){
+    syncHRUserSession();
+    toast(canManageHR() ? "HR Section: Full Manager Access Active (Ashan, Widura & Sahan)" : "HR Section: Staff Workspace Active");
   } else {
     if(!canManageWork()){
       toast("Work Section: Only Subodha Kalhara can add new contacts. You have viewing access.");
@@ -7693,11 +7837,27 @@ function buildMe(){
   if(!me) return;
   const isSahanUser = isSahan();
   const isSubodhaUser = isSubodha();
+  const isWiduraUser = isWidura();
+  const isAshanUser = isAshan();
 
-  // Avatar initials and colors across sidebar, mobile, topbar
-  const av=$("#me-av"); if(av) { av.textContent=me.initials; av.style.background=me.color; }
-  const mav=$("#mobile-me-av"); if(mav) { mav.textContent=me.initials; mav.style.background=me.color; }
-  const tav=$("#topbar-me-av"); if(tav) { tav.textContent=me.initials; tav.style.background=me.color; }
+  // Avatar image or initials across sidebar, mobile, topbar
+  const avatarMap = { u1:"/subodha.png", u2:"/sadeepa.png", u3:"/sahan.png", u4:"/pulasthi.png", u5:"/Ashan.png", u6:"/widura.png" };
+  const setAv = (el) => {
+    if(!el) return;
+    const pic = me.avatar || avatarMap[me.id];
+    if(pic){
+      el.innerHTML = `<img src="${pic}" alt="${esc(me.name)}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;" onerror="this.remove();" />`;
+      el.style.overflow = "hidden";
+      el.style.padding = "0";
+      el.style.background = me.color || "var(--teal)";
+    } else {
+      el.textContent = me.initials;
+      el.style.background = me.color;
+    }
+  };
+  setAv($("#me-av"));
+  setAv($("#mobile-me-av"));
+  setAv($("#topbar-me-av"));
 
   // Sidebar username & role
   const nameEl=$("#me-name"); if(nameEl) nameEl.textContent = me.name;
@@ -7709,24 +7869,42 @@ function buildMe(){
       roleEl.style.background = "";
       roleEl.style.color = "";
       roleEl.style.border = "";
+      roleEl.style.textTransform = "";
     } else if(isSubodhaUser){
       roleEl.className = "role-pill good";
       roleEl.style.background = "var(--teal-wash)";
       roleEl.style.color = "var(--teal)";
       roleEl.style.border = "1px solid var(--teal)";
+      roleEl.style.textTransform = "none";
       roleEl.textContent = "Work Manager";
+    } else if(isWiduraUser){
+      roleEl.className = "role-pill good";
+      roleEl.style.background = "#f1e8f8";
+      roleEl.style.color = "#6b21a8";
+      roleEl.style.border = "1px solid #dec8f0";
+      roleEl.style.textTransform = "none";
+      roleEl.textContent = "Social & HR";
+    } else if(isAshanUser){
+      roleEl.className = "role-pill good";
+      roleEl.style.background = "#e8f0ef";
+      roleEl.style.color = "#1f5c5a";
+      roleEl.style.border = "1px solid #a3c7c4";
+      roleEl.style.textTransform = "none";
+      roleEl.textContent = "Social & Ops";
     } else {
       roleEl.className = "role-pill member";
       roleEl.style.background = "";
       roleEl.style.color = "";
       roleEl.style.border = "";
-      roleEl.textContent = me.title || "Member";
+      roleEl.style.textTransform = "none";
+      roleEl.textContent = me.title || "Partner";
     }
   }
 
   // Topbar profile: full name, badge, title
   const topNameEl=$("#topbar-me-name"); if(topNameEl) topNameEl.textContent = me.name;
-  const topTitleEl=$("#topbar-me-title"); if(topTitleEl) topTitleEl.textContent = me.title || (isSahanUser ? "Managing Director & Finance" : "Team Member");
+  const userTitle = isWiduraUser ? "Social Media Marketing & HR" : (isAshanUser ? "Social & Operations Lead" : (me.title || (isSahanUser ? "Managing Director & Finance" : "Partner")));
+  const topTitleEl=$("#topbar-me-title"); if(topTitleEl) topTitleEl.textContent = userTitle;
   const topRoleEl=$("#topbar-me-role");
   if(topRoleEl){
     if(isSahanUser){
@@ -7741,12 +7919,24 @@ function buildMe(){
       topRoleEl.style.color = "var(--teal)";
       topRoleEl.style.border = "1px solid var(--teal)";
       topRoleEl.textContent = "🎨 Creative Director (Work Mgr)";
+    } else if(isWiduraUser){
+      topRoleEl.className = "role-guard good";
+      topRoleEl.style.background = "#f1e8f8";
+      topRoleEl.style.color = "#6b21a8";
+      topRoleEl.style.border = "1px solid #dec8f0";
+      topRoleEl.textContent = "📱 Social Media Marketing & HR";
+    } else if(isAshanUser){
+      topRoleEl.className = "role-guard good";
+      topRoleEl.style.background = "#e8f0ef";
+      topRoleEl.style.color = "#1f5c5a";
+      topRoleEl.style.border = "1px solid #a3c7c4";
+      topRoleEl.textContent = "⚡ Social & Operations Lead";
     } else {
       topRoleEl.className = "role-guard viewer";
       topRoleEl.style.background = "var(--surface-2)";
       topRoleEl.style.color = "var(--muted)";
       topRoleEl.style.border = "1px solid var(--line)";
-      topRoleEl.textContent = `👁️ ${me.title || 'Team Member'}`;
+      topRoleEl.textContent = `👁️ ${userTitle}`;
     }
   }
 
@@ -7776,9 +7966,11 @@ function changeMe(userId){
   if(u) setAuthSession(u, true);
   else localStorage.setItem("crm_current_user", userId);
   cacheLocal(DB);
+  syncHRUserSession();
   buildMe();
   toast("Now acting as "+(u?.name || userId));
   if(VIEW === "account") renderAccount();
+  else if(VIEW === "humanresource") renderHumanResource();
   else draw();
 }
 
@@ -7921,10 +8113,6 @@ function subscribeRealtime(){
 function getInitialView(){
   const hash = window.location.hash.replace(/^#\/?/, "").toLowerCase();
   const path = window.location.pathname.replace(/^\//, "").replace(/\/$/, "").toLowerCase();
-  if(path === "humanresource" || hash === "humanresource" || path.endsWith("/humanresource")){
-    window.location.href = "https://team-task-manager-teal-iota.vercel.app/";
-    return "today";
-  }
   if(hash && PAGES[hash]) return hash;
   if(path && PAGES[path]) return path;
   return "today";
@@ -8008,12 +8196,12 @@ function buildAiCrmContext(){
 - Current Cycle Net Profit / Surplus: Rs. ${netProfit.toLocaleString()}
 - Distributable Profit Split Policy: Strict 6-Way Equal Founder Split (1/6 or 16.667% each to all 6 founders). The company holds NO shares/reserves. All distributable net surplus is divided equally among the 6 founders. If current cycle surplus was split today, each founder receives Rs. ${founderShareIfProfit.toLocaleString()}.
 - The 6 Founders / Equal Partners:
-  1. Subodha Kalhara (u1) - Creative Director
-  2. Sadeepa Oshada (u2) - Cinematographer & Drone
+  1. Subodha Kalhara (u1) - Creative Director & Work Manager
+  2. Sadeepa Oshada (u2) - Video Production Lead
   3. Sahan Madhawa (u3) - Managing Director & Finance Lead (Controls finance, bank accounts, and payouts)
-  4. Pulasthi (u4) - Senior Editor & Colorist
-  5. Janith Ashan (u5) - Head of Production
-  6. Widura (u6) - Photographer & Visual Media
+  4. Pulasthi Wijayarathna (u4) - Web & Tech Lead
+  5. Ashan Indusara (u5) - Social & Operations Lead (HR Management)
+  6. Widura Bandara (u6) - Social Media Marketing & HR Lead (HR Management)
 - Initial Capital & Equity Foundation: The agency was seeded by an initial capital investment of Rs. 50,000 from each of the 6 founders (Total initial seed pool: Rs. 300,000). All subsequent company assets, cameras, production gear, and setup were funded 100% organically from business profits and cash flow generated through the team's ongoing client work. There are no external investors or company-held shares.
 - Monthly Founder Remuneration Policy: Rs. 40,000 / month each (Total commitment: Rs. 240,000 per cycle), disbursed subject to liquidity. Disbursed so far this cycle: Rs. ${founderPayroll.toLocaleString()}.
 - Active Liabilities & Debt: Total active debt Rs. ${totalDebt.toLocaleString()}, scheduled monthly loan installments Rs. ${monthlyInstallments.toLocaleString()}/mo.
