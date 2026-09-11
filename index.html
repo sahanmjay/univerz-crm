@@ -7032,6 +7032,10 @@ function userProfileModal(userId){
     return;
   }
 
+  const isTargetWidura = targetId === 'u6' || (targetUser.name||'').toLowerCase().includes('widura');
+  const isTargetAshan = targetId === 'u5' || (targetUser.name||'').toLowerCase().includes('ashan');
+  const targetDefaultTitle = isTargetWidura ? "Social Media Marketing & HR" : (isTargetAshan ? "Social & Operations Lead" : (targetUser.title||''));
+
   const palette = ["#1f5c5a", "#9a6a14", "#bb472b", "#3c7a4e", "#5a466a", "#2b5cbb", "#c05621", "#319795"];
 
   openModal(`
@@ -7079,10 +7083,6 @@ function userProfileModal(userId){
           🔒 <span><b>Privacy Mode Active:</b> Company accounts, liquid balances, and debt liabilities are restricted to Executive Finance.</span>
         </div>
       ` : ''}
-
-      const isTargetWidura = targetId === 'u6' || (targetUser.name||'').toLowerCase().includes('widura');
-      const isTargetAshan = targetId === 'u5' || (targetUser.name||'').toLowerCase().includes('ashan');
-      const targetDefaultTitle = isTargetWidura ? "Social Media Marketing & HR" : (isTargetAshan ? "Social & Operations Lead" : (targetUser.title||''));
 
       <div class="grid2">
         <div class="field">
@@ -7570,7 +7570,7 @@ $("#content").addEventListener("click",e=>{
   const shareLoanBtn=e.target.closest("[data-share-loan]");
   const shareLoanWa=e.target.closest("[data-share-loan-wa]");
   const shareLoanCopy=e.target.closest("[data-share-loan-copy]");
-  const editMyProfile=e.target.closest("#btn-edit-my-profile") || e.target.closest("#btn-team-edit-my-profile");
+  const editMyProfile=e.target.closest("#btn-edit-my-profile") || e.target.closest("#btn-team-edit-my-profile") || e.target.closest("#topbar-user-btn") || e.target.closest("#btn-topbar-change-pwd") || e.target.closest(".topbar-profile");
   const switchUserBtn=e.target.closest("#btn-team-switch-user");
   const editUserBtn=e.target.closest("[data-edit-user-btn]");
   const logoutBtn=e.target.closest("#btn-team-logout");
@@ -7752,7 +7752,7 @@ $("#content").addEventListener("click",e=>{
 
 document.body.addEventListener("click",e=>{
   if(e.target.closest("[data-close]")) closeModal();
-  const sideUser = e.target.closest("#sidebar-user-btn") || e.target.closest("#mobile-sidebar-user-btn") || e.target.closest("#topbar-user-btn");
+  const sideUser = e.target.closest("#sidebar-user-btn") || e.target.closest("#mobile-sidebar-user-btn") || e.target.closest("#topbar-user-btn") || e.target.closest("#btn-topbar-change-pwd") || e.target.closest(".topbar-profile") || e.target.closest(".topbar-profile-action");
   if(sideUser){ userProfileModal(DB.currentUserId); }
   const authClose = e.target.closest("#auth-close-btn");
   if(authClose){ closeAuthModal(); }
