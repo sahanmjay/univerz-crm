@@ -5,7 +5,7 @@
   "description": "Univerz CRM — internal call & appointment management for a 6-person creative agency",
   "scripts": {
     "dev": "vite",
-    "build:hr": "npm --prefix team-task-manager run build",
+    "build:hr": "npm --prefix team-task-manager install && npm --prefix team-task-manager run build",
     "build": "npm run build:hr && vite build",
     "preview": "vite preview"
   },
