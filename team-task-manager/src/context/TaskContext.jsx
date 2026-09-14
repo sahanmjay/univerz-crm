@@ -32,7 +32,7 @@ export const TaskProvider = ({ children }) => {
 
   // Filter states & Monthly Scoping
   const [selectedMonth, setSelectedMonth] = useState('current'); // 'current', 'YYYY-MM', or 'all'
-  const [selectedStatus, setSelectedStatus] = useState('all'); // all, pending, completed
+  const [selectedStatus, setSelectedStatus] = useState('active'); // 'active', 'pending', 'review', 'completed', 'all'
   const [selectedPriority, setSelectedPriority] = useState('all'); // all, Urgent, High, Medium, Low
   const [selectedAssignee, setSelectedAssignee] = useState('mine'); // 'mine' (current user only), 'all', or profile id
   const [searchQuery, setSearchQuery] = useState('');
@@ -705,30 +705,33 @@ export const TaskProvider = ({ children }) => {
     const currentTask = tasks.find(t => t.id === taskId);
     if (!currentTask) return;
 
-    let nextStatus = currentTask.status;
+    let nextStatus = 'done';
 
-    // Role-based logic
     if (isAdmin) {
+      // HR/Admin: Clicking checkbox directly toggles task between 'done' and 'todo'
       nextStatus = currentTask.status === 'done' ? 'todo' : 'done';
     } else {
-      // Non-admins cannot toggle 'done' tasks
+      // Non-admin Team Member:
+      // If 'todo' -> member submits task for HR review ('review')
+      // If 'review' -> member cancels/returns task to 'todo'
       if (currentTask.status === 'done') return;
       nextStatus = currentTask.status === 'review' ? 'todo' : 'review';
     }
 
-    const nowIso = new Date().toISOString();
     const isDone = nextStatus === 'done';
+    const nowIso = new Date().toISOString();
     const completionTimestamp = isDone ? (currentTask.completed_at || nowIso) : null;
     const taskMonth = currentTask.task_month || getCurrentMonthKey();
 
     const updatedTask = {
       ...currentTask,
       status: nextStatus,
+      is_completed: isDone,
       completed_at: completionTimestamp,
       task_month: taskMonth
     };
 
-    if (nextStatus === 'done' || nextStatus === 'review') {
+    if (isDone || nextStatus === 'review') {
       triggerConfetti();
     }
 
@@ -741,15 +744,20 @@ export const TaskProvider = ({ children }) => {
         .from('tasks')
         .update({
           status: nextStatus,
+          is_completed: isDone,
           completed_at: completionTimestamp
         })
         .eq('id', taskId);
 
       if (error) {
         console.error('Error updating task in Supabase:', error);
+        setTasks(prev => prev.map(t => (t.id === taskId ? currentTask : t)));
+        alert('Database error updating task: ' + error.message);
       }
     } catch (err) {
       console.error('Task update exception:', err);
+      setTasks(prev => prev.map(t => (t.id === taskId ? currentTask : t)));
+      alert('Exception updating task: ' + err.message);
     }
   }, [tasks, isAdmin, triggerConfetti]);
 
@@ -822,50 +830,64 @@ export const TaskProvider = ({ children }) => {
 
   // Approve / Reject workflows (HR/Admin only)
   const approveTask = useCallback(async (taskId) => {
-    if (!isAdmin) return;
+    const currentTask = tasks.find(t => t.id === taskId);
     const nowIso = new Date().toISOString();
+
+    // Optimistic UI Update
+    setTasks(prev => prev.map(t => (t.id === taskId ? { ...t, status: 'done', is_completed: true, completed_at: nowIso } : t)));
+    setLastSyncTime(new Date());
+    triggerConfetti();
+
     try {
       const { error } = await supabase
         .from('tasks')
-        .update({ status: 'done', completed_at: nowIso })
+        .update({ status: 'done', is_completed: true, completed_at: nowIso })
         .eq('id', taskId);
 
       if (error) {
         console.error("Failed to approve task in Supabase:", error);
+        if (currentTask) {
+          setTasks(prev => prev.map(t => (t.id === taskId ? currentTask : t)));
+        }
         alert("Failed to update database: " + error.message);
-        return;
       }
-
-      setTasks(prev => prev.map(t => (t.id === taskId ? { ...t, status: 'done', completed_at: nowIso } : t)));
-      setLastSyncTime(new Date());
-      triggerConfetti();
     } catch (err) {
       console.error("Exception in approveTask:", err);
+      if (currentTask) {
+        setTasks(prev => prev.map(t => (t.id === taskId ? currentTask : t)));
+      }
       alert("Failed to update database: " + err.message);
     }
-  }, [isAdmin, triggerConfetti]);
+  }, [tasks, triggerConfetti]);
 
   const rejectTask = useCallback(async (taskId) => {
-    if (!isAdmin) return;
+    const currentTask = tasks.find(t => t.id === taskId);
+
+    // Optimistic UI Update
+    setTasks(prev => prev.map(t => (t.id === taskId ? { ...t, status: 'todo', is_completed: false, completed_at: null } : t)));
+    setLastSyncTime(new Date());
+
     try {
       const { error } = await supabase
         .from('tasks')
-        .update({ status: 'todo', completed_at: null })
+        .update({ status: 'todo', is_completed: false, completed_at: null })
         .eq('id', taskId);
 
       if (error) {
         console.error("Failed to reject task in Supabase:", error);
+        if (currentTask) {
+          setTasks(prev => prev.map(t => (t.id === taskId ? currentTask : t)));
+        }
         alert("Failed to update database: " + error.message);
-        return;
       }
-
-      setTasks(prev => prev.map(t => (t.id === taskId ? { ...t, status: 'todo', completed_at: null } : t)));
-      setLastSyncTime(new Date());
     } catch (err) {
       console.error("Exception in rejectTask:", err);
+      if (currentTask) {
+        setTasks(prev => prev.map(t => (t.id === taskId ? currentTask : t)));
+      }
       alert("Failed to update database: " + err.message);
     }
-  }, [isAdmin]);
+  }, [tasks]);
 
   // Metrics calculation strictly based on scopedTasks for current active month (or selected archive month)
   const metrics = useMemo(() => {

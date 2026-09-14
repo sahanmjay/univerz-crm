@@ -14,8 +14,10 @@ import TaskCompletionModal from './TaskCompletionModal';
 import { getDepartmentBadge } from '../lib/demoData';
 
 export default function TaskCard({ task }) {
-  const { profiles, toggleTaskStatus, deleteTask, updateTask, isAdmin, approveTask, rejectTask } = useTasks();
+  const { profiles, toggleTaskStatus, deleteTask, updateTask, isAdmin, currentUser, approveTask, rejectTask } = useTasks();
   const [isNoteModalOpen, setIsNoteModalOpen] = useState(false);
+
+  const isHRorAdmin = currentUser?.role === 'HR' || currentUser?.role === 'admin' || currentUser?.role === 'Admin' || currentUser?.department === 'HR' || currentUser?.role === 'hr' || isAdmin;
 
   const assignedProfile = profiles.find((p) => 
     p.id === task.assigned_to || 
@@ -118,13 +120,19 @@ export default function TaskCard({ task }) {
           <button
             type="button"
             onClick={handleCheckboxClick}
-            disabled={(!isAdmin && isCompleted) || (!isAdmin && isPendingApproval)}
             aria-label={isCompleted ? 'Mark task as incomplete' : 'Mark task as complete'}
-            className={`mt-0.5 w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-200 border ${
+            title={
+              isCompleted
+                ? 'Completed (Click to reopen task)'
+                : isPendingApproval
+                ? (isHRorAdmin ? 'In Review (Click to Approve & Complete)' : 'Pending HR Approval (Click to cancel submission)')
+                : (isHRorAdmin ? 'Click to Complete & Approve task' : 'Click to Complete & Submit for HR Approval')
+            }
+            className={`mt-0.5 w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-200 border cursor-pointer ${
               isCompleted
                 ? 'bg-emerald-500 border-emerald-400 text-slate-950 shadow-md shadow-emerald-500/20 scale-105'
                 : isPendingApproval
-                ? 'bg-amber-500 border-amber-400 text-slate-950 shadow-md shadow-amber-500/20 scale-105 opacity-80 cursor-not-allowed'
+                ? 'bg-amber-500 border-amber-400 text-slate-950 shadow-md shadow-amber-500/20 scale-105'
                 : 'bg-slate-950/60 border-slate-700 text-transparent hover:border-indigo-500 hover:text-indigo-400 hover:bg-indigo-950/40'
             }`}
           >
@@ -227,22 +235,25 @@ export default function TaskCard({ task }) {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center gap-1">
-                {isAdmin && isPendingApproval && (
-                  <div className="flex items-center gap-1 mr-2">
+              <div className="flex items-center gap-1.5">
+                {isHRorAdmin && isPendingApproval && (
+                  <div className="flex items-center gap-1.5 mr-2">
                     <button
                       type="button"
                       onClick={() => approveTask(task.id)}
-                      className="px-2 py-1 bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 hover:text-emerald-300 rounded-md text-[10px] font-bold transition-colors border border-emerald-500/30"
+                      className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition-all shadow-md shadow-emerald-600/30 flex items-center gap-1 cursor-pointer"
+                      title="Approve and mark task as completed (done)"
                     >
-                      Approve
+                      <Check size={13} className="stroke-[3]" />
+                      <span>Approve</span>
                     </button>
                     <button
                       type="button"
                       onClick={() => rejectTask(task.id)}
-                      className="px-2 py-1 bg-rose-500/20 text-rose-400 hover:bg-rose-500/30 hover:text-rose-300 rounded-md text-[10px] font-bold transition-colors border border-rose-500/30"
+                      className="px-2.5 py-1 bg-rose-500/20 hover:bg-rose-600 text-rose-300 hover:text-white rounded-lg text-xs font-bold transition-all border border-rose-500/30 flex items-center gap-1 cursor-pointer"
+                      title="Reject and send back to member as todo"
                     >
-                      Reject
+                      <span>Reject</span>
                     </button>
                   </div>
                 )}
