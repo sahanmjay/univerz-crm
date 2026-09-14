@@ -50,7 +50,8 @@ export default function StaffDashboard() {
   const myAllTasks = scopedTasks.filter(isMyTask);
 
   const filteredTasks = myAllTasks.filter((task) => {
-    if (selectedStatus === 'pending' && task.status === 'done') return false;
+    if (selectedStatus === 'active' && task.status === 'done') return false;
+    if (selectedStatus === 'pending' && task.status !== 'todo') return false;
     if (selectedStatus === 'review' && task.status !== 'review') return false;
     if (selectedStatus === 'completed' && task.status !== 'done') return false;
 
@@ -64,8 +65,10 @@ export default function StaffDashboard() {
   });
 
   const totalMyTasks = myAllTasks.length;
+  const activeMyTasks = myAllTasks.filter((t) => t.status !== 'done').length;
+  const reviewMyTasks = myAllTasks.filter((t) => t.status === 'review').length;
   const completedMyTasks = myAllTasks.filter((t) => t.status === 'done').length;
-  const pendingMyTasks = totalMyTasks - completedMyTasks;
+  const pendingMyTasks = myAllTasks.filter((t) => t.status === 'todo').length;
   const rate = totalMyTasks > 0 ? Math.round((completedMyTasks / totalMyTasks) * 100) : 0;
 
   return (
@@ -210,10 +213,11 @@ export default function StaffDashboard() {
               onChange={(e) => setSelectedStatus(e.target.value)}
               className="rounded-xl glass-input px-3 py-2 text-xs text-slate-200 bg-slate-900 cursor-pointer"
             >
-              <option value="all">All Statuses ({totalMyTasks})</option>
+              <option value="active">Active Tasks ({activeMyTasks})</option>
               <option value="pending">Pending Only ({pendingMyTasks})</option>
-              <option value="review">In Review (Awaiting HR)</option>
+              <option value="review">In Review ({reviewMyTasks})</option>
               <option value="completed">Completed Only ({completedMyTasks})</option>
+              <option value="all">All Statuses ({totalMyTasks})</option>
             </select>
           </div>
         </div>

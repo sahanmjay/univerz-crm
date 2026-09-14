@@ -133,7 +133,8 @@ export default function ManagerDashboard() {
     }
 
     // 3. Status Filter
-    if (selectedStatus === 'pending' && task.status === 'done') return false;
+    if (selectedStatus === 'active' && task.status === 'done') return false;
+    if (selectedStatus === 'pending' && task.status !== 'todo') return false;
     if (selectedStatus === 'review' && task.status !== 'review') return false;
     if (selectedStatus === 'completed' && task.status !== 'done') return false;
 
@@ -187,8 +188,9 @@ export default function ManagerDashboard() {
   });
 
   const currentTotal = memberTimeframeTasks.length;
+  const currentActive = memberTimeframeTasks.filter(t => t.status !== 'done').length;
   const currentCompleted = memberTimeframeTasks.filter(t => t.status === 'done').length;
-  const currentPending = currentTotal - currentCompleted;
+  const currentPending = memberTimeframeTasks.filter(t => t.status === 'todo').length;
   const currentReview = memberTimeframeTasks.filter(t => t.status === 'review').length;
 
   const allReviewTasks = scopedTasks.filter(t => t.status === 'review');
@@ -462,10 +464,11 @@ export default function ManagerDashboard() {
                   onChange={(e) => setSelectedStatus(e.target.value)}
                   className="rounded-xl glass-input px-3 py-2 text-xs text-slate-200 bg-slate-900 cursor-pointer"
                 >
-                  <option value="all">All Statuses ({currentTotal})</option>
+                  <option value="active">Active Tasks ({currentActive})</option>
                   <option value="pending">Pending Only ({currentPending})</option>
                   <option value="review">In Review ({currentReview})</option>
                   <option value="completed">Completed Only ({currentCompleted})</option>
+                  <option value="all">All Statuses ({currentTotal})</option>
                 </select>
 
                 {/* Priority */}
