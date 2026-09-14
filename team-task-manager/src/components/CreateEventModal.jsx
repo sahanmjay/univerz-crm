@@ -286,8 +286,8 @@ export default function CreateEventModal({ isOpen, onClose, editingEvent = null,
           {/* 1. Title (Hidden/Optional when Daily Roster is selected) */}
           {eventType !== 'roster' ? (
             <div>
-              <label className="block text-xs font-bold text-slate-300 mb-1.5 flex items-center gap-1.5">
-                <Tag size={13} className="text-indigo-400" /> Title / Name <span className="text-rose-400">*</span>
+              <label className="block text-xs font-bold text-[#20262e] mb-1.5 flex items-center gap-1.5">
+                <Tag size={13} className="text-[#1f5c5a]" /> Title / Name <span className="text-rose-500">*</span>
               </label>
               <input
                 type="text"
@@ -300,21 +300,21 @@ export default function CreateEventModal({ isOpen, onClose, editingEvent = null,
                   eventType === 'holiday' ? 'e.g. Full Moon Poya Day / Christmas' :
                   'e.g. Monthly KPI Review / Audit Reminder'
                 }
-                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder:text-slate-600 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-medium"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#d8d1c2] text-xs text-[#20262e] placeholder:text-[#8c827a] focus:border-[#1f5c5a] focus:ring-1 focus:ring-[#1f5c5a] transition-all font-semibold"
               />
             </div>
           ) : (
-            <div className="p-3 rounded-2xl bg-emerald-950/30 border border-emerald-500/30 flex items-center justify-between text-xs">
+            <div className="p-3 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-between text-xs">
               <div className="flex items-center gap-2">
-                <span className="text-emerald-400 font-bold flex items-center gap-1.5">
+                <span className="text-emerald-700 font-bold flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                   Daily Duty Roster
                 </span>
-                <span className="text-slate-400 text-[11px] font-medium">
+                <span className="text-[#6f6a60] text-[11px] font-medium">
                   (No title required — auto-assigned from selected staff)
                 </span>
               </div>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
                 Auto-Titled
               </span>
             </div>
@@ -322,23 +322,23 @@ export default function CreateEventModal({ isOpen, onClose, editingEvent = null,
 
           {/* 2. Event Type */}
           <div>
-            <label className="block text-xs font-bold text-slate-300 mb-1.5 flex items-center gap-1.5">
-              <Tag size={13} className="text-indigo-400" /> Event Type <span className="text-rose-400">*</span>
+            <label className="block text-xs font-bold text-[#20262e] mb-1.5 flex items-center gap-1.5">
+              <Tag size={13} className="text-[#1f5c5a]" /> Event Type <span className="text-rose-500">*</span>
             </label>
             {isAdmin ? (
               <select
                 value={eventType}
                 onChange={(e) => handleTypeChange(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-medium cursor-pointer"
+                className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#d8d1c2] text-xs text-[#20262e] font-bold focus:border-[#1f5c5a] focus:ring-1 focus:ring-[#1f5c5a] transition-all cursor-pointer shadow-xs"
               >
-                <option value="meeting">🔵 Scheduled Meetings</option>
-                <option value="roster">🟢 Daily Duty Roster</option>
-                <option value="leave">🔴 Approved Leaves</option>
-                <option value="holiday">🟡 Company Holidays</option>
-                <option value="reminder">🟣 Special Reminders</option>
+                <option value="meeting" className="bg-white text-[#20262e] font-bold py-2">🔵 Scheduled Meetings</option>
+                <option value="roster" className="bg-white text-[#20262e] font-bold py-2">🟢 Daily Duty Roster</option>
+                <option value="leave" className="bg-white text-[#20262e] font-bold py-2">🔴 Approved Leaves</option>
+                <option value="holiday" className="bg-white text-[#20262e] font-bold py-2">🟡 Company Holidays</option>
+                <option value="reminder" className="bg-white text-[#20262e] font-bold py-2">🟣 Special Reminders</option>
               </select>
             ) : (
-              <div className="px-3.5 py-2.5 rounded-xl bg-slate-950/70 border border-slate-800 text-xs text-rose-300 font-semibold flex items-center gap-2">
+              <div className="px-3.5 py-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs text-rose-700 font-semibold flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-rose-500" />
                 Leave Request
               </div>
@@ -492,30 +492,30 @@ export default function CreateEventModal({ isOpen, onClose, editingEvent = null,
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Start Date & Time */}
             <div className="space-y-2">
-              <label className="block text-xs font-bold text-slate-300 flex items-center gap-1.5">
-                <CalendarIcon size={13} className="text-indigo-400" /> Start Date <span className="text-rose-400">*</span>
+              <label className="block text-xs font-bold text-[#20262e] flex items-center gap-1.5">
+                <CalendarIcon size={13} className="text-[#1f5c5a]" /> Start Date <span className="text-rose-500">*</span>
               </label>
               <input
                 type="date"
                 required
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-medium"
+                className="w-full px-3 py-2 rounded-xl bg-white border border-[#d8d1c2] text-xs text-[#20262e] font-semibold focus:border-[#1f5c5a] focus:ring-1 focus:ring-[#1f5c5a] transition-all"
               />
               {!isAllDay && (
                 <input
                   type="time"
                   value={startTime}
                   onChange={(e) => setStartTime(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-medium"
+                  className="w-full px-3 py-2 rounded-xl bg-white border border-[#d8d1c2] text-xs text-[#20262e] font-semibold focus:border-[#1f5c5a] focus:ring-1 focus:ring-[#1f5c5a] transition-all"
                 />
               )}
             </div>
 
             {/* End Date & Time */}
             <div className="space-y-2">
-              <label className="block text-xs font-bold text-slate-300 flex items-center gap-1.5">
-                <CalendarIcon size={13} className="text-indigo-400" /> End Date <span className="text-slate-500 font-normal">(Optional)</span>
+              <label className="block text-xs font-bold text-[#20262e] flex items-center gap-1.5">
+                <CalendarIcon size={13} className="text-[#1f5c5a]" /> End Date <span className="text-[#6f6a60] font-normal">(Optional)</span>
               </label>
               <input
                 type="date"
@@ -523,14 +523,14 @@ export default function CreateEventModal({ isOpen, onClose, editingEvent = null,
                 min={startDate}
                 onChange={(e) => setEndDate(e.target.value)}
                 placeholder="Same as start date"
-                className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-medium"
+                className="w-full px-3 py-2 rounded-xl bg-white border border-[#d8d1c2] text-xs text-[#20262e] font-semibold focus:border-[#1f5c5a] focus:ring-1 focus:ring-[#1f5c5a] transition-all"
               />
               {!isAllDay && (
                 <input
                   type="time"
                   value={endTime}
                   onChange={(e) => setEndTime(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all font-medium"
+                  className="w-full px-3 py-2 rounded-xl bg-white border border-[#d8d1c2] text-xs text-[#20262e] font-semibold focus:border-[#1f5c5a] focus:ring-1 focus:ring-[#1f5c5a] transition-all"
                 />
               )}
             </div>
@@ -538,15 +538,15 @@ export default function CreateEventModal({ isOpen, onClose, editingEvent = null,
 
           {/* 6. Description / Notes */}
           <div>
-            <label className="block text-xs font-bold text-slate-300 mb-1.5 flex items-center gap-1.5">
-              <AlignLeft size={13} className="text-indigo-400" /> Description / Notes
+            <label className="block text-xs font-bold text-[#20262e] mb-1.5 flex items-center gap-1.5">
+              <AlignLeft size={13} className="text-[#1f5c5a]" /> Description / Notes
             </label>
             <textarea
               rows={3}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Add agenda, meeting link, leave reason, or additional details..."
-              className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder:text-slate-600 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all resize-none font-medium"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#d8d1c2] text-xs text-[#20262e] placeholder:text-[#8c827a] focus:border-[#1f5c5a] focus:ring-1 focus:ring-[#1f5c5a] transition-all resize-none font-medium"
             />
           </div>
 

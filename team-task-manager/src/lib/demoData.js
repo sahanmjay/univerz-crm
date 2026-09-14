@@ -101,6 +101,7 @@ export const getDepartmentBadge = (dept) => {
 };
 
 export const PROJECT_TYPES = [
+  'System',
   'Web Development',
   'Social Media Management',
   'Video Production',
@@ -118,6 +119,12 @@ export const PROJECT_STATUSES = [
 
 export const getProjectTypeBadge = (type) => {
   switch (type) {
+    case 'System':
+      return {
+        label: 'System',
+        icon: '💻',
+        badge: 'bg-indigo-50 text-indigo-700 border-indigo-200'
+      };
     case 'Web Development':
       return {
         label: 'Web Development',

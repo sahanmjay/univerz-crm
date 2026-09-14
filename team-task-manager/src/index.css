@@ -84,6 +84,28 @@ body {
   outline: none;
 }
 
+/* Universal Select & Option High Contrast Styling */
+select {
+  color: #20262e !important;
+  background-color: #ffffff !important;
+  border: 1px solid #d8d1c2 !important;
+}
+
+select option {
+  background-color: #ffffff !important;
+  color: #20262e !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  padding: 8px 12px !important;
+}
+
+select option:hover,
+select option:focus,
+select option:checked {
+  background-color: #e8f0ef !important;
+  color: #1f5c5a !important;
+}
+
 /* Light text & border adjustments */
 .text-slate-100,
 .text-slate-200,
