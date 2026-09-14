@@ -1647,7 +1647,10 @@ body.auth-locked #auth-overlay {
                 class="pin-input"
                 maxlength="20"
                 placeholder="••••"
-                autocomplete="current-password"
+                autocomplete="off"
+                data-lpignore="true"
+                data-1p-ignore="true"
+                data-form-type="other"
                 autofocus
               />
             </div>
@@ -3922,6 +3925,137 @@ async function refreshAccountsData(){
   renderAccount();
 }
 
+/* =================================================================
+   FINANCE NAVIGATION BAR CUSTOMIZATION (Show / Hide Tabs)
+   ================================================================= */
+const ALL_ACC_TABS = [
+  { id: 'overview', name: 'Overview & Balances', icon: '💼', desc: 'Company bank accounts, liquidity, and billing cycle totals' },
+  { id: 'transactions', name: 'Transactions & Ledger', icon: '💳', desc: 'Full transaction registry, deposits, expenses, and filters' },
+  { id: 'loans', name: 'Loans & Liabilities', icon: '🏛️', desc: 'Active loans, installment tracker, director loans on hold' },
+  { id: 'bills', name: 'Recurring Bills', icon: '📅', desc: 'Monthly utility bills, rent, software and commitments' },
+  { id: 'claims', name: 'Staff Claims', icon: '👥', desc: 'Staff reimbursement claims, travel, food, and approvals' },
+  { id: 'founders', name: 'Founder Salaries', icon: '💼', desc: 'Founder partner monthly remuneration & 6-way profit split' },
+  { id: 'reports', name: 'Monthly Ledger & Analytics', icon: '📊', desc: 'Monthly financial metrics, category stats, and AI audit' },
+  { id: 'advisor', name: 'AI Advisor', icon: '🤖', desc: 'Interactive AI financial assistant & chat consultant' },
+  { id: 'audit', name: 'Audit Trail', icon: '📋', desc: 'System finance logs, event audit trail and timeline' }
+];
+
+function getAccTabPrefs(){
+  try {
+    const raw = localStorage.getItem("crm_acc_tab_prefs");
+    if(raw){
+      const parsed = JSON.parse(raw);
+      if(typeof parsed === "object" && parsed !== null) return parsed;
+    }
+  }catch(e){}
+  const def = {};
+  ALL_ACC_TABS.forEach(t => { def[t.id] = true; });
+  return def;
+}
+
+function saveAccTabPrefs(prefs){
+  try {
+    localStorage.setItem("crm_acc_tab_prefs", JSON.stringify(prefs));
+  }catch(e){}
+}
+
+function customizeAccTabsModal(){
+  if(!isSahan()){
+    toast("Only Sahan Madhawa can customize finance navigation tabs.");
+    return;
+  }
+  const prefs = getAccTabPrefs();
+  openModal(`
+  <div class="modal" style="max-width:540px;width:95vw">
+    <header style="padding:14px 20px;border-bottom:1px solid var(--line);background:var(--surface);display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:36px;height:36px;border-radius:10px;background:var(--teal-wash);color:var(--teal-deep);border:1px solid var(--teal);display:grid;place-items:center;font-size:18px">⚙️</div>
+        <div>
+          <h3 style="margin:0;font-size:16px;font-weight:750">Customize Finance Tabs Bar</h3>
+          <div style="font-size:11.5px;color:var(--muted)">Show, hide, and personalize your navigation tabs bar</div>
+        </div>
+      </div>
+      <button class="x" data-close style="font-size:22px">×</button>
+    </header>
+
+    <div class="pad" style="padding:18px 20px">
+      <!-- Quick Presets -->
+      <div style="margin-bottom:14px">
+        <label style="font-size:11.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:8px">Quick Presets</label>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn ghost sm" id="btn-tab-preset-all" style="border:1px solid var(--line-strong);font-size:11.5px;font-weight:600">🌟 Show All Tabs</button>
+          <button class="btn ghost sm" id="btn-tab-preset-daily" style="border:1px solid var(--line-strong);font-size:11.5px;font-weight:600">⚡ Daily Bookkeeping</button>
+          <button class="btn ghost sm" id="btn-tab-preset-exec" style="border:1px solid var(--line-strong);font-size:11.5px;font-weight:600">👔 Founder &amp; Executive</button>
+        </div>
+      </div>
+
+      <!-- Tab Checkboxes List -->
+      <div style="border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface);margin-bottom:18px;max-height:380px;overflow-y:auto">
+        ${ALL_ACC_TABS.map(t => {
+          const isChecked = prefs[t.id] !== false;
+          return `
+          <label style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--line);cursor:pointer;user-select:none;transition:background .15s" onmouseover="this.style.background='var(--surface-2)'" onmouseout="this.style.background=''">
+            <div style="display:flex;align-items:center;gap:10px">
+              <span style="font-size:18px">${t.icon}</span>
+              <div>
+                <b style="font-size:13px;color:var(--ink);display:block">${t.name}</b>
+                <span style="font-size:11px;color:var(--muted)">${t.desc}</span>
+              </div>
+            </div>
+            <input type="checkbox" class="tab-toggle-cb" data-tab-id="${t.id}" ${isChecked ? 'checked' : ''} style="width:18px;height:18px;cursor:pointer;accent-color:var(--teal)" />
+          </label>
+          `;
+        }).join("")}
+      </div>
+
+      <!-- Footer Buttons -->
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+        <button class="btn ghost sm" id="btn-reset-tab-prefs" style="font-size:12px;color:var(--clay)">Reset to Defaults</button>
+        <div style="display:flex;gap:8px">
+          <button class="btn ghost" data-close style="font-size:12px">Cancel</button>
+          <button class="btn primary" id="btn-save-tab-prefs" style="background:var(--teal);border-color:var(--teal);font-size:12px;font-weight:700">Save &amp; Apply</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  `);
+
+  $("#btn-tab-preset-all").onclick = () => {
+    $$(".tab-toggle-cb").forEach(cb => cb.checked = true);
+  };
+  $("#btn-tab-preset-daily").onclick = () => {
+    const daily = ['overview', 'transactions', 'claims', 'reports'];
+    $$(".tab-toggle-cb").forEach(cb => cb.checked = daily.includes(cb.dataset.tabId));
+  };
+  $("#btn-tab-preset-exec").onclick = () => {
+    const exec = ['overview', 'transactions', 'loans', 'founders', 'reports'];
+    $$(".tab-toggle-cb").forEach(cb => cb.checked = exec.includes(cb.dataset.tabId));
+  };
+  $("#btn-reset-tab-prefs").onclick = () => {
+    $$(".tab-toggle-cb").forEach(cb => cb.checked = true);
+  };
+  $("#btn-save-tab-prefs").onclick = () => {
+    const newPrefs = {};
+    let checkedCount = 0;
+    $$(".tab-toggle-cb").forEach(cb => {
+      newPrefs[cb.dataset.tabId] = cb.checked;
+      if(cb.checked) checkedCount++;
+    });
+    if(checkedCount === 0){
+      toast("Please keep at least one tab visible.");
+      return;
+    }
+    saveAccTabPrefs(newPrefs);
+    if(newPrefs[ACCOUNT_TAB] === false){
+      const firstVis = ALL_ACC_TABS.find(t => newPrefs[t.id] !== false);
+      if(firstVis) ACCOUNT_TAB = firstVis.id;
+    }
+    closeModal();
+    toast("✓ Tab bar customized!");
+    renderAccount();
+  };
+}
+
 function renderAccount(){
   if(!DB.accounts) DB.accounts = [];
   if(!DB.transactions) DB.transactions = [];
@@ -4029,10 +4163,99 @@ function renderAccount(){
     ACCOUNT_TAB = 'claims';
   }
 
+  const tabPrefs = isSahanUser ? getAccTabPrefs() : { claims: true, founders: true, overview: true };
+  if(isSahanUser && tabPrefs[ACCOUNT_TAB] === false){
+    const firstVis = ALL_ACC_TABS.find(t => tabPrefs[t.id] !== false);
+    if(firstVis) ACCOUNT_TAB = firstVis.id;
+  }
+
   let h = `
+  <!-- Unified Section Navigation Tabs (Positioned at the very top directly under Profile) -->
+  <div class="acc-top-tabs-wrapper" style="position:sticky;top:0;z-index:20;background:var(--bg);padding:4px 0 10px;margin-bottom:14px;border-bottom:1.5px solid var(--line)">
+    <div class="acc-top-tabs" style="border-bottom:none;margin-bottom:0;padding:2px 0;display:flex;gap:8px;align-items:center;overflow-x:auto">
+  `;
+
+  if(isSahanUser){
+    ALL_ACC_TABS.forEach(t => {
+      if(tabPrefs[t.id] === false) return;
+      let badgeHtml = '';
+      if(t.id === 'overview'){
+        badgeHtml = `<span class="tab-cnt">${DB.accounts.length}</span>`;
+      } else if(t.id === 'transactions'){
+        badgeHtml = `<span class="tab-cnt">${DB.transactions.length}</span>`;
+      } else if(t.id === 'loans'){
+        badgeHtml = `<span class="tab-cnt" style="${unpaidLoans.length?'background:var(--clay);color:#fff':''}">${DB.loans.length}</span>`;
+      } else if(t.id === 'bills'){
+        badgeHtml = `<span class="tab-cnt" style="${unpaidBills.length?'background:var(--amber);color:#fff':''}">${DB.bills.length}</span>`;
+      } else if(t.id === 'claims'){
+        badgeHtml = `<span class="tab-cnt" style="${pendingClaims.length?'background:var(--clay);color:#fff':''}">${pendingClaims.length}</span>`;
+      } else if(t.id === 'founders'){
+        badgeHtml = `<span class="tab-cnt" style="${unpaidFoundersCount ? 'background:var(--amber);color:#fff' : 'background:var(--teal-wash);color:var(--teal-deep)'}">${unpaidFoundersCount ? unpaidFoundersCount + ' Pending' : '6 Settled'}</span>`;
+      } else if(t.id === 'audit'){
+        badgeHtml = `<span class="tab-cnt">${auditCount}</span>`;
+      }
+      
+      const isActive = (t.id === 'transactions' && ['transactions','all','expense','income','sahan'].includes(ACCOUNT_TAB)) || (ACCOUNT_TAB === t.id);
+      h += `
+      <button class="acc-tab-item ${isActive?'active':''}" data-acc-view="${t.id}" title="${esc(t.desc)}">
+        <span class="tab-ico">${t.icon}</span>
+        <span>${t.name}</span>
+        ${badgeHtml}
+      </button>
+      `;
+    });
+
+    h += `
+      <div style="margin-left:auto;display:flex;gap:6px;align-items:center;flex:none">
+        <button class="btn sm" id="btn-customize-acc-tabs" title="Customize and reorder tabs in this bar" style="background:var(--surface);border:1.5px solid var(--teal);color:var(--teal-deep);font-weight:700;font-size:11.5px;padding:6px 12px;border-radius:8px">
+          ⚙️ Customize Bar
+        </button>
+        <button class="btn ghost sm" id="btn-hero-db-setup" title="Database Setup &amp; Cloud Sync (SQL)" style="border:1px solid var(--line-strong);font-size:11.5px;padding:6px 9px">⚡ SQL</button>
+        <button class="btn ghost sm" id="btn-accounts-customizer" title="Customize categories, cycle dates &amp; currency" style="border:1px solid var(--line-strong);font-size:11.5px;padding:6px 9px">⚙️ Settings</button>
+        <button class="btn ghost sm" id="btn-refresh-accounts" title="Refresh data" style="border:1px solid var(--line-strong);font-size:11.5px;padding:6px 9px">↻ Refresh</button>
+      </div>
+    `;
+  } else {
+    h += `
+      <button class="acc-tab-item ${ACCOUNT_TAB==='claims'?'active':''}" data-acc-view="claims">
+        <span class="tab-ico">👥</span>
+        <span>Staff Claims</span>
+        <span class="tab-cnt" style="${pendingClaims.length?'background:var(--clay);color:#fff':''}">${pendingClaims.length}</span>
+      </button>
+      <button class="acc-tab-item ${ACCOUNT_TAB==='founders'?'active':''}" data-acc-view="founders">
+        <span class="tab-ico">💼</span>
+        <span>Founder Salaries</span>
+        <span class="tab-cnt" style="${unpaidFoundersCount ? 'background:var(--amber);color:#fff' : 'background:var(--teal-wash);color:var(--teal-deep)'}">${unpaidFoundersCount ? unpaidFoundersCount + ' Pending' : '6 Settled'}</span>
+      </button>
+      <button class="acc-tab-item ${ACCOUNT_TAB==='overview'?'active':''}" data-acc-view="overview">
+        <span class="tab-ico">🔒</span>
+        <span>Company Overview</span>
+      </button>
+      <div style="margin-left:auto;display:flex;gap:6px;align-items:center;flex:none">
+        <button class="btn ghost sm" id="btn-refresh-accounts" title="Refresh data" style="border:1px solid var(--line-strong);font-size:12px;padding:6px 10px">↻ Refresh</button>
+      </div>
+    `;
+  }
+
+  h += `
+    </div>
+  </div>
+  `;
+
+  let viewTitle = isSahanUser ? 'Accounts, Balances &amp; Expenses' : 'Financial Portal &amp; Reimbursements';
+  if(ACCOUNT_TAB === 'transactions' || ['all','expense','income','sahan'].includes(ACCOUNT_TAB)) viewTitle = 'Transactions &amp; Financial Ledger';
+  else if(ACCOUNT_TAB === 'loans') viewTitle = 'Loans, Liabilities &amp; Director Debt';
+  else if(ACCOUNT_TAB === 'bills') viewTitle = 'Recurring Bills &amp; Subscriptions';
+  else if(ACCOUNT_TAB === 'claims') viewTitle = 'Staff Expense Claims &amp; Reimbursements';
+  else if(ACCOUNT_TAB === 'founders') viewTitle = 'Founder Partner Salaries &amp; Profit Split';
+  else if(ACCOUNT_TAB === 'reports') viewTitle = 'Monthly Ledger &amp; Financial Analytics';
+  else if(ACCOUNT_TAB === 'advisor') viewTitle = 'AI Financial Advisor';
+  else if(ACCOUNT_TAB === 'audit') viewTitle = 'Financial Audit Trail &amp; System Logs';
+
+  h += `
   <div class="view-head" style="margin-bottom:14px;align-items:center">
     <div>
-      <h1 style="margin:0;font-size:22px;font-weight:750;letter-spacing:-.3px">${isSahanUser ? 'Accounts, Balances &amp; Expenses' : 'Financial Portal &amp; Reimbursements'}</h1>
+      <h1 style="margin:0;font-size:21px;font-weight:750;letter-spacing:-.3px">${viewTitle}</h1>
     </div>
     ${isSahanUser ? `
     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
@@ -4057,78 +4280,6 @@ function renderAccount(){
     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
       <button class="btn primary sm" id="btn-portal-add-claim" style="font-weight:650;padding:7px 14px">+ Submit Expense Claim</button>
     </div>`}
-  </div>
-
-  <!-- Unified Section Navigation Tabs -->
-  <div class="acc-top-tabs">
-    ${isSahanUser ? `
-    <button class="acc-tab-item ${ACCOUNT_TAB==='overview'?'active':''}" data-acc-view="overview">
-      <span class="tab-ico">💼</span>
-      <span>Overview &amp; Balances</span>
-      <span class="tab-cnt">${DB.accounts.length}</span>
-    </button>
-    <button class="acc-tab-item ${['transactions','all','expense','income','sahan'].includes(ACCOUNT_TAB)?'active':''}" data-acc-view="transactions">
-      <span class="tab-ico">💳</span>
-      <span>Transactions &amp; Ledger</span>
-      <span class="tab-cnt">${DB.transactions.length}</span>
-    </button>
-    <button class="acc-tab-item ${ACCOUNT_TAB==='loans'?'active':''}" data-acc-view="loans">
-      <span class="tab-ico">🏛️</span>
-      <span>Loans &amp; Liabilities</span>
-      <span class="tab-cnt" style="${unpaidLoans.length?'background:var(--clay);color:#fff':''}">${DB.loans.length}</span>
-    </button>
-    <button class="acc-tab-item ${ACCOUNT_TAB==='bills'?'active':''}" data-acc-view="bills">
-      <span class="tab-ico">📅</span>
-      <span>Recurring Bills</span>
-      <span class="tab-cnt" style="${unpaidBills.length?'background:var(--amber);color:#fff':''}">${DB.bills.length}</span>
-    </button>
-    <button class="acc-tab-item ${ACCOUNT_TAB==='claims'?'active':''}" data-acc-view="claims">
-      <span class="tab-ico">👥</span>
-      <span>Staff Claims</span>
-      <span class="tab-cnt" style="${pendingClaims.length?'background:var(--clay);color:#fff':''}">${pendingClaims.length}</span>
-    </button>
-    <button class="acc-tab-item ${ACCOUNT_TAB==='founders'?'active':''}" data-acc-view="founders">
-      <span class="tab-ico">💼</span>
-      <span>Founder Salaries</span>
-      <span class="tab-cnt" style="${unpaidFoundersCount ? 'background:var(--amber);color:#fff' : 'background:var(--teal-wash);color:var(--teal-deep)'}">${unpaidFoundersCount ? unpaidFoundersCount + ' Pending' : '6 Settled'}</span>
-    </button>
-    <button class="acc-tab-item ${ACCOUNT_TAB==='reports'?'active':''}" data-acc-view="reports">
-      <span class="tab-ico">📊</span>
-      <span>Monthly Ledger &amp; Analytics</span>
-    </button>
-    <button class="acc-tab-item ${ACCOUNT_TAB==='advisor'?'active':''}" data-acc-view="advisor">
-      <span class="tab-ico">🤖</span>
-      <span>AI Advisor</span>
-    </button>
-    <button class="acc-tab-item ${ACCOUNT_TAB==='audit'?'active':''}" data-acc-view="audit">
-      <span class="tab-ico">📋</span>
-      <span>Audit Trail</span>
-      <span class="tab-cnt">${auditCount}</span>
-    </button>
-    <div style="margin-left:auto;display:flex;gap:6px;align-items:center;flex:none">
-      <button class="btn ghost sm" id="btn-hero-db-setup" title="Database Setup &amp; Cloud Sync (SQL)" style="border:1px solid var(--line-strong);font-size:12px;padding:6px 10px">⚡ SQL Setup</button>
-      <button class="btn ghost sm" id="btn-accounts-customizer" title="Customize categories, cycle dates & currency" style="border:1px solid var(--line-strong);font-size:12px;padding:6px 10px">⚙️ Settings</button>
-      <button class="btn ghost sm" id="btn-refresh-accounts" title="Refresh data" style="border:1px solid var(--line-strong);font-size:12px;padding:6px 10px">↻ Refresh</button>
-    </div>
-    ` : `
-    <button class="acc-tab-item ${ACCOUNT_TAB==='claims'?'active':''}" data-acc-view="claims">
-      <span class="tab-ico">👥</span>
-      <span>Staff Claims</span>
-      <span class="tab-cnt" style="${pendingClaims.length?'background:var(--clay);color:#fff':''}">${pendingClaims.length}</span>
-    </button>
-    <button class="acc-tab-item ${ACCOUNT_TAB==='founders'?'active':''}" data-acc-view="founders">
-      <span class="tab-ico">💼</span>
-      <span>Founder Salaries</span>
-      <span class="tab-cnt" style="${unpaidFoundersCount ? 'background:var(--amber);color:#fff' : 'background:var(--teal-wash);color:var(--teal-deep)'}">${unpaidFoundersCount ? unpaidFoundersCount + ' Pending' : '6 Settled'}</span>
-    </button>
-    <button class="acc-tab-item ${ACCOUNT_TAB==='overview'?'active':''}" data-acc-view="overview">
-      <span class="tab-ico">🔒</span>
-      <span>Company Overview</span>
-    </button>
-    <div style="margin-left:auto;display:flex;gap:6px;align-items:center;flex:none">
-      <button class="btn ghost sm" id="btn-refresh-accounts" title="Refresh data" style="border:1px solid var(--line-strong);font-size:12px;padding:6px 10px">↻ Refresh</button>
-    </div>
-    `}
   </div>
   `;
 
@@ -4208,48 +4359,7 @@ function renderAccount(){
       `;
     } else {
       // Full Sahan Executive Overview
-      if(totalPendingCommitments > 0 || overdueLoans.length > 0){
-        h += `
-        <div class="debt-banner ${overdueLoans.length ? 'has-overdue' : 'has-due'}" style="animation:rise .2s ease both">
-          <div style="display:flex;align-items:center;gap:14px">
-            <div style="width:44px;height:44px;border-radius:50%;background:${overdueLoans.length ? 'var(--clay-wash)' : 'var(--amber-wash)'};color:${overdueLoans.length ? 'var(--clay)' : 'var(--amber)'};display:grid;place-items:center;font-size:22px;flex:none">
-              ${overdueLoans.length ? '🚨' : '🏛️'}
-            </div>
-            <div>
-              <div style="font-weight:750;color:${overdueLoans.length ? 'var(--clay)' : 'var(--amber)'};font-size:14.5px;letter-spacing:-.2px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-                <span>Monthly Commitments &amp; Payables Reminder</span>
-                <span class="pill" style="background:${overdueLoans.length ? 'var(--clay)' : 'var(--amber)'};color:#fff;font-size:11px">26th–25th Cycle</span>
-              </div>
-              <div style="font-size:13px;color:var(--ink);margin-top:3px">
-                ${overdueLoans.length > 0 ? `<b style="color:var(--clay)">🔴 ${overdueLoans.length} Loan Installment(s) Overdue!</b> ` : ''}
-                ${unpaidLoans.length > 0 ? `Unpaid Loans: <b>${unpaidLoans.length} (${fmtMoney(unpaidInstallmentsTotal)})</b>` : ''}
-                ${unpaidLoans.length > 0 && unpaidBills.length > 0 ? ' · ' : ''}
-                ${unpaidBills.length > 0 ? `Recurring Bills: <b>${unpaidBills.length} (${fmtMoney(unpaidBillsTotal)})</b>` : ''}
-                ${(unpaidLoans.length > 0 || unpaidBills.length > 0) && pendingClaims.length > 0 ? ' · ' : ''}
-                ${pendingClaims.length > 0 ? `Staff Claims: <b>${pendingClaims.length} (${fmtMoney(pendingClaimsTotal)})</b>` : ''}
-                · Due before <b>25th cycle close</b>.
-              </div>
-              <div style="font-size:11.5px;color:var(--muted);margin-top:2px">
-                Total Outstanding Debt: <b style="color:var(--clay);font-family:var(--mono)">${fmtMoney(totalLoansRemaining)}</b>
-                ${directorLoans.length > 0 ? ` (Includes ${directorLoans.length} Director loan(s) on hold)` : ''} · 
-                Required in Current Cycle: <b style="color:var(--teal-deep);font-family:var(--mono)">${fmtMoney(totalPendingCommitments)}</b>
-              </div>
-            </div>
-          </div>
-          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-            <button class="btn sm" id="btn-open-debt-center" style="background:${overdueLoans.length ? 'var(--clay)' : 'var(--amber)'};color:#fff;border:0;font-weight:700;padding:7px 14px">
-              🔔 Reminders Center
-            </button>
-            <button class="btn ghost sm" id="btn-quick-copy-schedule" title="Copy debt schedule" style="border:1px solid var(--line-strong)">
-              📋 Schedule Copy
-            </button>
-            ${unpaidLoans.length > 0 ? `<button class="btn ghost sm" id="btn-view-loans-tab" style="border:1px solid var(--line-strong)">🏛️ Loans (${unpaidLoans.length})</button>` : ''}
-            ${unpaidBills.length > 0 ? `<button class="btn ghost sm" id="btn-view-bills-tab" style="border:1px solid var(--line-strong)">📅 Bills (${unpaidBills.length})</button>` : ''}
-            ${pendingClaims.length > 0 ? `<button class="btn ghost sm" id="btn-view-claims-tab" style="border:1px solid var(--line-strong)">👥 Staff Claims (${pendingClaims.length})</button>` : ''}
-          </div>
-        </div>`;
-      }
-
+      // (Payables & Debt Reminders banner removed from body — accessed via top header small notify button)
     h += `
     <!-- Billing Cycle Card -->
     <div class="cycle-card">
@@ -5974,7 +6084,7 @@ function expenseForm(defaultAccId){
   }
   const defaultAcc = defaultAccId || (DB.accounts[0]?.id || "acc1");
   const nowDt = new Date(Date.now() - new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
-  openModal(`<div class="modal"><header><h3>Log expense</h3><button class="x" data-close>×</button></header>
+  openModal(`<div class="modal" autocomplete="off" data-lpignore="true"><header><h3>Log expense</h3><button class="x" data-close>×</button></header>
   <div class="pad">
     <div class="grid2">
       <div class="field"><label>Amount (Rs.)</label><input id="ex-amount" class="num" type="number" placeholder="e.g. 15000" autofocus></div>
@@ -6045,7 +6155,7 @@ function incomeForm(defaultAccId){
   }
   const defaultAcc = defaultAccId || (DB.accounts[0]?.id || "acc1");
   const nowDt = new Date(Date.now() - new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
-  openModal(`<div class="modal"><header><h3>Record client payment / income</h3><button class="x" data-close>×</button></header>
+  openModal(`<div class="modal" autocomplete="off" data-lpignore="true"><header><h3>Record client payment / income</h3><button class="x" data-close>×</button></header>
   <div class="pad">
     <div class="grid2">
       <div class="field"><label>Amount received (Rs.)</label><input id="in-amount" class="num" type="number" placeholder="e.g. 75000" autofocus></div>
@@ -8574,6 +8684,8 @@ function openAuthModal(opts = {}){
 
 function closeAuthModal(){
   if(AUTH_IS_FORCED) return;
+  const pinInput = $("#auth-pin-input");
+  if(pinInput){ pinInput.value = ""; }
   const overlay = $("#auth-overlay");
   if(overlay) overlay.style.display = "none";
   document.body.classList.remove("auth-locked");
@@ -8708,6 +8820,8 @@ function submitAuth(){
     document.body.classList.remove("auth-locked");
     const overlay = $("#auth-overlay");
     if(overlay) overlay.style.display = "none";
+    const pinInput = $("#auth-pin-input");
+    if(pinInput){ pinInput.value = ""; }
     DB.currentUserId = selUser.id;
     syncHRUserSession();
     buildMe();
@@ -8803,6 +8917,7 @@ $("#content").addEventListener("click",e=>{
   const refreshAccountsBtn=e.target.closest("#btn-refresh-accounts");
   const accViewBtn=e.target.closest("[data-acc-view]");
   const importLedgerBtn=e.target.closest("#btn-hero-import-ledger") || e.target.closest("#btn-monthly-import-ledger") || e.target.closest("#btn-tx-import-ledger");
+  const customizeTabsBtn=e.target.closest("#btn-customize-acc-tabs");
 
   if(topbarDebt || badgeDebt || openDebtCenter){ loanRemindersModal(); }
   else if(quickCopySched){ copyDebtScheduleSummary(); }
@@ -8935,6 +9050,9 @@ $("#content").addEventListener("click",e=>{
   }
   else if(importLedgerBtn){
     historicalLedgerImporterModal();
+  }
+  else if(customizeTabsBtn){
+    customizeAccTabsModal();
   }
   else if(payFounderBtn){
     disburseFounderSalaryModal(payFounderBtn.dataset.payFounder);
@@ -9261,21 +9379,33 @@ function refreshBadges(){
     }
   });
 
+  const totalDueAmount = unpaidBills.reduce((s, b) => s + (Number(b.amount)||0), 0) +
+    unpaidLoans.reduce((s, i) => s + (Number(i.loan.monthlyInstallment)||0), 0) +
+    pendingClaims.reduce((s, c) => s + (Number(c.amount)||0), 0);
+
   const topDebtPill = $("#topbar-debt-pill");
   const topDebtTxt = $("#topbar-debt-txt");
   if(topDebtPill && topDebtTxt){
     if(totalCommitmentsDue > 0){
       topDebtPill.style.display = "inline-flex";
+      topDebtPill.style.borderRadius = "20px";
+      topDebtPill.style.padding = "4px 12px";
+      topDebtPill.style.fontWeight = "700";
+      topDebtPill.style.fontSize = "12px";
+      topDebtPill.style.border = "1.5px solid";
+      topDebtPill.style.boxShadow = "0 1px 4px rgba(0,0,0,0.06)";
       if(overdueLoans.length > 0){
         topDebtPill.style.background = "var(--clay-wash)";
         topDebtPill.style.borderColor = "var(--clay)";
         topDebtPill.style.color = "var(--clay)";
-        topDebtTxt.textContent = `🚨 ${overdueLoans.length} Overdue Loan(s)! (${totalCommitmentsDue} commitments due)`;
+        topDebtTxt.textContent = `🚨 ${overdueLoans.length} Overdue (${totalCommitmentsDue} Due)`;
+        topDebtPill.title = `Alert: ${overdueLoans.length} Overdue Loan(s)! Click to open Reminders Center`;
       } else {
         topDebtPill.style.background = "var(--amber-wash)";
         topDebtPill.style.borderColor = "var(--amber)";
-        topDebtPill.style.color = "var(--amber)";
-        topDebtTxt.textContent = `⚠️ Due Commitments (${unpaidLoans.length} Loans · ${unpaidBills.length} Bills · ${pendingClaims.length} Staff Claims)`;
+        topDebtPill.style.color = "#8b5800";
+        topDebtTxt.textContent = `🔔 ${totalCommitmentsDue} Payables Due (${fmtMoney(totalDueAmount)})`;
+        topDebtPill.title = `Monthly Commitments: ${unpaidLoans.length} Loans, ${unpaidBills.length} Bills, ${pendingClaims.length} Staff Claims. Click to open Reminders Center`;
       }
     } else {
       topDebtPill.style.display = "none";
