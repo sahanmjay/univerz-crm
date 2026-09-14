@@ -5475,9 +5475,9 @@ function renderAccount(){
               <td data-label="Amount" style="text-align:right">
                 <span class="tx-amt ${amtCls}">${amtSign}${fmtMoney(t.amount)}</span>
               </td>
-              <td style="text-align:right">
+              <td style="text-align:right;white-space:nowrap">
                 ${isSahanUser 
-                  ? `<button class="btn ghost sm" data-del-tx="${t.id}" title="Delete transaction and reverse balance" style="color:var(--clay);font-weight:700">×</button>` 
+                  ? `<button class="btn ghost sm" data-edit-tx="${t.id}" title="Edit transaction details and balance" style="color:var(--teal-deep);border:1px solid var(--line);padding:3px 8px;font-size:11.5px;font-weight:650;margin-right:4px;border-radius:6px;background:var(--surface);cursor:pointer">✎ Edit</button><button class="btn ghost sm" data-del-tx="${t.id}" title="Delete transaction and reverse balance" style="color:var(--clay);font-weight:700;padding:3px 7px;font-size:13px;border-radius:6px;cursor:pointer">×</button>` 
                   : `<span title="Protected" style="color:var(--muted);font-size:11px">🔒</span>`}
               </td>
             </tr>`;
@@ -5659,10 +5659,10 @@ function renderAccount(){
           <td data-label="Amount" style="text-align:right">
             <span class="tx-amt ${amtCls}">${amtSign}${fmtMoney(t.amount)}</span>
           </td>
-          <td style="text-align:right">
+          <td style="text-align:right;white-space:nowrap">
             ${isSahanUser 
-              ? `<button class="btn ghost sm" data-del-tx="${t.id}" title="Delete transaction and reverse balance" style="color:var(--clay);font-weight:700">×</button>` 
-              : `<span title="Only Sahan can delete entries" style="color:var(--muted);font-size:11px">🔒</span>`}
+              ? `<button class="btn ghost sm" data-edit-tx="${t.id}" title="Edit transaction details and balance" style="color:var(--teal-deep);border:1px solid var(--line);padding:3px 8px;font-size:11.5px;font-weight:650;margin-right:4px;border-radius:6px;background:var(--surface);cursor:pointer">✎ Edit</button><button class="btn ghost sm" data-del-tx="${t.id}" title="Delete transaction and reverse balance" style="color:var(--clay);font-weight:700;padding:3px 7px;font-size:13px;border-radius:6px;cursor:pointer">×</button>` 
+              : `<span title="Only Sahan can manage entries" style="color:var(--muted);font-size:11px">🔒</span>`}
           </td>
         </tr>`;
       });
@@ -6287,6 +6287,261 @@ function transferForm(){
 
     closeModal();
     toast(`Transfer completed — ${fmtMoney(amount)}`);
+    draw();
+  };
+}
+
+/* =================================================================
+   TRANSACTION EDIT & DELETE WORKFLOWS (Sahan only)
+   ================================================================= */
+function deleteTransaction(txId){
+  if(!isSahan()){
+    toast("Security restriction: Only Sahan Madhawa can delete transactions.");
+    return;
+  }
+  const tx = DB.transactions.find(t => t.id === txId);
+  if(!tx) return;
+  if(confirm(`Delete this ${tx.type} of ${fmtMoney(tx.amount)} (${tx.description})? Account balance will be restored.`)){
+    if(tx.type === "expense"){
+      const a = DB.accounts.find(x => x.id === tx.accountId);
+      if(a) { a.balance += Number(tx.amount); sbWrite(sb.from('finance_account').update({balance:a.balance}).eq('id',a.id)); }
+    } else if(tx.type === "income"){
+      const a = DB.accounts.find(x => x.id === tx.accountId);
+      if(a) { a.balance -= Number(tx.amount); sbWrite(sb.from('finance_account').update({balance:a.balance}).eq('id',a.id)); }
+    } else if(tx.type === "transfer"){
+      const fromA = DB.accounts.find(x => x.id === tx.accountId);
+      const toA = DB.accounts.find(x => x.id === tx.toAccountId);
+      if(fromA) { fromA.balance += Number(tx.amount); sbWrite(sb.from('finance_account').update({balance:fromA.balance}).eq('id',fromA.id)); }
+      if(toA) { toA.balance -= Number(tx.amount); sbWrite(sb.from('finance_account').update({balance:toA.balance}).eq('id',toA.id)); }
+    }
+    logFinanceAction("Deleted Transaction", `Reversed ${tx.type} of ${fmtMoney(tx.amount)}: ${tx.description}`, 0);
+    DB.transactions = DB.transactions.filter(t => t.id !== txId);
+    cacheLocal(DB);
+    sbWrite(sb.from('finance_transaction').delete().eq('id', txId));
+    toast("Transaction deleted & balance restored");
+    draw();
+  }
+}
+
+function editTransactionModal(txId){
+  if(!isSahan()){
+    toast("Accounts restricted: Only Sahan Madhawa can edit company transactions.");
+    return;
+  }
+  const tx = DB.transactions.find(t => t.id === txId);
+  if(!tx){
+    toast("Transaction not found.");
+    return;
+  }
+
+  const txDate = new Date(parseTxAt(tx.at) - new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
+  const curType = tx.type || "expense";
+  const curCat = tx.category || "other";
+  const curAccId = tx.accountId || DB.accounts[0]?.id || "";
+  const curToAccId = tx.toAccountId || "";
+  const curContactId = tx.contactId || "";
+  const curUserId = tx.userId || DB.currentUserId;
+
+  openModal(`
+  <div class="modal" autocomplete="off" data-lpignore="true" style="max-width:580px;width:95vw">
+    <header style="padding:14px 20px;border-bottom:1px solid var(--line);background:var(--surface);display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:36px;height:36px;border-radius:10px;background:var(--teal-wash);color:var(--teal-deep);border:1px solid var(--teal);display:grid;place-items:center;font-size:18px">✎</div>
+        <div>
+          <h3 style="margin:0;font-size:16px;font-weight:750">Edit Transaction</h3>
+          <div style="font-size:11.5px;color:var(--muted)">Modify details, reallocate account, or adjust transaction amount</div>
+        </div>
+      </div>
+      <button class="x" data-close style="font-size:22px">×</button>
+    </header>
+
+    <div class="pad" style="padding:18px 20px">
+      <div class="grid2" style="margin-bottom:12px">
+        <div class="field" style="margin-bottom:0">
+          <label style="font-size:11.5px">Transaction Type</label>
+          <select id="edtx-type" style="font-size:12.5px;font-weight:600">
+            <option value="expense" ${curType==='expense'?'selected':''}>Expense (Outflow -)</option>
+            <option value="income" ${curType==='income'?'selected':''}>Income (Deposit +)</option>
+            <option value="transfer" ${curType==='transfer'?'selected':''}>Account Transfer (⇄)</option>
+          </select>
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <label style="font-size:11.5px">Amount (Rs.)</label>
+          <input id="edtx-amount" type="number" step="any" min="0" value="${tx.amount || 0}" style="font-size:13px;font-weight:700;font-family:var(--mono)" />
+        </div>
+      </div>
+
+      <div class="grid2" style="margin-bottom:12px">
+        <div class="field" style="margin-bottom:0">
+          <label style="font-size:11.5px" id="edtx-acc-label">${curType==='transfer'?'From Account':'Account'}</label>
+          <select id="edtx-account" style="font-size:12px">
+            ${DB.accounts.map(a => `<option value="${a.id}" ${a.id===curAccId?'selected':''}>${esc(a.name)} (${fmtMoney(a.balance)})</option>`).join("")}
+          </select>
+        </div>
+        <div class="field" id="edtx-to-acc-wrap" style="margin-bottom:0;display:${curType==='transfer'?'block':'none'}">
+          <label style="font-size:11.5px">To Account</label>
+          <select id="edtx-to-account" style="font-size:12px">
+            ${DB.accounts.map(a => `<option value="${a.id}" ${a.id===curToAccId?'selected':''}>${esc(a.name)} (${fmtMoney(a.balance)})</option>`).join("")}
+          </select>
+        </div>
+        <div class="field" id="edtx-cat-wrap" style="margin-bottom:0;display:${curType==='transfer'?'none':'block'}">
+          <label style="font-size:11.5px">Category</label>
+          <select id="edtx-category" style="font-size:12px">
+            <!-- Dynamically populated -->
+          </select>
+        </div>
+      </div>
+
+      <div class="field" style="margin-bottom:12px">
+        <label style="font-size:11.5px">Description / Details</label>
+        <input id="edtx-desc" value="${esc(tx.description || '')}" placeholder="e.g. SLT broadband bill, Sony camera rental" style="font-size:12.5px" />
+      </div>
+
+      <div class="grid2" style="margin-bottom:12px">
+        <div class="field" style="margin-bottom:0">
+          <label style="font-size:11.5px">Receipt / Reference #</label>
+          <input id="edtx-ref" value="${esc(tx.receiptRef || '')}" placeholder="INV-001 / EXP-002" style="font-size:12px;font-family:var(--mono)" />
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <label style="font-size:11.5px">Linked Client (Optional)</label>
+          <select id="edtx-contact" style="font-size:12px">
+            <option value="">— None (General internal) —</option>
+            ${DB.contacts.map(c => `<option value="${c.id}" ${c.id===curContactId?'selected':''}>${esc(c.name)} (${esc(c.company||'Individual')})</option>`).join("")}
+          </select>
+        </div>
+      </div>
+
+      <div class="grid2" style="margin-bottom:16px">
+        <div class="field" style="margin-bottom:0">
+          <label style="font-size:11.5px">Logged by</label>
+          <select id="edtx-user" style="font-size:12px">
+            ${DB.users.map(u => `<option value="${u.id}" ${u.id===curUserId?'selected':''}>${esc(u.name)}</option>`).join("")}
+          </select>
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <label style="font-size:11.5px">Date &amp; Time</label>
+          <input id="edtx-at" type="datetime-local" value="${txDate}" style="font-size:12px" />
+        </div>
+      </div>
+
+      <div style="background:var(--amber-wash);border:1px solid var(--amber);border-radius:8px;padding:10px 12px;font-size:11.5px;color:#8b5800;display:flex;gap:8px;align-items:flex-start">
+        <span>💡</span>
+        <span><b>Auto-Balance Adjustment:</b> Updating this transaction will automatically recalculate and balance your bank/cash account records accurately.</span>
+      </div>
+    </div>
+
+    <footer style="padding:14px 20px;border-top:1px solid var(--line);background:var(--surface);display:flex;align-items:center;justify-content:space-between">
+      <button class="btn ghost sm" id="edtx-btn-delete" style="color:var(--clay);font-weight:650">🗑️ Delete</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn ghost sm" data-close>Cancel</button>
+        <button class="btn primary sm" id="edtx-btn-save" style="background:var(--teal);border-color:var(--teal);color:#fff;font-weight:700">✓ Save Changes</button>
+      </div>
+    </footer>
+  </div>
+  `);
+
+  const typeEl = $("#edtx-type");
+  const catEl = $("#edtx-category");
+  const toAccWrap = $("#edtx-to-acc-wrap");
+  const catWrap = $("#edtx-cat-wrap");
+  const accLabel = $("#edtx-acc-label");
+
+  function refreshCategoryOptions(){
+    const tVal = typeEl.value;
+    if(tVal === 'transfer'){
+      toAccWrap.style.display = 'block';
+      catWrap.style.display = 'none';
+      accLabel.textContent = 'From Account';
+    } else {
+      toAccWrap.style.display = 'none';
+      catWrap.style.display = 'block';
+      accLabel.textContent = 'Account';
+      const list = tVal === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
+      catEl.innerHTML = list.map(c => `<option value="${c.id}" ${c.id===curCat?'selected':''}>${c.label}</option>`).join("");
+      if(!list.some(c => c.id === curCat) && curCat){
+        catEl.innerHTML = `<option value="${esc(curCat)}" selected>${esc(curCat)}</option>` + catEl.innerHTML;
+      }
+    }
+  }
+  refreshCategoryOptions();
+  typeEl.onchange = refreshCategoryOptions;
+
+  $("#edtx-btn-delete").onclick = () => {
+    closeModal();
+    deleteTransaction(txId);
+  };
+
+  $("#edtx-btn-save").onclick = () => {
+    const newAmount = Number($("#edtx-amount").value);
+    if(isNaN(newAmount) || newAmount <= 0){
+      toast("Please enter a valid amount greater than 0.");
+      $("#edtx-amount").focus();
+      return;
+    }
+    const newType = typeEl.value;
+    const newAccId = $("#edtx-account").value;
+    const newToAccId = newType === 'transfer' ? $("#edtx-to-account").value : null;
+    if(newType === 'transfer' && newAccId === newToAccId){
+      toast("From and To accounts must be different.");
+      return;
+    }
+    const newCategory = newType === 'transfer' ? 'transfer' : catEl.value;
+    const newDesc = $("#edtx-desc").value.trim() || (newType === 'income' ? 'Client Income' : 'Company Expense');
+    const newRef = $("#edtx-ref").value.trim();
+    const newContactId = $("#edtx-contact").value || null;
+    const newUserId = $("#edtx-user").value || DB.currentUserId;
+    const newAt = $("#edtx-at").value ? new Date($("#edtx-at").value).getTime() : tx.at;
+
+    // 1. REVERSE old transaction effect on account balances
+    if(tx.type === "expense"){
+      const oldA = DB.accounts.find(x => x.id === tx.accountId);
+      if(oldA) oldA.balance += Number(tx.amount);
+    } else if(tx.type === "income"){
+      const oldA = DB.accounts.find(x => x.id === tx.accountId);
+      if(oldA) oldA.balance -= Number(tx.amount);
+    } else if(tx.type === "transfer"){
+      const oldFrom = DB.accounts.find(x => x.id === tx.accountId);
+      const oldTo = DB.accounts.find(x => x.id === tx.toAccountId);
+      if(oldFrom) oldFrom.balance += Number(tx.amount);
+      if(oldTo) oldTo.balance -= Number(tx.amount);
+    }
+
+    // 2. APPLY new transaction effect on account balances
+    if(newType === "expense"){
+      const newA = DB.accounts.find(x => x.id === newAccId);
+      if(newA) newA.balance -= newAmount;
+    } else if(newType === "income"){
+      const newA = DB.accounts.find(x => x.id === newAccId);
+      if(newA) newA.balance += newAmount;
+    } else if(newType === "transfer"){
+      const newFrom = DB.accounts.find(x => x.id === newAccId);
+      const newTo = DB.accounts.find(x => x.id === newToAccId);
+      if(newFrom) newFrom.balance -= newAmount;
+      if(newTo) newTo.balance += newAmount;
+    }
+
+    // 3. Update transaction record
+    tx.type = newType;
+    tx.amount = newAmount;
+    tx.accountId = newAccId;
+    tx.toAccountId = newToAccId;
+    tx.category = newCategory;
+    tx.description = newDesc;
+    tx.receiptRef = newRef;
+    tx.contactId = newContactId;
+    tx.userId = newUserId;
+    tx.at = newAt;
+
+    // 4. Persist to Supabase
+    sbWrite(sb.from('finance_transaction').upsert(objToSnake(tx)));
+    DB.accounts.forEach(a => {
+      sbWrite(sb.from('finance_account').update({ balance: a.balance }).eq('id', a.id));
+    });
+
+    logFinanceAction("Edited Transaction", `Updated ${newType} of ${fmtMoney(newAmount)}: ${newDesc}`, 0);
+    cacheLocal(DB);
+    closeModal();
+    toast("✓ Transaction updated successfully!");
     draw();
   };
 }
@@ -8856,6 +9111,7 @@ $("#content").addEventListener("click",e=>{
   const inAcc=e.target.closest("[data-in-acc]");
   const outAcc=e.target.closest("[data-out-acc]");
   const editAcc=e.target.closest("[data-edit-acc]");
+  const editTx=e.target.closest("[data-edit-tx]");
   const delTx=e.target.closest("[data-del-tx]");
   const ftab=e.target.closest("[data-ftab]");
   const quickSahan=e.target.closest("#btn-quick-sahan");
@@ -8983,30 +9239,11 @@ $("#content").addEventListener("click",e=>{
   else if(reimburseClaimBtn){ reimburseClaimModal(reimburseClaimBtn.dataset.reimburseClaim); }
   else if(editClaim){ claimForm(DB.claims.find(c=>c.id===editClaim.dataset.editClaim)); }
   else if(delClaim){ deleteClaim(delClaim.dataset.delClaim); }
+  else if(editTx){
+    editTransactionModal(editTx.dataset.editTx);
+  }
   else if(delTx){
-    if(!isSahan()){ toast("Security restriction: Only Sahan Madhawa can delete transactions."); return; }
-    const txId = delTx.dataset.delTx;
-    const tx = DB.transactions.find(t=>t.id===txId);
-    if(tx && confirm(`Delete this ${tx.type} of ${fmtMoney(tx.amount)}? Account balance will be restored.`)){
-      if(tx.type === "expense"){
-        const a = DB.accounts.find(x=>x.id===tx.accountId);
-        if(a) { a.balance += Number(tx.amount); sbWrite(sb.from('finance_account').update({balance:a.balance}).eq('id',a.id)); }
-      } else if(tx.type === "income"){
-        const a = DB.accounts.find(x=>x.id===tx.accountId);
-        if(a) { a.balance -= Number(tx.amount); sbWrite(sb.from('finance_account').update({balance:a.balance}).eq('id',a.id)); }
-      } else if(tx.type === "transfer"){
-        const fromA = DB.accounts.find(x=>x.id===tx.accountId);
-        const toA = DB.accounts.find(x=>x.id===tx.toAccountId);
-        if(fromA) { fromA.balance += Number(tx.amount); sbWrite(sb.from('finance_account').update({balance:fromA.balance}).eq('id',fromA.id)); }
-        if(toA) { toA.balance -= Number(tx.amount); sbWrite(sb.from('finance_account').update({balance:toA.balance}).eq('id',toA.id)); }
-      }
-      logFinanceAction("Deleted Transaction", `Reversed ${tx.type} of ${fmtMoney(tx.amount)}: ${tx.description}`, 0);
-      DB.transactions = DB.transactions.filter(t=>t.id!==txId);
-      cacheLocal(DB);
-      sbWrite(sb.from('finance_transaction').delete().eq('id',txId));
-      toast("Transaction deleted");
-      draw();
-    }
+    deleteTransaction(delTx.dataset.delTx);
   }
   else if(ftab){
     ACCOUNT_TAB = ftab.dataset.ftab;
