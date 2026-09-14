@@ -705,17 +705,17 @@ export const TaskProvider = ({ children }) => {
     const currentTask = tasks.find(t => t.id === taskId);
     if (!currentTask) return;
 
-    // Workflow:
-    // If 'todo' -> member submits task for HR review ('review')
-    // If 'review' -> member cancels/returns task to 'todo'
-    // If 'done' -> toggle back to 'todo'
-    let nextStatus = 'review';
-    if (currentTask.status === 'review') {
-      nextStatus = 'todo';
-    } else if (currentTask.status === 'done') {
-      nextStatus = 'todo';
+    let nextStatus = 'done';
+
+    if (isAdmin) {
+      // HR/Admin: Clicking checkbox directly toggles task between 'done' and 'todo'
+      nextStatus = currentTask.status === 'done' ? 'todo' : 'done';
     } else {
-      nextStatus = 'review';
+      // Non-admin Team Member:
+      // If 'todo' -> member submits task for HR review ('review')
+      // If 'review' -> member cancels/returns task to 'todo'
+      if (currentTask.status === 'done') return;
+      nextStatus = currentTask.status === 'review' ? 'todo' : 'review';
     }
 
     const isDone = nextStatus === 'done';
@@ -731,7 +731,7 @@ export const TaskProvider = ({ children }) => {
       task_month: taskMonth
     };
 
-    if (nextStatus === 'review' || nextStatus === 'done') {
+    if (isDone || nextStatus === 'review') {
       triggerConfetti();
     }
 
@@ -752,12 +752,14 @@ export const TaskProvider = ({ children }) => {
       if (error) {
         console.error('Error updating task in Supabase:', error);
         setTasks(prev => prev.map(t => (t.id === taskId ? currentTask : t)));
+        alert('Database error updating task: ' + error.message);
       }
     } catch (err) {
       console.error('Task update exception:', err);
       setTasks(prev => prev.map(t => (t.id === taskId ? currentTask : t)));
+      alert('Exception updating task: ' + err.message);
     }
-  }, [tasks, triggerConfetti]);
+  }, [tasks, isAdmin, triggerConfetti]);
 
   const createTask = useCallback(async (taskData) => {
     const currentMonthKey = getCurrentMonthKey();

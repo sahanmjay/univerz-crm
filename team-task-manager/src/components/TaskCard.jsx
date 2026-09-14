@@ -121,6 +121,13 @@ export default function TaskCard({ task }) {
             type="button"
             onClick={handleCheckboxClick}
             aria-label={isCompleted ? 'Mark task as incomplete' : 'Mark task as complete'}
+            title={
+              isCompleted
+                ? 'Completed (Click to reopen task)'
+                : isPendingApproval
+                ? (isHRorAdmin ? 'In Review (Click to Approve & Complete)' : 'Pending HR Approval (Click to cancel submission)')
+                : (isHRorAdmin ? 'Click to Complete & Approve task' : 'Click to Complete & Submit for HR Approval')
+            }
             className={`mt-0.5 w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 transition-all duration-200 border cursor-pointer ${
               isCompleted
                 ? 'bg-emerald-500 border-emerald-400 text-slate-950 shadow-md shadow-emerald-500/20 scale-105'
