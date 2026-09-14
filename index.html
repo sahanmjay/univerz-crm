@@ -1743,6 +1743,14 @@ function parseTxAt(val){
   return isNaN(parsed) ? Date.now() : parsed;
 }
 
+/* ---- Safe local datetime string for <input type="datetime-local"> ---- */
+function toLocalDatetimeStr(ts){
+  const d = new Date(typeof ts === 'number' ? ts : parseTxAt(ts));
+  if(isNaN(d.getTime())) return '';
+  const pad = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 /* =================================================================
    STORE  — in-memory DB, persisted to Supabase (with localStorage cache)
    ================================================================= */
@@ -6083,7 +6091,7 @@ function expenseForm(defaultAccId){
     return;
   }
   const defaultAcc = defaultAccId || (DB.accounts[0]?.id || "acc1");
-  const nowDt = new Date(Date.now() - new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
+  const nowDt = toLocalDatetimeStr(Date.now());
   openModal(`<div class="modal" autocomplete="off" data-lpignore="true"><header><h3>Log expense</h3><button class="x" data-close>×</button></header>
   <div class="pad">
     <div class="grid2">
@@ -6154,7 +6162,7 @@ function incomeForm(defaultAccId){
     return;
   }
   const defaultAcc = defaultAccId || (DB.accounts[0]?.id || "acc1");
-  const nowDt = new Date(Date.now() - new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
+  const nowDt = toLocalDatetimeStr(Date.now());
   openModal(`<div class="modal" autocomplete="off" data-lpignore="true"><header><h3>Record client payment / income</h3><button class="x" data-close>×</button></header>
   <div class="pad">
     <div class="grid2">
@@ -6224,7 +6232,7 @@ function transferForm(){
     toast("Accounts restricted: Only Sahan Madhawa can transfer company funds.");
     return;
   }
-  const nowDt = new Date(Date.now() - new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
+  const nowDt = toLocalDatetimeStr(Date.now());
   openModal(`<div class="modal"><header><h3>Transfer funds between accounts</h3><button class="x" data-close>×</button></header>
   <div class="pad">
     <div class="grid2">
@@ -6334,7 +6342,8 @@ function editTransactionModal(txId){
     return;
   }
 
-  const txDate = new Date(parseTxAt(tx.at) - new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
+  const origAt = parseTxAt(tx.at);
+  const txDate = toLocalDatetimeStr(origAt);
   const curType = tx.type || "expense";
   const curCat = tx.category || "other";
   const curAccId = tx.accountId || DB.accounts[0]?.id || "";
@@ -6466,6 +6475,11 @@ function editTransactionModal(txId){
   refreshCategoryOptions();
   typeEl.onchange = refreshCategoryOptions;
 
+  // Track whether user actually touched the date input
+  let dateInputTouched = false;
+  $("#edtx-at").addEventListener('input', () => { dateInputTouched = true; });
+  $("#edtx-at").addEventListener('change', () => { dateInputTouched = true; });
+
   $("#edtx-btn-delete").onclick = () => {
     closeModal();
     deleteTransaction(txId);
@@ -6490,34 +6504,47 @@ function editTransactionModal(txId){
     const newRef = $("#edtx-ref").value.trim();
     const newContactId = $("#edtx-contact").value || null;
     const newUserId = $("#edtx-user").value || DB.currentUserId;
-    const newAt = $("#edtx-at").value ? new Date($("#edtx-at").value).getTime() : tx.at;
+
+    // PRESERVE original date unless user explicitly changed the date picker
+    const newAt = dateInputTouched && $("#edtx-at").value
+      ? new Date($("#edtx-at").value).getTime()
+      : origAt;
+
+    // Snapshot OLD values BEFORE mutation (critical for correct reversal)
+    const oldType = tx.type;
+    const oldAmount = Number(tx.amount);
+    const oldAccountId = tx.accountId;
+    const oldToAccountId = tx.toAccountId;
+
+    // Collect affected account IDs so we only sync those
+    const affectedAccIds = new Set();
 
     // 1. REVERSE old transaction effect on account balances
-    if(tx.type === "expense"){
-      const oldA = DB.accounts.find(x => x.id === tx.accountId);
-      if(oldA) oldA.balance += Number(tx.amount);
-    } else if(tx.type === "income"){
-      const oldA = DB.accounts.find(x => x.id === tx.accountId);
-      if(oldA) oldA.balance -= Number(tx.amount);
-    } else if(tx.type === "transfer"){
-      const oldFrom = DB.accounts.find(x => x.id === tx.accountId);
-      const oldTo = DB.accounts.find(x => x.id === tx.toAccountId);
-      if(oldFrom) oldFrom.balance += Number(tx.amount);
-      if(oldTo) oldTo.balance -= Number(tx.amount);
+    if(oldType === "expense"){
+      const oldA = DB.accounts.find(x => x.id === oldAccountId);
+      if(oldA){ oldA.balance += oldAmount; affectedAccIds.add(oldA.id); }
+    } else if(oldType === "income"){
+      const oldA = DB.accounts.find(x => x.id === oldAccountId);
+      if(oldA){ oldA.balance -= oldAmount; affectedAccIds.add(oldA.id); }
+    } else if(oldType === "transfer"){
+      const oldFrom = DB.accounts.find(x => x.id === oldAccountId);
+      const oldTo = DB.accounts.find(x => x.id === oldToAccountId);
+      if(oldFrom){ oldFrom.balance += oldAmount; affectedAccIds.add(oldFrom.id); }
+      if(oldTo){ oldTo.balance -= oldAmount; affectedAccIds.add(oldTo.id); }
     }
 
     // 2. APPLY new transaction effect on account balances
     if(newType === "expense"){
       const newA = DB.accounts.find(x => x.id === newAccId);
-      if(newA) newA.balance -= newAmount;
+      if(newA){ newA.balance -= newAmount; affectedAccIds.add(newA.id); }
     } else if(newType === "income"){
       const newA = DB.accounts.find(x => x.id === newAccId);
-      if(newA) newA.balance += newAmount;
+      if(newA){ newA.balance += newAmount; affectedAccIds.add(newA.id); }
     } else if(newType === "transfer"){
       const newFrom = DB.accounts.find(x => x.id === newAccId);
       const newTo = DB.accounts.find(x => x.id === newToAccId);
-      if(newFrom) newFrom.balance -= newAmount;
-      if(newTo) newTo.balance += newAmount;
+      if(newFrom){ newFrom.balance -= newAmount; affectedAccIds.add(newFrom.id); }
+      if(newTo){ newTo.balance += newAmount; affectedAccIds.add(newTo.id); }
     }
 
     // 3. Update transaction record
@@ -6532,10 +6559,11 @@ function editTransactionModal(txId){
     tx.userId = newUserId;
     tx.at = newAt;
 
-    // 4. Persist to Supabase
+    // 4. Persist to Supabase — only update AFFECTED accounts
     sbWrite(sb.from('finance_transaction').upsert(objToSnake(tx)));
-    DB.accounts.forEach(a => {
-      sbWrite(sb.from('finance_account').update({ balance: a.balance }).eq('id', a.id));
+    affectedAccIds.forEach(accId => {
+      const a = DB.accounts.find(x => x.id === accId);
+      if(a) sbWrite(sb.from('finance_account').update({ balance: a.balance }).eq('id', a.id));
     });
 
     logFinanceAction("Edited Transaction", `Updated ${newType} of ${fmtMoney(newAmount)}: ${newDesc}`, 0);
@@ -6838,7 +6866,7 @@ function payLoanForm(loanId){
   const loan = DB.loans.find(l => l.id === loanId);
   if(!loan){ toast("Loan not found"); return; }
   const defaultAccId = loan.accountId || (DB.accounts[0]?.id || "");
-  const nowDt = new Date(Date.now() - new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
+  const nowDt = toLocalDatetimeStr(Date.now());
 
   openModal(`<div class="modal"><header><h3>Pay Loan Installment — ${esc(loan.name)}</h3><button class="x" data-close>×</button></header>
   <div class="pad">
@@ -6992,7 +7020,7 @@ function payBillForm(billId){
   const bill = DB.bills.find(b => b.id === billId);
   if(!bill){ toast("Bill not found"); return; }
   const defaultAccId = bill.accountId || (DB.accounts[0]?.id || "");
-  const nowDt = new Date(Date.now() - new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
+  const nowDt = toLocalDatetimeStr(Date.now());
 
   openModal(`<div class="modal"><header><h3>Pay Bill — ${esc(bill.name)}</h3><button class="x" data-close>×</button></header>
   <div class="pad">
@@ -7218,7 +7246,7 @@ function reimburseClaimModal(claimId){
   if(!claim){ toast("Claim not found"); return; }
   const u = user(claim.userId);
   const cat = claimCat(claim.category);
-  const nowDt = new Date(Date.now() - new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
+  const nowDt = toLocalDatetimeStr(Date.now());
   const defaultAccId = DB.accounts[0]?.id || "";
 
   openModal(`<div class="modal"><header><h3>💰 Pay Staff Reimbursement</h3><button class="x" data-close>×</button></header>
@@ -7378,7 +7406,7 @@ function disburseFounderSalaryModal(userId){
   const u = user(userId);
   if(!u){ toast("Founder not found"); return; }
   const cycle = getCycleBounds(CYCLE_OFFSET);
-  const nowDt = new Date(Date.now() - new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
+  const nowDt = toLocalDatetimeStr(Date.now());
   const defaultAccId = DB.accounts[0]?.id || "";
 
   const allAccountsTotal = DB.accounts.reduce((s, a) => s + (Number(a.balance)||0), 0);
@@ -7520,7 +7548,7 @@ function batchDisburseFoundersModal(){
   }
 
   const totalAmount = unpaidFounders.length * 40000;
-  const nowDt = new Date(Date.now() - new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
+  const nowDt = toLocalDatetimeStr(Date.now());
   const defaultAccId = DB.accounts[0]?.id || "";
 
   const allAccountsTotal = DB.accounts.reduce((s, a) => s + (Number(a.balance)||0), 0);
@@ -7661,7 +7689,7 @@ function executeProfitDistributionModal(distAmount){
   const founderAmt = Math.round(amt / 6);
   const totalFoundersAmt = founderAmt * 6;
   const defaultAccId = DB.accounts[0]?.id || "";
-  const nowDt = new Date(Date.now() - new Date().getTimezoneOffset()*60000).toISOString().slice(0,16);
+  const nowDt = toLocalDatetimeStr(Date.now());
 
   openModal(`
   <div class="modal" style="max-width:580px">
