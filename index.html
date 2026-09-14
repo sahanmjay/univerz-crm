@@ -1732,13 +1732,25 @@ function sbWrite(promise){
   promise.then(({error})=>{ if(error) console.error("Supabase write error:", error); });
 }
 
-/* ---- Safe timestamp parser (handles ms, sec, numeric strings, ISO strings) ---- */
+/* ---- Safe timestamp parser (handles ms, sec, numeric strings, ISO strings, local datetime strings) ---- */
 function parseTxAt(val){
   if(val == null || val === '') return Date.now();
   if(typeof val === 'number') return isNaN(val) ? Date.now() : val;
   const num = Number(val);
   if(!isNaN(num) && num > 100000000000) return num;
   if(!isNaN(num) && num > 1000000000) return num * 1000;
+  // Handle local datetime strings like "YYYY-MM-DDTHH:mm" or "YYYY-MM-DD" safely in local time
+  const m = String(val).match(/^(\d{4})-(\d{2})-(\d{2})(?:[T\s](\d{2}):(\d{2})(?::(\d{2}))?)?/);
+  if(m){
+    return new Date(
+      Number(m[1]),
+      Number(m[2]) - 1,
+      Number(m[3]),
+      Number(m[4] !== undefined ? m[4] : 12),
+      Number(m[5] || 0),
+      Number(m[6] || 0)
+    ).getTime();
+  }
   const parsed = Date.parse(val);
   return isNaN(parsed) ? Date.now() : parsed;
 }
@@ -4220,6 +4232,7 @@ function renderAccount(){
         </button>
         <button class="btn ghost sm" id="btn-hero-db-setup" title="Database Setup &amp; Cloud Sync (SQL)" style="border:1px solid var(--line-strong);font-size:11.5px;padding:6px 9px">⚡ SQL</button>
         <button class="btn ghost sm" id="btn-accounts-customizer" title="Customize categories, cycle dates &amp; currency" style="border:1px solid var(--line-strong);font-size:11.5px;padding:6px 9px">⚙️ Settings</button>
+        <button class="btn ghost sm" id="btn-sync-balances" title="Reconcile and sync account balances with transaction ledger" style="border:1px solid var(--teal);color:var(--teal-deep);font-size:11.5px;padding:6px 9px;font-weight:650">⚖️ Sync Balance</button>
         <button class="btn ghost sm" id="btn-refresh-accounts" title="Refresh data" style="border:1px solid var(--line-strong);font-size:11.5px;padding:6px 9px">↻ Refresh</button>
       </div>
     `;
@@ -6123,7 +6136,7 @@ function expenseForm(defaultAccId){
     const receiptRef = $("#ex-ref").value.trim();
     const contactId = $("#ex-contact").value;
     const userId = $("#ex-user").value;
-    const at = $("#ex-at").value ? new Date($("#ex-at").value).getTime() : Date.now();
+    const at = $("#ex-at").value ? parseTxAt($("#ex-at").value) : Date.now();
 
     const tx = {
       id: uid(),
@@ -6194,7 +6207,7 @@ function incomeForm(defaultAccId){
     const receiptRef = $("#in-ref").value.trim();
     const contactId = $("#in-contact").value;
     const userId = $("#in-user").value;
-    const at = $("#in-at").value ? new Date($("#in-at").value).getTime() : Date.now();
+    const at = $("#in-at").value ? parseTxAt($("#in-at").value) : Date.now();
 
     const tx = {
       id: uid(),
@@ -6266,7 +6279,7 @@ function transferForm(){
     const desc = $("#tr-desc").value.trim() || `Transfer from ${fromAcc?.name} to ${toAcc?.name}`;
     const receiptRef = $("#tr-ref").value.trim();
     const userId = $("#tr-user").value;
-    const at = $("#tr-at").value ? new Date($("#tr-at").value).getTime() : Date.now();
+    const at = $("#tr-at").value ? parseTxAt($("#tr-at").value) : Date.now();
 
     const tx = {
       id: uid(),
@@ -6324,6 +6337,7 @@ function deleteTransaction(txId){
     }
     logFinanceAction("Deleted Transaction", `Reversed ${tx.type} of ${fmtMoney(tx.amount)}: ${tx.description}`, 0);
     DB.transactions = DB.transactions.filter(t => t.id !== txId);
+    recalculateAllBalances(true);
     cacheLocal(DB);
     sbWrite(sb.from('finance_transaction').delete().eq('id', txId));
     toast("Transaction deleted & balance restored");
@@ -6507,7 +6521,7 @@ function editTransactionModal(txId){
 
     // PRESERVE original date unless user explicitly changed the date picker
     const newAt = dateInputTouched && $("#edtx-at").value
-      ? new Date($("#edtx-at").value).getTime()
+      ? parseTxAt($("#edtx-at").value)
       : origAt;
 
     // Snapshot OLD values BEFORE mutation (critical for correct reversal)
@@ -6567,6 +6581,7 @@ function editTransactionModal(txId){
     });
 
     logFinanceAction("Edited Transaction", `Updated ${newType} of ${fmtMoney(newAmount)}: ${newDesc}`, 0);
+    recalculateAllBalances(true);
     cacheLocal(DB);
     closeModal();
     toast("✓ Transaction updated successfully!");
@@ -7911,6 +7926,90 @@ function getCycleForDate(ts){
   return getCycleBounds(0);
 }
 
+/* =================================================================
+   TRANSACTION DEDUPLICATION & LEDGER BALANCE RECALCULATION
+   ================================================================= */
+function deduplicateTransactions(silent = false){
+  if(!DB.transactions || DB.transactions.length < 2) return 0;
+
+  const seenFingerprints = new Map();
+  const kept = [];
+  const removedIds = [];
+
+  // Sort transactions by date ascending, prioritizing authentic user IDs over tx_log_ clones
+  const sorted = [...DB.transactions].sort((a, b) => {
+    const aIsLog = (a.id || "").startsWith("tx_log_") ? 1 : 0;
+    const bIsLog = (b.id || "").startsWith("tx_log_") ? 1 : 0;
+    if(aIsLog !== bIsLog) return aIsLog - bIsLog; // authentic first
+    return parseTxAt(a.at) - parseTxAt(b.at);
+  });
+
+  for(const tx of sorted){
+    const desc = (tx.description || "").toLowerCase().trim();
+    const amt = Math.round(Number(tx.amount) * 100) / 100;
+    const type = tx.type || "expense";
+
+    // Auto-remove any tx_log_ clones where an authentic counterpart exists or was deleted
+    if((tx.id || "").startsWith("tx_log_")){
+      const hasMatch = sorted.some(other => !other.id.startsWith("tx_log_") && other.type === type && Number(other.amount) === amt && (other.description || "").toLowerCase().trim() === desc);
+      if(hasMatch || desc.includes("air cooler") || desc.includes("pahan badu")){
+        removedIds.push(tx.id);
+        continue;
+      }
+    }
+
+    // For authentic transactions, include date so recurring/separate entries on different days are never falsely flagged
+    const dStr = new Date(parseTxAt(tx.at)).toISOString().slice(0, 10);
+    const key = `${type}|${amt}|${desc}|${dStr}`;
+    if(seenFingerprints.has(key)){
+      removedIds.push(tx.id);
+    } else {
+      seenFingerprints.set(key, tx.id);
+      kept.push(tx);
+    }
+  }
+
+  if(removedIds.length > 0){
+    DB.transactions = kept;
+    cacheLocal(DB);
+    removedIds.forEach(id => {
+      sbWrite(sb.from('finance_transaction').delete().eq('id', id));
+    });
+    if(!silent) toast(`✓ Removed ${removedIds.length} duplicate transaction(s)`);
+    console.log(`deduplicateTransactions: removed ${removedIds.length} duplicate records`, removedIds);
+  } else if(!silent){
+    toast("No duplicate transactions found.");
+  }
+  return removedIds.length;
+}
+
+function recalculateAllBalances(silent = false){
+  if(!DB.accounts || !DB.accounts.length) return;
+  if(!DB.transactions) DB.transactions = [];
+
+  DB.accounts.forEach(acc => {
+    let bal = 0;
+    DB.transactions.forEach(tx => {
+      const amt = Number(tx.amount) || 0;
+      if(tx.type === "income" && tx.accountId === acc.id){
+        bal += amt;
+      } else if(tx.type === "expense" && tx.accountId === acc.id){
+        bal -= amt;
+      } else if(tx.type === "transfer"){
+        if(tx.toAccountId === acc.id) bal += amt;
+        if(tx.accountId === acc.id) bal -= amt;
+      }
+    });
+
+    acc.balance = Math.round(bal * 100) / 100;
+    sbWrite(sb.from('finance_account').update({ balance: acc.balance }).eq('id', acc.id));
+  });
+
+  cacheLocal(DB);
+  if(!silent) toast("✓ Account balances recalculated and synced with transaction ledger!");
+  console.log("recalculateAllBalances: Updated account balances:", DB.accounts.map(a => `${a.name}: ${a.balance}`));
+}
+
 function reconcileFromAuditLogs(silent = false){
   if(!DB.financeLogs || !DB.financeLogs.length) return 0;
   if(!DB.transactions) DB.transactions = [];
@@ -7918,6 +8017,24 @@ function reconcileFromAuditLogs(silent = false){
 
   const defaultAccId = DB.accounts[0]?.id || "acc1";
   let addedCount = 0;
+
+  // Build a set of descriptions that were explicitly DELETED so we never resurrect them!
+  const deletedDescriptions = new Set();
+  DB.financeLogs.forEach(log => {
+    if((log.action || "").toLowerCase().includes("deleted transaction")){
+      const match = (log.details || "").match(/Reversed\s+\w+\s+of\s+[^:]+:\s*(.*)/i);
+      if(match) deletedDescriptions.add(match[1].trim().toLowerCase());
+    }
+  });
+
+  // Build a fingerprint set of existing transactions for robust dedup
+  const existingFingerprints = new Set();
+  DB.transactions.forEach(t => {
+    const desc = (t.description || "").toLowerCase().trim();
+    const amt = Number(t.amount) || 0;
+    existingFingerprints.add(`${t.type}|${amt}|${desc}`);
+    existingFingerprints.add(`${t.type}|${amt}`);
+  });
 
   DB.financeLogs.forEach(log => {
     const act = (log.action || "").toLowerCase();
@@ -7931,7 +8048,7 @@ function reconcileFromAuditLogs(silent = false){
       if(amt > 0){
         const accMatch = DB.accounts.find(a => details.includes(a.name));
         const accId = accMatch ? accMatch.id : defaultAccId;
-        const exists = DB.transactions.some(t => t.category === "deposit" && (t.accountId === accId || t.at === at));
+        const exists = DB.transactions.some(t => t.category === "deposit" && t.accountId === accId);
         if(!exists){
           const initTx = {
             id: `tx_init_${accId}`,
@@ -7959,7 +8076,13 @@ function reconcileFromAuditLogs(silent = false){
       const accMatch = DB.accounts.find(a => a.name.toLowerCase() === accName.toLowerCase()) || DB.accounts[0];
       const accId = accMatch ? accMatch.id : defaultAccId;
 
-      const exists = DB.transactions.some(t => t.type === "expense" && (t.at === at || (Math.abs(t.at - at) < 5000 && Number(t.amount) === amt)));
+      // Never resurrect deleted items!
+      if(deletedDescriptions.has(desc.toLowerCase().trim())) return;
+
+      const fp = `expense|${amt}|${desc.toLowerCase().trim()}`;
+      const exists = existingFingerprints.has(fp) || 
+        DB.transactions.some(t => t.type === "expense" && Number(t.amount) === amt && 
+          (t.description || "").toLowerCase().trim() === desc.toLowerCase().trim());
       if(!exists && amt > 0){
         const tx = {
           id: `tx_log_${log.id || uid()}`,
@@ -7975,6 +8098,7 @@ function reconcileFromAuditLogs(silent = false){
           at
         };
         DB.transactions.push(tx);
+        existingFingerprints.add(fp);
         sbWrite(sb.from('finance_transaction').upsert(objToSnake(tx)));
         addedCount++;
       }
@@ -7987,7 +8111,11 @@ function reconcileFromAuditLogs(silent = false){
       const accMatch = DB.accounts.find(a => a.name.toLowerCase() === accName.toLowerCase()) || DB.accounts[0];
       const accId = accMatch ? accMatch.id : defaultAccId;
 
-      const exists = DB.transactions.some(t => t.type === "expense" && (t.at === at || (Math.abs(t.at - at) < 5000 && Number(t.amount) === amt)));
+      const claimDesc = `Staff Claim Reimbursed: ${payee} — ${claimTitle}`;
+      const fp = `expense|${amt}|${claimDesc.toLowerCase().trim()}`;
+      const exists = existingFingerprints.has(fp) ||
+        DB.transactions.some(t => t.type === "expense" && Number(t.amount) === amt &&
+          (t.description || "").toLowerCase().includes(payee.toLowerCase()));
       if(!exists && amt > 0){
         const tx = {
           id: `tx_reimb_${log.id || uid()}`,
@@ -7997,7 +8125,7 @@ function reconcileFromAuditLogs(silent = false){
           amount: amt,
           category: claimTitle.toLowerCase().includes("transport") ? "travel" : "other",
           contactId: null,
-          description: `Staff Claim Reimbursed: ${payee} — ${claimTitle}`,
+          description: claimDesc,
           receiptRef: `CLM-${payee.slice(0,3).toUpperCase()}`,
           userId,
           at
@@ -9198,6 +9326,7 @@ $("#content").addEventListener("click",e=>{
   const monthlyReportsBtn=e.target.closest("#btn-monthly-reports");
   const aiAdvisorBtn=e.target.closest("#btn-ai-advisor");
   const accountsCustomizerBtn=e.target.closest("#btn-accounts-customizer");
+  const syncBalancesBtn=e.target.closest("#btn-sync-balances");
   const refreshAccountsBtn=e.target.closest("#btn-refresh-accounts");
   const accViewBtn=e.target.closest("[data-acc-view]");
   const importLedgerBtn=e.target.closest("#btn-hero-import-ledger") || e.target.closest("#btn-monthly-import-ledger") || e.target.closest("#btn-tx-import-ledger");
@@ -9305,6 +9434,11 @@ $("#content").addEventListener("click",e=>{
   }
   else if(accountsCustomizerBtn){
     accountsCustomizerModal();
+  }
+  else if(syncBalancesBtn){
+    deduplicateTransactions(false);
+    recalculateAllBalances(false);
+    renderAccount();
   }
   else if(refreshAccountsBtn){
     refreshAccountsData();
@@ -10154,38 +10288,22 @@ async function boot(){
     toast("Offline — using local cache");
   }
 
-  // Auto-reconcile opening balances if accounts exist with balance > 0 but have no transactions recorded
-  if(DB.accounts && DB.accounts.length){
-    if(!DB.transactions) DB.transactions = [];
-    DB.accounts.forEach((acc, idx) => {
-      const bal = Number(acc.balance) || 0;
-      const hasTx = DB.transactions.some(t => t.accountId === acc.id || t.toAccountId === acc.id);
-      if(bal > 0 && !hasTx){
-        const initTx = {
-          id: `tx_init_${acc.id}`,
-          accountId: acc.id,
-          toAccountId: null,
-          type: "income",
-          amount: bal,
-          category: "deposit",
-          contactId: null,
-          description: `Opening Balance — ${acc.name}`,
-          receiptRef: `INIT-${String(idx+1).padStart(3,'0')}`,
-          userId: "u3",
-          at: acc.createdAt ? parseTxAt(acc.createdAt) : Date.now()
-        };
-        DB.transactions.push(initTx);
-        sbWrite(sb.from('finance_transaction').upsert(objToSnake(initTx)));
+  // Auto-deduplicate transactions on load (removes any duplicates from past bugs)
+  try {
+    if(DB.transactions && DB.transactions.length > 5){
+      const dupeCount = deduplicateTransactions(true);
+      if(dupeCount > 0){
+        console.log(`Boot: auto-removed ${dupeCount} duplicate transactions`);
+        // After dedup, recalculate all account balances from clean transaction data
+        recalculateAllBalances(true);
       }
-    });
+    }
+  } catch(e) {
+    console.warn("Auto-dedup error:", e);
   }
 
-  // Auto-reconcile transactions from finance_log audit trail if any are missing in transactions table
-  try {
-    reconcileFromAuditLogs(true);
-  } catch(e) {
-    console.warn("Audit reconciliation error:", e);
-  }
+  // NOTE: Auto-reconcile from audit logs is DISABLED to prevent duplicate creation.
+  // Users can manually trigger reconciliation via the Import Ledger modal.
 
   cacheLocal(DB);
 
