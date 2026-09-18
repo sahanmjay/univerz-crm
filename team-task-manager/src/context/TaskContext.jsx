@@ -37,11 +37,12 @@ export const TaskProvider = ({ children }) => {
   const [selectedAssignee, setSelectedAssignee] = useState('mine'); // 'mine' (current user only), 'all', or profile id
   const [searchQuery, setSearchQuery] = useState('');
 
-  // View, Calendar, Projects & Work Roster states
-  const [currentView, setCurrentView] = useState('dashboard'); // 'dashboard', 'projects', or 'calendar'
+  // View, Calendar, Projects, Work Roster & Attendance states
+  const [currentView, setCurrentView] = useState('dashboard'); // 'dashboard', 'projects', 'calendar', 'attendance', 'reminders'
   const [calendarEvents, setCalendarEvents] = useState([]);
   const [workRosters, setWorkRosters] = useState([]);
   const [projects, setProjects] = useState([]);
+  const [attendanceRecords, setAttendanceRecords] = useState([]);
 
   // 1. Fetch profiles strictly from public.profiles
   const fetchProfiles = useCallback(async () => {
@@ -190,6 +191,30 @@ export const TaskProvider = ({ children }) => {
     }
   }, []);
 
+  // 2e. Fetch Attendance strictly from public.attendance
+  const fetchAttendance = useCallback(async (dateOrMonth) => {
+    try {
+      let query = supabase.from('attendance').select('*');
+      if (dateOrMonth) {
+        if (dateOrMonth.length === 10) {
+          query = query.eq('date', dateOrMonth);
+        } else if (dateOrMonth.length === 7) {
+          query = query.gte('date', `${dateOrMonth}-01`).lte('date', `${dateOrMonth}-31`);
+        }
+      }
+      const { data, error } = await query.order('date', { ascending: false });
+      if (!error && data) {
+        setAttendanceRecords(data);
+        return data;
+      } else if (error) {
+        console.warn('Notice from attendance fetch:', error.message);
+      }
+    } catch (err) {
+      console.error('attendance fetch exception:', err);
+    }
+    return [];
+  }, []);
+
   // 3. Check Session on Mount
   useEffect(() => {
     let isMounted = true;
@@ -241,6 +266,7 @@ export const TaskProvider = ({ children }) => {
           await fetchCalendarEvents();
           await fetchWorkRosters();
           await fetchProjects();
+          await fetchAttendance();
         }
       } catch (err) {
         console.error('Auth initialization error:', err);
@@ -433,6 +459,23 @@ export const TaskProvider = ({ children }) => {
             setProjects(prev => prev.map(p => (p.id === normalized.id ? normalized : p)));
           } else if (payload.eventType === 'DELETE') {
             setProjects(prev => prev.filter(p => p.id !== payload.old.id));
+          }
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'attendance' },
+        (payload) => {
+          if (payload.eventType === 'INSERT') {
+            setAttendanceRecords(prev => {
+              const exists = prev.some(a => a.id === payload.new.id || (a.member_id === payload.new.member_id && a.date === payload.new.date));
+              if (exists) return prev.map(a => (a.id === payload.new.id || (a.member_id === payload.new.member_id && a.date === payload.new.date)) ? payload.new : a);
+              return [payload.new, ...prev];
+            });
+          } else if (payload.eventType === 'UPDATE') {
+            setAttendanceRecords(prev => prev.map(a => (a.id === payload.new.id || (a.member_id === payload.new.member_id && a.date === payload.new.date)) ? payload.new : a));
+          } else if (payload.eventType === 'DELETE') {
+            setAttendanceRecords(prev => prev.filter(a => a.id !== payload.old.id));
           }
         }
       )
@@ -1430,6 +1473,134 @@ ${JSON.stringify(payload, null, 2)}`;
     }
   }, []);
 
+  // Attendance CRUD Actions
+  const markAttendance = useCallback(async (memberId, dateStr, status, checkInTime = null, notes = '') => {
+    const formattedDate = toDateStringOnly(dateStr);
+    const member = profiles.find(p => p.id === memberId);
+    const nowTimeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const finalCheckInTime = checkInTime !== undefined && checkInTime !== null 
+      ? checkInTime 
+      : (status === 'present' || status === 'late' || status === 'half_day' ? nowTimeStr : null);
+
+    const payload = {
+      member_id: memberId,
+      member_name: member?.full_name || member?.username || 'Team Member',
+      date: formattedDate,
+      status: status || 'present',
+      check_in_time: finalCheckInTime,
+      notes: (notes || '').trim() || null,
+      marked_by: currentUser?.id || null,
+      updated_at: new Date().toISOString()
+    };
+
+    // Optimistic state update
+    setAttendanceRecords(prev => {
+      const existingIdx = prev.findIndex(a => a.member_id === memberId && a.date === formattedDate);
+      if (existingIdx >= 0) {
+        const next = [...prev];
+        next[existingIdx] = { ...next[existingIdx], ...payload };
+        return next;
+      }
+      return [{ ...payload, id: 'temp-' + Date.now(), created_at: new Date().toISOString() }, ...prev];
+    });
+
+    if (status === 'present') {
+      triggerConfetti();
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('attendance')
+        .upsert([payload], { onConflict: 'member_id,date' })
+        .select();
+
+      if (!error && data && data[0]) {
+        setAttendanceRecords(prev => prev.map(a => 
+          (a.member_id === memberId && a.date === formattedDate) ? data[0] : a
+        ));
+        return data[0];
+      } else if (error) {
+        console.warn('Supabase attendance upsert notice:', error.message);
+      }
+    } catch (err) {
+      console.warn('Exception marking attendance in Supabase:', err);
+    }
+    return payload;
+  }, [profiles, currentUser, triggerConfetti]);
+
+  const bulkMarkAttendance = useCallback(async (records) => {
+    if (!Array.isArray(records) || records.length === 0) return;
+
+    const payloads = records.map(r => {
+      const formattedDate = toDateStringOnly(r.date);
+      const member = profiles.find(p => p.id === r.member_id);
+      return {
+        member_id: r.member_id,
+        member_name: member?.full_name || member?.username || r.member_name || 'Team Member',
+        date: formattedDate,
+        status: r.status || 'present',
+        check_in_time: r.check_in_time || null,
+        notes: (r.notes || '').trim() || null,
+        marked_by: currentUser?.id || null,
+        updated_at: new Date().toISOString()
+      };
+    });
+
+    // Optimistic state update
+    setAttendanceRecords(prev => {
+      let next = [...prev];
+      payloads.forEach(p => {
+        const idx = next.findIndex(a => a.member_id === p.member_id && a.date === p.date);
+        if (idx >= 0) {
+          next[idx] = { ...next[idx], ...p };
+        } else {
+          next = [{ ...p, id: 'temp-' + Math.random(), created_at: new Date().toISOString() }, ...next];
+        }
+      });
+      return next;
+    });
+
+    triggerConfetti();
+
+    try {
+      const { data, error } = await supabase
+        .from('attendance')
+        .upsert(payloads, { onConflict: 'member_id,date' })
+        .select();
+
+      if (!error && data) {
+        setAttendanceRecords(prev => {
+          let next = [...prev];
+          data.forEach(saved => {
+            next = next.map(a => (a.member_id === saved.member_id && a.date === saved.date ? saved : a));
+          });
+          return next;
+        });
+        return data;
+      } else if (error) {
+        console.warn('Notice bulk upserting attendance:', error.message);
+      }
+    } catch (err) {
+      console.warn('Exception bulk marking attendance:', err);
+    }
+  }, [profiles, currentUser, triggerConfetti]);
+
+  const deleteAttendance = useCallback(async (memberId, dateStr) => {
+    const formattedDate = toDateStringOnly(dateStr);
+    setAttendanceRecords(prev => prev.filter(a => !(a.member_id === memberId && a.date === formattedDate)));
+
+    try {
+      const { error } = await supabase
+        .from('attendance')
+        .delete()
+        .eq('member_id', memberId)
+        .eq('date', formattedDate);
+      if (error) console.warn('Notice deleting attendance in Supabase:', error.message);
+    } catch (err) {
+      console.warn('Exception deleting attendance:', err);
+    }
+  }, []);
+
   const value = {
     session,
     currentUser,
@@ -1486,6 +1657,11 @@ ${JSON.stringify(payload, null, 2)}`;
     createProject,
     updateProject,
     deleteProject,
+    attendanceRecords,
+    fetchAttendance,
+    markAttendance,
+    bulkMarkAttendance,
+    deleteAttendance,
     createEvent,
     requestLeave,
     updateLeaveStatus,

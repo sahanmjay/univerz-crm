@@ -7,7 +7,8 @@ import {
   Plus, 
   Calendar as CalendarIcon,
   BellRing,
-  Briefcase
+  Briefcase,
+  UserCheck
 } from 'lucide-react';
 
 export default function Navbar() {
@@ -66,6 +67,17 @@ export default function Navbar() {
             >
               <CalendarIcon size={13} />
               <span>Calendar</span>
+            </button>
+            <button
+              onClick={() => setCurrentView('attendance')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                currentView === 'attendance'
+                  ? 'bg-[#1f5c5a] text-white shadow-sm'
+                  : 'text-[#6f6a60] hover:text-[#20262e] hover:bg-white/80'
+              }`}
+            >
+              <UserCheck size={13} />
+              <span>Attendance</span>
             </button>
             <button
               onClick={() => setCurrentView('reminders')}

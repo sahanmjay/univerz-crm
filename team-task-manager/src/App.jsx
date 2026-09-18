@@ -7,6 +7,7 @@ import StaffDashboard from './components/StaffDashboard';
 import CalendarView from './components/CalendarView';
 import RemindersListView from './components/RemindersListView';
 import ProjectsView from './components/ProjectsView';
+import AttendanceView from './components/AttendanceView';
 import { ShieldCheck } from 'lucide-react';
 
 function DashboardView() {
@@ -34,7 +35,9 @@ function DashboardView() {
         <Navbar />
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-          {currentView === 'reminders' ? (
+          {currentView === 'attendance' ? (
+            <AttendanceView />
+          ) : currentView === 'reminders' ? (
             <RemindersListView />
           ) : currentView === 'projects' ? (
             <ProjectsView />

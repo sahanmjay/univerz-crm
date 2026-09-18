@@ -62,11 +62,25 @@ create table if not exists public.work_roster (
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
+-- 5B. Daily Attendance Tracking Table
+create table if not exists public.attendance (
+  id uuid primary key default uuid_generate_v4(),
+  date date not null,
+  member_id uuid references public.profiles(id) on delete cascade,
+  status text not null default 'present' check (status in ('present', 'absent', 'late', 'half_day', 'on_leave')),
+  check_in_time time,
+  notes text,
+  marked_by uuid references public.profiles(id) on delete set null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  unique(date, member_id)
+);
+
 -- 6. Enable Row Level Security (RLS)
 alter table public.profiles enable row level security;
 alter table public.tasks enable row level security;
 alter table public.calendar_events enable row level security;
 alter table public.work_roster enable row level security;
+alter table public.attendance enable row level security;
 
 -- Open policies for team collaboration
 drop policy if exists "Allow public all profiles" on public.profiles;
@@ -81,11 +95,15 @@ create policy "Allow public all calendar_events" on public.calendar_events for a
 drop policy if exists "Allow public all work_roster" on public.work_roster;
 create policy "Allow public all work_roster" on public.work_roster for all using (true);
 
+drop policy if exists "Allow public all attendance" on public.attendance;
+create policy "Allow public all attendance" on public.attendance for all using (true);
+
 -- 7. Realtime Channel Setup
 alter publication supabase_realtime add table public.tasks;
 alter publication supabase_realtime add table public.profiles;
 alter publication supabase_realtime add table public.calendar_events;
 alter publication supabase_realtime add table public.work_roster;
+alter publication supabase_realtime add table public.attendance;
 
 -- 7. Pre-seeded 6-Person Team Members
 insert into public.profiles (id, full_name, username, email, department, role)
