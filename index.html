@@ -610,8 +610,8 @@ td .num{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
 /* ----------------------------------------------------------------
    The printable / PDF document sheet.
    Mirrors the Univerzlk Word templates: A4, Calibri, navy banding.
-   Colours are literal hex (never CSS vars) so html2canvas rasterizes
-   them correctly when building the PDF.
+   Colours are literal hex so the sheet also prints correctly from the
+   browser print dialog, which is the fallback when jsPDF is unavailable.
    ----------------------------------------------------------------*/
 .doc-sheet{
   width:794px;min-height:1123px;background:#ffffff;color:#1C1C2E;padding:38px 42px;
@@ -724,9 +724,6 @@ td .num{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
 .doc-sheet .ds-stamp.red{border-color:#9B3922;color:#9B3922}
 .doc-sheet .ds-stamp.grey{border-color:#545E6F;color:#545E6F}
 .doc-sheet .ds-sp{height:10px}
-
-/* Off-screen staging area used to rasterize the sheet for PDF export */
-#pdf-stage{position:fixed;left:-10000px;top:0;width:794px;z-index:-1;pointer-events:none;background:#fff}
 
 .doc-preview-scroll{
   background:var(--surface-2);padding:18px;border-radius:8px;overflow:auto;max-height:66vh;
@@ -1935,8 +1932,7 @@ body.auth-locked #auth-overlay {
 <!-- Supabase JS v2 from CDN -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 
-<!-- PDF engine for quotations & invoices (jsPDF + html2canvas) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<!-- PDF engine for quotations & invoices (jsPDF, vector output) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 
@@ -2945,21 +2941,13 @@ function go(v){
         topBtn.style.border = "none";
       }
     } else if(v === "business"){
-      if(canManageWork()){
-        topBtn.textContent = BUSINESS_TAB === "products" ? "+ New product"
-                           : BUSINESS_TAB === "quotations" ? "+ New quotation"
-                           : "+ New invoice";
-        topBtn.title = "Create a new " + (BUSINESS_TAB === "products" ? "product or service" : BUSINESS_TAB === "quotations" ? "quotation" : "invoice");
-        topBtn.style.background = "var(--teal)";
-        topBtn.style.color = "#fff";
-        topBtn.style.border = "none";
-      } else {
-        topBtn.textContent = "👁️ Viewing access";
-        topBtn.title = "Products, quotations and invoices are managed by Sahan and Subodha.";
-        topBtn.style.background = "var(--surface-2)";
-        topBtn.style.color = "var(--muted)";
-        topBtn.style.border = "1px solid var(--line-strong)";
-      }
+      topBtn.textContent = BUSINESS_TAB === "products" ? "+ New product"
+                         : BUSINESS_TAB === "quotations" ? "+ New quotation"
+                         : "+ New invoice";
+      topBtn.title = "Create a new " + (BUSINESS_TAB === "products" ? "product or service" : BUSINESS_TAB === "quotations" ? "quotation" : "invoice");
+      topBtn.style.background = "var(--teal)";
+      topBtn.style.color = "#fff";
+      topBtn.style.border = "none";
     } else if(v === "team"){
       topBtn.textContent = "👤 My Profile";
       topBtn.title = "Edit your profile & password";
@@ -3092,6 +3080,10 @@ const INVOICE_STATUSES = [
   {id:"overdue",   label:"Overdue"},
   {id:"cancelled", label:"Cancelled"},
 ];
+
+/* The whole Business section is open to every signed-in team member.
+   Narrow this to canManageWork() (Sahan + Subodha) if it ever needs locking down. */
+function canManageBusiness(){ return true; }
 
 function prodCat(id){ return PRODUCT_CATEGORIES.find(c=>c.id===id) || {id:id||"other", label:id||"Other"}; }
 function docStatusLabel(type, id){
@@ -3318,7 +3310,7 @@ function renderBusiness(){
   if(!DB.quotations) DB.quotations = [];
   if(!DB.invoices)   DB.invoices = [];
 
-  const canEdit = canManageWork();
+  const canEdit = canManageBusiness();
   const c = $("#content");
 
   const activeProducts = DB.products.filter(p => p.active !== false);
@@ -3384,11 +3376,6 @@ function renderBusiness(){
     </div>
   </div>`;
 
-  if(!canEdit){
-    h += `<div style="background:var(--surface-2);border:1px solid var(--line-strong);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12.5px;color:var(--ink-soft)">
-      &#128065; <b>Viewing access.</b> Products, quotations and invoices are managed by Sahan and Subodha. You can still open any document and download it as a PDF.
-    </div>`;
-  }
 
   if(BUSINESS_TAB === "products")        h += businessProductsTab(canEdit);
   else if(BUSINESS_TAB === "quotations") h += businessDocsTab("quotation", canEdit);
@@ -3605,8 +3592,8 @@ function businessDocsTab(type, canEdit){
    PRODUCT FORM
    ================================================================= */
 function productForm(p){
-  if(!canManageWork()){
-    toast("Business Section: Only Sahan and Subodha can manage the product catalogue.");
+  if(!canManageBusiness()){
+    toast("Business Section: sign in to manage the product catalogue.");
     return;
   }
   const isNew = !p;
@@ -3710,8 +3697,8 @@ let DOC_CURRENCY = "Rs.";
 function blankItem(){ return {productId:"", name:"", description:"", qty:1, rate:0, amountText:""}; }
 
 function salesDocForm(type, doc, presetItems){
-  if(!canManageWork()){
-    toast("Business Section: Only Sahan and Subodha can create quotations and invoices.");
+  if(!canManageBusiness()){
+    toast("Business Section: sign in to create quotations and invoices.");
     return;
   }
   const isQuote = type === "quotation";
@@ -4636,7 +4623,7 @@ function previewDocModal(type, id){
   const d = findDoc(type, id);
   if(!d){ toast("Document not found"); return; }
   const isQuote = type === "quotation";
-  const canEdit = canManageWork();
+  const canEdit = canManageBusiness();
 
   openModal(`<div class="modal" style="max-width:900px;width:96vw"><header>
     <h3>${isQuote ? "Quotation" : "Invoice"} ${esc(d.number)}</h3>
@@ -4662,27 +4649,775 @@ function previewDocModal(type, id){
   if(pay) pay.onclick = () => markInvoicePaidModal(id);
 }
 
-function pdfStage(){
-  let stage = document.getElementById("pdf-stage");
-  if(!stage){
-    stage = document.createElement("div");
-    stage.id = "pdf-stage";
-    document.body.appendChild(stage);
-  }
-  return stage;
-}
+/* =================================================================
+   NATIVE PDF ENGINE
+
+   The document is drawn with jsPDF vector primitives rather than
+   rasterised from the DOM. html2canvas ignores <colgroup>, so the
+   fixed-layout tables collapsed and the <thead> band vanished; it
+   also produced a blurry bitmap that page-breaks straight through
+   table rows. Drawing natively gives selectable text, crisp output
+   at any zoom, a small file, and page breaks that never split a row.
+   ================================================================= */
+
+const PDF_MM = {
+  pageW: 210, pageH: 297,
+  mL: 14, mR: 14, mT: 12, mB: 15,
+};
+PDF_MM.contentW = PDF_MM.pageW - PDF_MM.mL - PDF_MM.mR;
+
+const PDF_COLOR = {
+  navy:      [26, 62, 108],
+  navySoft:  [220, 227, 240],
+  navyPale:  [235, 244, 253],
+  bandTint:  [168, 200, 224],
+  rowAlt:    [244, 246, 248],
+  border:    [214, 221, 230],
+  ink:       [28, 28, 46],
+  body:      [43, 55, 70],
+  muted:     [84, 94, 111],
+  white:     [255, 255, 255],
+  green:     [26, 107, 48],
+  greenPale: [231, 243, 234],
+  red:       [155, 57, 34],
+  amber:     [180, 83, 9],
+};
+
+/* pt -> mm */
+function ptMm(pt){ return pt * 0.352778; }
 
 function docFileName(type, d){
   const who = (d.clientCompany || d.clientName || "client").replace(/[^\w\s-]/g, "").trim().replace(/\s+/g, "-").slice(0, 40);
   return `${d.number}${who ? "_" + who : ""}.pdf`;
 }
 
+/* Load an image as a data URL so jsPDF can embed it. Returns null on any failure. */
+function pdfLoadImage(src){
+  return new Promise(resolve => {
+    if(!src) return resolve(null);
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      try{
+        const cv = document.createElement("canvas");
+        cv.width = img.naturalWidth || img.width;
+        cv.height = img.naturalHeight || img.height;
+        if(!cv.width || !cv.height) return resolve(null);
+        cv.getContext("2d").drawImage(img, 0, 0);
+        resolve({ data: cv.toDataURL("image/png"), w: cv.width, h: cv.height });
+      }catch(e){ resolve(null); }
+    };
+    img.onerror = () => resolve(null);
+    img.src = src;
+  });
+}
+
+/* A thin drawing surface over jsPDF: keeps a y cursor and handles page breaks. */
+function makeSheet(pdf){
+  const M = PDF_MM;
+  const S = {
+    pdf,
+    y: M.mT,
+    page: 1,
+    onNewPage: null,
+
+    setFont(size, style, color){
+      pdf.setFont("helvetica", style || "normal");
+      pdf.setFontSize(size);
+      const c = color || PDF_COLOR.ink;
+      pdf.setTextColor(c[0], c[1], c[2]);
+      return S;
+    },
+    fill(c){ pdf.setFillColor(c[0], c[1], c[2]); return S; },
+    stroke(c, w){ pdf.setDrawColor(c[0], c[1], c[2]); pdf.setLineWidth(w == null ? 0.2 : w); return S; },
+
+    /* Start a new page and run the per-page header hook */
+    newPage(){
+      pdf.addPage();
+      S.page++;
+      S.y = M.mT;
+      if(S.onNewPage) S.onNewPage(S);
+      return S;
+    },
+    /* Ensure h mm of room; break the page if not */
+    ensure(h){
+      if(S.y + h > M.pageH - M.mB) S.newPage();
+      return S;
+    },
+    gap(h){ S.y += h; return S; },
+
+    /* Wrap text and return the lines */
+    wrap(text, width, size, style){
+      pdf.setFont("helvetica", style || "normal");
+      pdf.setFontSize(size);
+      return pdf.splitTextToSize(String(text == null ? "" : text), width);
+    },
+    lineH(size){ return ptMm(size) * 1.32; },
+
+    /* Draw wrapped text from the top-left; returns the height used */
+    textBlock(text, x, y, width, size, style, color, align){
+      const lines = S.wrap(text, width, size, style);
+      S.setFont(size, style, color);
+      const lh = S.lineH(size);
+      lines.forEach((ln, i) => {
+        const tx = align === "right" ? x + width : align === "center" ? x + width / 2 : x;
+        pdf.text(ln, tx, y + i * lh, { align: align || "left", baseline: "top" });
+      });
+      return lines.length * lh;
+    },
+    measureBlock(text, width, size, style){
+      return S.wrap(text, width, size, style).length * S.lineH(size);
+    },
+  };
+  return S;
+}
+
+/* ---- Masthead band ---- */
+function pdfBand(S, cfg, titleText, logo){
+  const M = PDF_MM, pdf = S.pdf;
+  const h = 20;
+  S.fill(PDF_COLOR.navy);
+  pdf.rect(M.mL, S.y, M.contentW, h, "F");
+
+  let tx = M.mL + 5;
+  if(logo){
+    const boxH = 13;
+    const ratio = logo.w && logo.h ? logo.w / logo.h : 1;
+    const imgH = boxH, imgW = Math.min(boxH * ratio, 22);
+    S.fill(PDF_COLOR.white);
+    pdf.roundedRect(tx, S.y + (h - boxH) / 2, imgW + 2, boxH, 0.8, 0.8, "F");
+    try{ pdf.addImage(logo.data, "PNG", tx + 1, S.y + (h - imgH) / 2, imgW, imgH); }catch(e){}
+    tx += imgW + 6;
+  }
+
+  const rightW = 66;
+  const leftW = M.contentW - (tx - M.mL) - rightW - 8;
+  S.setFont(14.5, "bold", PDF_COLOR.white);
+  pdf.text(S.wrap(cfg.name, leftW, 14.5, "bold")[0] || "", tx, S.y + 8.4, { baseline: "alphabetic" });
+  if(cfg.tagline){
+    S.setFont(7.8, "normal", PDF_COLOR.bandTint);
+    pdf.text(S.wrap(cfg.tagline, leftW, 7.8)[0] || "", tx, S.y + 12.6, { baseline: "alphabetic" });
+  }
+
+  const rx = M.mL + M.contentW - 5;
+  if(cfg.country){
+    S.setFont(7.2, "normal", PDF_COLOR.bandTint);
+    pdf.text(String(cfg.country).toUpperCase(), rx, S.y + 7.6, { align: "right", baseline: "alphabetic" });
+  }
+  S.setFont(13, "bold", PDF_COLOR.white);
+  pdf.text(String(titleText || "").toUpperCase(), rx, S.y + 14.2, { align: "right", baseline: "alphabetic" });
+
+  S.y += h;
+
+  // contact strip
+  const left = [cfg.address].filter(Boolean).join("\n");
+  const right = [
+    [cfg.phone, cfg.email].filter(Boolean).join("   "),
+    [cfg.website, cfg.regNo ? "Reg. " + cfg.regNo : ""].filter(Boolean).join("   "),
+    cfg.taxId ? "VAT/TIN " + cfg.taxId : "",
+  ].filter(Boolean).join("\n");
+
+  if(left || right){
+    S.y += 2.2;
+    const colW = (M.contentW - 8) / 2;
+    const hL = left  ? S.textBlock(left,  M.mL, S.y, colW, 7.2, "normal", PDF_COLOR.muted) : 0;
+    const hR = right ? S.textBlock(right, M.mL + colW + 8, S.y, colW, 7.2, "normal", PDF_COLOR.muted, "right") : 0;
+    S.y += Math.max(hL, hR) + 2.2;
+    S.stroke(PDF_COLOR.border, 0.2);
+    S.pdf.line(M.mL, S.y, M.mL + M.contentW, S.y);
+  }
+  S.y += 4;
+}
+
+/* ---- Section heading with a navy rule ---- */
+function pdfSection(S, text){
+  const M = PDF_MM;
+  S.ensure(12);
+  S.setFont(10.5, "bold", PDF_COLOR.navy);
+  S.pdf.text(String(text), M.mL, S.y, { baseline: "top" });
+  S.y += S.lineH(10.5) + 1;
+  S.stroke(PDF_COLOR.navy, 0.5);
+  S.pdf.line(M.mL, S.y, M.mL + M.contentW, S.y);
+  S.y += 3;
+}
+
+/* ---- Table ----
+   cols: [{ w (mm), align, head }]
+   rows: [{ cells:[string|{text,style,color,align}], variant }]
+   variant: undefined | 'total' | 'sub' | 'due' | 'paid'
+*/
+function pdfTable(S, cols, rows, opts){
+  const M = PDF_MM, pdf = S.pdf;
+  const o = opts || {};
+  const padX = 2.2, padY = 1.9;
+  const headSize = 7.4, bodySize = 8.6;
+
+  // normalise widths to the content width
+  const totalW = cols.reduce((s, c) => s + c.w, 0);
+  const scale = M.contentW / totalW;
+  const w = cols.map(c => c.w * scale);
+
+  const drawHead = () => {
+    if(!o.head) return;
+    const hh = S.lineH(headSize) + padY * 2;
+    S.ensure(hh + 6);
+    S.fill(PDF_COLOR.navy);
+    pdf.rect(M.mL, S.y, M.contentW, hh, "F");
+    S.setFont(headSize, "bold", PDF_COLOR.white);
+    let x = M.mL;
+    cols.forEach((c, i) => {
+      const t = String(c.head || "").toUpperCase();
+      const a = c.align || "left";
+      const tx = a === "right" ? x + w[i] - padX : a === "center" ? x + w[i] / 2 : x + padX;
+      pdf.text(t, tx, S.y + padY + 0.3, { align: a, baseline: "top" });
+      x += w[i];
+    });
+    S.y += hh;
+  };
+
+  drawHead();
+
+  rows.forEach((row, ri) => {
+    const cells = row.cells.map((c, i) => {
+      const cell = (typeof c === "object" && c !== null) ? c : { text: c };
+      const style = cell.style || (row.variant === "total" || row.variant === "due" ? "bold" : "normal");
+      const size = row.variant === "total" || row.variant === "due" ? 9.2 : bodySize;
+      const cw = w[i] - padX * 2;
+      return {
+        cell, style, size,
+        lines: S.wrap(cell.text == null ? "" : cell.text, cw, size, style),
+        sub: cell.sub ? S.wrap(cell.sub, cw, 7.2, "normal") : null,
+      };
+    });
+
+    const bodyH = Math.max(...cells.map(c =>
+      c.lines.length * S.lineH(c.size) + (c.sub ? c.sub.length * S.lineH(7.2) : 0)
+    ));
+    const rowH = bodyH + padY * 2;
+
+    // never split a row across pages; repeat the header on the new page
+    if(S.y + rowH > M.pageH - M.mB){
+      S.newPage();
+      drawHead();
+    }
+
+    let bg = null, fg = PDF_COLOR.body;
+    if(row.variant === "total"){ bg = PDF_COLOR.navy;      fg = PDF_COLOR.white; }
+    else if(row.variant === "due"){ bg = PDF_COLOR.red;    fg = PDF_COLOR.white; }
+    else if(row.variant === "sub"){ bg = PDF_COLOR.navyPale; fg = PDF_COLOR.navy; }
+    else if(row.variant === "paid"){ bg = PDF_COLOR.greenPale; }
+    else if(ri % 2 === 1){ bg = PDF_COLOR.rowAlt; }
+
+    if(bg){ S.fill(bg); pdf.rect(M.mL, S.y, M.contentW, rowH, "F"); }
+
+    let x = M.mL;
+    cells.forEach((c, i) => {
+      const a = c.cell.align || cols[i].align || "left";
+      const color = c.cell.color || fg;
+      const tx = a === "right" ? x + w[i] - padX : a === "center" ? x + w[i] / 2 : x + padX;
+      S.setFont(c.size, c.style, color);
+      c.lines.forEach((ln, li) => {
+        pdf.text(ln, tx, S.y + padY + li * S.lineH(c.size), { align: a, baseline: "top" });
+      });
+      if(c.sub){
+        const subY = S.y + padY + c.lines.length * S.lineH(c.size);
+        S.setFont(7.2, "normal", row.variant ? color : PDF_COLOR.muted);
+        c.sub.forEach((ln, li) => {
+          pdf.text(ln, tx, subY + li * S.lineH(7.2), { align: a, baseline: "top" });
+        });
+      }
+      x += w[i];
+    });
+
+    // horizontal rule under the row
+    S.stroke(PDF_COLOR.border, 0.15);
+    pdf.line(M.mL, S.y + rowH, M.mL + M.contentW, S.y + rowH);
+    S.y += rowH;
+  });
+
+  S.y += 3;
+}
+
+/* ---- Label / value table (Quotation Details, Client Information) ---- */
+function pdfKvTable(S, pairs, labelW){
+  const rows = pairs.map(([k, v]) => ({
+    cells: [
+      { text: k, style: "bold", color: PDF_COLOR.navy },
+      { text: (v == null || v === "") ? "—" : String(v) },
+    ],
+    variant: "kv",
+  }));
+  // draw with a tinted label column
+  const M = PDF_MM, pdf = S.pdf;
+  const lw = (labelW || 0.36) * M.contentW;
+  const vw = M.contentW - lw;
+  const padX = 2.2, padY = 1.9, size = 8.6;
+
+  rows.forEach(r => {
+    const kLines = S.wrap(r.cells[0].text, lw - padX * 2, size, "bold");
+    const vLines = S.wrap(r.cells[1].text, vw - padX * 2, size, "normal");
+    const rowH = Math.max(kLines.length, vLines.length) * S.lineH(size) + padY * 2;
+    S.ensure(rowH);
+
+    S.fill(PDF_COLOR.navySoft);
+    pdf.rect(M.mL, S.y, lw, rowH, "F");
+    S.fill(PDF_COLOR.white);
+    pdf.rect(M.mL + lw, S.y, vw, rowH, "F");
+
+    S.setFont(size, "bold", PDF_COLOR.navy);
+    kLines.forEach((ln, i) => pdf.text(ln, M.mL + padX, S.y + padY + i * S.lineH(size), { baseline: "top" }));
+    S.setFont(size, "normal", PDF_COLOR.body);
+    vLines.forEach((ln, i) => pdf.text(ln, M.mL + lw + padX, S.y + padY + i * S.lineH(size), { baseline: "top" }));
+
+    S.stroke(PDF_COLOR.border, 0.15);
+    pdf.rect(M.mL, S.y, M.contentW, rowH, "S");
+    pdf.line(M.mL + lw, S.y, M.mL + lw, S.y + rowH);
+    S.y += rowH;
+  });
+  S.y += 3;
+}
+
+/* ---- Measure a titled box so two of them can share a row ---- */
+function pdfBoxHeight(S, body, boxW, isList){
+  const headH = S.lineH(7.4) + 3.4;
+  const inner = boxW - 5;
+  let h;
+  if(isList){
+    h = body.reduce((s, t) => s + S.measureBlock("•  " + t, inner - 2, 8) , 0);
+  } else {
+    h = S.measureBlock(body, inner, 8.6);
+  }
+  return headH + h + 4;
+}
+
+/* ---- Draw a titled box at an explicit x/width ---- */
+function pdfBox(S, title, body, x, boxW, boxH, isList){
+  const pdf = S.pdf;
+  const headH = S.lineH(7.4) + 3.4;
+
+  S.fill(PDF_COLOR.white);
+  pdf.rect(x, S.y, boxW, boxH, "F");
+  S.fill(PDF_COLOR.navy);
+  pdf.rect(x, S.y, boxW, headH, "F");
+  S.setFont(7.4, "bold", PDF_COLOR.white);
+  pdf.text(String(title).toUpperCase(), x + 2.6, S.y + 1.7, { baseline: "top" });
+
+  let ty = S.y + headH + 2;
+  if(isList){
+    body.forEach(t => {
+      ty += S.textBlock("•  " + t, x + 2.6, ty, boxW - 5.2, 8, "normal", PDF_COLOR.body);
+    });
+  } else {
+    S.textBlock(body, x + 2.6, ty, boxW - 5.2, 8.6, "normal", PDF_COLOR.body);
+  }
+
+  S.stroke(PDF_COLOR.border, 0.2);
+  pdf.rect(x, S.y, boxW, boxH, "S");
+}
+
+/* ---- Two titled boxes side by side, aligned to the taller one ---- */
+function pdfTwoBoxes(S, left, right){
+  const M = PDF_MM;
+  const gap = 5;
+  const boxW = (M.contentW - gap) / 2;
+  const hL = pdfBoxHeight(S, left.body, boxW, left.isList);
+  const hR = pdfBoxHeight(S, right.body, boxW, right.isList);
+  const h = Math.max(hL, hR);
+  S.ensure(h + 2);
+  pdfBox(S, left.title,  left.body,  M.mL, boxW, h, left.isList);
+  pdfBox(S, right.title, right.body, M.mL + boxW + gap, boxW, h, right.isList);
+  S.y += h + 3;
+}
+
+/* ---- Numbered terms ---- */
+function pdfTerms(S, terms){
+  const list = splitTerms(terms);
+  if(!list.length) return;
+  pdfSection(S, "Terms & Notes");
+  const M = PDF_MM;
+  list.forEach((t, i) => {
+    const num = (i + 1) + ".";
+    const indent = 5.5;
+    const h = S.measureBlock(t, M.contentW - indent, 8);
+    S.ensure(h + 1);
+    S.setFont(8, "bold", PDF_COLOR.navy);
+    S.pdf.text(num, M.mL, S.y, { baseline: "top" });
+    S.textBlock(t, M.mL + indent, S.y, M.contentW - indent, 8, "normal", PDF_COLOR.body);
+    S.y += h + 1.1;
+  });
+  S.y += 2;
+}
+
+/* ---- Signature blocks ---- */
+function pdfSignatures(S, cfg, leftLabel, rightLabel){
+  const M = PDF_MM, pdf = S.pdf;
+  const blockH = 30;
+  S.ensure(blockH + 4);
+  S.y += 8;
+  const gap = 14;
+  const colW = (M.contentW - gap) / 2;
+
+  [[M.mL, leftLabel, cfg.signatory, cfg.signatoryTitle],
+   [M.mL + colW + gap, rightLabel, "", ""]].forEach(([x, label, name, title]) => {
+    S.stroke(PDF_COLOR.ink, 0.3);
+    pdf.line(x, S.y, x + colW, S.y);
+    let ty = S.y + 1.8;
+    ty += S.textBlock(label, x, ty, colW, 8.2, "bold", PDF_COLOR.navy);
+    ty += S.textBlock("Name:  " + (name || "______________________"), x, ty, colW, 8, "normal", PDF_COLOR.body);
+    ty += S.textBlock("Title:  " + (title || "______________________"), x, ty, colW, 8, "normal", PDF_COLOR.body);
+    S.textBlock("Date:  ______________________", x, ty, colW, 8, "normal", PDF_COLOR.body);
+  });
+  S.y += 22;
+}
+
+/* ---- Footer on every page ---- */
+function pdfFooters(S, cfg, footerText){
+  const M = PDF_MM, pdf = S.pdf;
+  const total = pdf.getNumberOfPages();
+  for(let p = 1; p <= total; p++){
+    pdf.setPage(p);
+    const fy = M.pageH - M.mB + 4;
+    pdf.setDrawColor(PDF_COLOR.border[0], PDF_COLOR.border[1], PDF_COLOR.border[2]);
+    pdf.setLineWidth(0.2);
+    pdf.line(M.mL, fy - 3, M.mL + M.contentW, fy - 3);
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(7);
+    pdf.setTextColor(PDF_COLOR.muted[0], PDF_COLOR.muted[1], PDF_COLOR.muted[2]);
+    pdf.text(String(footerText || ""), M.mL, fy, { baseline: "top", maxWidth: M.contentW - 24 });
+    pdf.text("Page " + p + " of " + total, M.mL + M.contentW, fy, { align: "right", baseline: "top" });
+  }
+}
+
+/* ---- Status stamp ---- */
+function pdfStamp(S, status, x, w){
+  const map = {
+    paid:      ["PAID",      PDF_COLOR.green],
+    accepted:  ["ACCEPTED",  PDF_COLOR.green],
+    overdue:   ["OVERDUE",   PDF_COLOR.red],
+    cancelled: ["CANCELLED", PDF_COLOR.red],
+    declined:  ["DECLINED",  PDF_COLOR.red],
+    draft:     ["DRAFT",     PDF_COLOR.muted],
+    expired:   ["EXPIRED",   PDF_COLOR.muted],
+  };
+  const hit = map[status];
+  if(!hit) return;
+  const [label, color] = hit;
+  const pdf = S.pdf;
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(12);
+  const tw = pdf.getTextWidth(label);
+  const bw = tw + 9, bh = 8;
+  const bx = x + w - bw;
+  pdf.setDrawColor(color[0], color[1], color[2]);
+  pdf.setLineWidth(0.7);
+  pdf.roundedRect(bx, S.y, bw, bh, 1, 1, "S");
+  pdf.setTextColor(color[0], color[1], color[2]);
+  pdf.text(label, bx + bw / 2, S.y + bh / 2 + 0.3, { align: "center", baseline: "middle" });
+}
+
+/* =================================================================
+   QUOTATION PDF
+   ================================================================= */
+function buildQuotationPdf(S, d, cfg, logo){
+  const M = PDF_MM;
+  const cur = d.currency || bizCurrency();
+  const taxLabel = cfg.taxLabel || "VAT";
+
+  pdfBand(S, cfg, d.docTitle || cfg.quoteTitle || "Quotation", logo);
+
+  // status stamp sits on its own line so it can never overlap the details table
+  if((d.status || "draft") !== "sent"){
+    S.ensure(12);
+    pdfStamp(S, d.status || "draft", M.mL, M.contentW);
+    S.y += 11;
+  }
+
+  pdfSection(S, "Quotation Details");
+  pdfKvTable(S, [
+    ["Quotation No.", d.number],
+    ["Date Issued",   fmtDocDate(d.issuedAt)],
+    ["Valid Until",   d.validUntilText || fmtDocDate(d.validUntil)],
+    ["Project Type",  d.projectType || d.title],
+    ["Prepared By",   d.preparedBy || cfg.name],
+  ], 0.34);
+
+  pdfSection(S, "Client Information");
+  pdfKvTable(S, dsClientRows(d), 0.34);
+
+  pdfSection(S, "Pricing Breakdown");
+  const itemRows = (d.items || []).map(it => ({
+    cells: [
+      { text: it.name, style: "bold" },
+      { text: it.description || "—" },
+      (it.amountText || "").trim()
+        ? { text: it.amountText, align: "right", style: "bold",
+            color: /^(free|included|n\/a)$/i.test(it.amountText.trim()) ? PDF_COLOR.green : PDF_COLOR.body }
+        : { text: docMoney(lineAmount(it), cur), align: "right" },
+    ],
+  }));
+  if(Number(d.discount)){
+    itemRows.push({ variant: "sub", cells: [
+      { text: "Discount" + (d.discountType === "percent" ? " (" + Number(d.discountVal) + "%)" : ""), style: "bold" },
+      "", { text: "-" + docMoney(d.discount, cur), align: "right", style: "bold" },
+    ]});
+  }
+  if(Number(d.taxRate)){
+    itemRows.push({ variant: "sub", cells: [
+      { text: taxLabel + " @ " + Number(d.taxRate) + "%", style: "bold" },
+      "", { text: "+" + docMoney(d.tax, cur), align: "right", style: "bold" },
+    ]});
+  }
+  itemRows.push({ variant: "total", cells: [
+    "Total Project Cost", "", { text: docMoney(d.total, cur), align: "right" },
+  ]});
+
+  pdfTable(S, [
+    { w: 46, head: "Item" },
+    { w: 92, head: "Description" },
+    { w: 44, head: "Amount", align: "right" },
+  ], itemRows, { head: true });
+
+  // amount in words
+  const words = d.amountInWords || amountInWords(d.total, cur);
+  const wh = S.measureBlock("Amount in Words:  " + words, M.contentW - 6, 8.4) + 4;
+  S.ensure(wh);
+  S.fill(PDF_COLOR.rowAlt);
+  S.pdf.rect(M.mL, S.y, M.contentW, wh, "F");
+  S.fill(PDF_COLOR.navy);
+  S.pdf.rect(M.mL, S.y, 1.1, wh, "F");
+  S.textBlock("Amount in Words:  " + words, M.mL + 4, S.y + 2, M.contentW - 8, 8.4, "bold", PDF_COLOR.navy);
+  S.y += wh + 4;
+
+  const ms = d.milestones || [];
+  if(ms.length){
+    pdfSection(S, "Payment Schedule");
+    const rows = ms.map((m, i) => ({ cells: [
+      { text: String(i + 1), align: "center" },
+      { text: m.label || "", style: "bold" },
+      m.whenDue || "",
+      { text: docMoney(m.amount, cur), align: "right" },
+    ]}));
+    rows.push({ variant: "total", cells: [
+      "", "Total", "", { text: docMoney(ms.reduce((s, m) => s + (Number(m.amount) || 0), 0), cur), align: "right" },
+    ]});
+    pdfTable(S, [
+      { w: 10, head: "#", align: "center" },
+      { w: 62, head: "Milestone" },
+      { w: 66, head: "When Due" },
+      { w: 44, head: "Amount", align: "right" },
+    ], rows, { head: true });
+  }
+
+  if(d.year2Note){
+    S.ensure(10);
+    S.y += S.textBlock(d.year2Note, M.mL, S.y, M.contentW, 7.8, "normal", PDF_COLOR.muted) + 4;
+  }
+
+  const bank = bankLines(cfg);
+  if(bank.length){
+    pdfSection(S, "Bank Details");
+    pdfTwoBoxes(S,
+      { title: "Bank Account Details", body: bank.join("\n") },
+      { title: "When You Pay", body: d.paymentNote || cfg.paymentNote || "" });
+  }
+
+  const tl = d.timeline || [];
+  if(tl.length){
+    pdfSection(S, "Project Timeline");
+    pdfTable(S, [
+      { w: 40, head: "Phase" },
+      { w: 100, head: "Activity" },
+      { w: 42, head: "Duration" },
+    ], tl.map(p => ({ cells: [
+      { text: p.phase || "", style: "bold" }, p.activity || "", p.duration || "",
+    ]})), { head: true });
+  }
+
+  const inc = d.inclusions || [], exc = d.exclusions || [];
+  if(inc.length || exc.length){
+    pdfSection(S, "Package Inclusions");
+    pdfTwoBoxes(S,
+      { title: "Included in this package", body: inc, isList: true },
+      { title: "Not included (available as add-ons)", body: exc, isList: true });
+  }
+
+  pdfTerms(S, d.terms);
+
+  if(d.notes){
+    S.ensure(10);
+    S.y += S.textBlock(d.notes, M.mL, S.y, M.contentW, 8, "normal", PDF_COLOR.body) + 3;
+  }
+
+  const acc = d.acceptanceText || cfg.quoteAcceptance || "";
+  if(acc){
+    pdfSection(S, "Acceptance");
+    S.ensure(12);
+    S.y += S.textBlock(acc, M.mL, S.y, M.contentW, 8, "normal", PDF_COLOR.body) + 2;
+  }
+
+  pdfSignatures(S, cfg, "Authorized Signature — " + cfg.name, "Client Signature");
+  pdfFooters(S, cfg, cfg.quoteFooter || ("Thank you for choosing " + cfg.name + "."));
+}
+
+/* =================================================================
+   INVOICE PDF
+   ================================================================= */
+function buildInvoicePdf(S, d, cfg, logo){
+  const M = PDF_MM;
+  const cur = d.currency || bizCurrency();
+  const taxLabel = cfg.taxLabel || "VAT";
+  const st = effectiveInvoiceStatus(d);
+  const ms = d.milestones || [];
+  const paid = invoicePaidAmount(d);
+  const balance = Math.max(0, (Number(d.total) || 0) - paid);
+
+  pdfBand(S, cfg, d.docTitle || cfg.invoiceTitle || "Invoice", logo);
+
+  pdfSection(S, "Invoice & Client Details");
+  const detail = [
+    ["Invoice No.",       d.number],
+    ["Invoice Date",      fmtDocDate(d.issuedAt)],
+    ["Payment Terms",     d.paymentTerms || (ms.length ? ms.length + " Instalments" : "")],
+    ["Quotation Ref.",    d.quotationRef || (d.quotationId ? (findDoc("quotation", d.quotationId) || {}).number : "")],
+    ["Project / Service", d.projectType || d.title],
+  ];
+  const client = dsClientRows(d);
+
+  // two label/value tables side by side
+  const gap = 5, colW = (M.contentW - gap) / 2;
+  const kvPairH = (pairs, boxW) => {
+    const lw = boxW * 0.42, vw = boxW - lw;
+    return pairs.reduce((s, [k, v]) => {
+      const kl = S.wrap(k, lw - 4.4, 8.2, "bold").length;
+      const vl = S.wrap((v == null || v === "") ? "—" : String(v), vw - 4.4, 8.2, "normal").length;
+      return s + Math.max(kl, vl) * S.lineH(8.2) + 3.6;
+    }, 0);
+  };
+  const headH = S.lineH(7.4) + 3.4;
+  const bodyH = Math.max(kvPairH(detail, colW), kvPairH(client, colW));
+  const boxH = headH + bodyH + 2;
+  S.ensure(boxH + 3);
+  const topY = S.y;
+
+  [[M.mL, "Invoice Details", detail], [M.mL + colW + gap, "Bill To", client]].forEach(([x, title, pairs]) => {
+    S.y = topY;
+    const pdf = S.pdf;
+    S.fill(PDF_COLOR.white); pdf.rect(x, S.y, colW, boxH, "F");
+    S.fill(PDF_COLOR.navy);  pdf.rect(x, S.y, colW, headH, "F");
+    S.setFont(7.4, "bold", PDF_COLOR.white);
+    pdf.text(title.toUpperCase(), x + 2.6, S.y + 1.7, { baseline: "top" });
+
+    const lw = colW * 0.42;
+    let ty = S.y + headH + 1;
+    pairs.forEach(([k, v]) => {
+      const kl = S.wrap(k, lw - 4.4, 8.2, "bold");
+      const vv = (v == null || v === "") ? "—" : String(v);
+      const vl = S.wrap(vv, colW - lw - 4.4, 8.2, "normal");
+      const rh = Math.max(kl.length, vl.length) * S.lineH(8.2) + 3.6;
+      S.setFont(8.2, "normal", PDF_COLOR.muted);
+      kl.forEach((ln, i) => pdf.text(ln, x + 2.6, ty + 1.4 + i * S.lineH(8.2), { baseline: "top" }));
+      S.setFont(8.2, "bold", PDF_COLOR.body);
+      vl.forEach((ln, i) => pdf.text(ln, x + lw + 1.6, ty + 1.4 + i * S.lineH(8.2), { baseline: "top" }));
+      ty += rh;
+    });
+    S.stroke(PDF_COLOR.border, 0.2);
+    pdf.rect(x, topY, colW, boxH, "S");
+  });
+  S.y = topY + boxH + 3;
+
+  if(st !== "sent"){
+    S.ensure(10);
+    pdfStamp(S, st, M.mL, M.contentW);
+    S.y += 10;
+  }
+
+  pdfSection(S, "Invoice Items");
+  const rows = (d.items || []).map((it, i) => ({ cells: [
+    { text: String(i + 1), align: "center" },
+    { text: it.name, style: "bold", sub: it.description || "" },
+    (it.amountText || "").trim()
+      ? { text: it.amountText, align: "right", style: "bold",
+          color: /^(free|included|n\/a)$/i.test(it.amountText.trim()) ? PDF_COLOR.green : PDF_COLOR.body }
+      : { text: docMoney(lineAmount(it), cur), align: "right" },
+  ]}));
+  rows.push({ variant: "sub", cells: ["", { text: "Sub Total", style: "bold" }, { text: docMoney(d.subtotal, cur), align: "right", style: "bold" }] });
+  if(Number(d.discount)){
+    rows.push({ variant: "sub", cells: ["", { text: "Discount" + (d.discountType === "percent" ? " (" + Number(d.discountVal) + "%)" : ""), style: "bold" }, { text: "-" + docMoney(d.discount, cur), align: "right", style: "bold" }] });
+  }
+  if(Number(d.taxRate)){
+    rows.push({ variant: "sub", cells: ["", { text: taxLabel + " @ " + Number(d.taxRate) + "%", style: "bold" }, { text: "+" + docMoney(d.tax, cur), align: "right", style: "bold" }] });
+  }
+  rows.push({ variant: "total", cells: ["", "Total Invoice Value", { text: docMoney(d.total, cur), align: "right" }] });
+
+  pdfTable(S, [
+    { w: 10, head: "#", align: "center" },
+    { w: 128, head: "Description" },
+    { w: 44, head: "Amount", align: "right" },
+  ], rows, { head: true });
+
+  const words = d.amountInWords || amountInWords(d.total, cur);
+  const wh = S.measureBlock("Amount in Words:  " + words, M.contentW - 8, 8.4) + 4;
+  S.ensure(wh);
+  S.fill(PDF_COLOR.rowAlt);
+  S.pdf.rect(M.mL, S.y, M.contentW, wh, "F");
+  S.fill(PDF_COLOR.navy);
+  S.pdf.rect(M.mL, S.y, 1.1, wh, "F");
+  S.textBlock("Amount in Words:  " + words, M.mL + 4, S.y + 2, M.contentW - 8, 8.4, "bold", PDF_COLOR.navy);
+  S.y += wh + 4;
+
+  if(ms.length){
+    pdfSection(S, "Instalment Schedule");
+    const mrows = ms.map((m, i) => ({
+      variant: m.paid ? "paid" : undefined,
+      cells: [
+        { text: String(i + 1), align: "center" },
+        { text: m.label || "", style: "bold" },
+        m.whenDue || "",
+        { text: docMoney(m.amount, cur), align: "right" },
+        { text: m.paid ? "PAID" : "DUE", align: "center", style: "bold",
+          color: m.paid ? PDF_COLOR.green : PDF_COLOR.amber,
+          sub: m.paid && m.paidAt ? fmtDocDate(m.paidAt) : "" },
+      ],
+    }));
+    mrows.push({ variant: "sub", cells: ["", "Total Paid to Date", "", { text: docMoney(paid, cur), align: "right", style: "bold" }, ""] });
+    pdfTable(S, [
+      { w: 10, head: "#", align: "center" },
+      { w: 54, head: "Instalment" },
+      { w: 54, head: "When Due" },
+      { w: 36, head: "Amount", align: "right" },
+      { w: 28, head: "Status", align: "center" },
+    ], mrows, { head: true });
+  }
+
+  pdfTable(S, [{ w: 138 }, { w: 44, align: "right" }],
+    [{ variant: "due", cells: ["Balance Due", { text: docMoney(balance, cur), align: "right" }] }],
+    { head: false });
+
+  pdfSection(S, "Payment Details");
+  pdfTwoBoxes(S,
+    { title: "Bank Account Details", body: bankLines(cfg).join("\n") || "—" },
+    { title: "When You Pay", body: d.paymentNote || cfg.paymentNote || "" });
+
+  pdfTerms(S, d.terms);
+
+  if(d.notes){
+    S.ensure(10);
+    S.y += S.textBlock(d.notes, M.mL, S.y, M.contentW, 8, "normal", PDF_COLOR.body) + 3;
+  }
+
+  pdfSignatures(S, cfg, "For " + cfg.name, "Received & Accepted by Client");
+  pdfFooters(S, cfg, cfg.invoiceFooter || ("Thank you for your business. " + cfg.name));
+}
+
+/* =================================================================
+   EXPORT
+   ================================================================= */
 async function exportDocPDF(type, id, btn){
   const d = findDoc(type, id);
   if(!d){ toast("Document not found"); return; }
 
   const jsPDFCtor = window.jspdf && window.jspdf.jsPDF;
-  if(typeof html2canvas !== "function" || !jsPDFCtor){
+  if(!jsPDFCtor){
     toast("PDF engine did not load — opening the print dialog instead, choose “Save as PDF”.");
     printDoc(type, id);
     return;
@@ -4691,39 +5426,20 @@ async function exportDocPDF(type, id, btn){
   const original = btn ? btn.innerHTML : "";
   if(btn){ btn.disabled = true; btn.innerHTML = "Building PDF…"; }
 
-  const stage = pdfStage();
-  stage.innerHTML = docSheetHTML(type, d);
-  const node = stage.querySelector(".doc-sheet");
-
   try{
-    // Give the logo a moment to decode so it is not missing from the capture
-    await Promise.all([...stage.querySelectorAll("img")].map(img =>
-      img.complete ? Promise.resolve() : new Promise(res => { img.onload = img.onerror = res; })
-    ));
-
-    const canvas = await html2canvas(node, {
-      scale: 2,
-      backgroundColor: "#ffffff",
-      useCORS: true,
-      logging: false,
-      windowWidth: 794,
+    const cfg = getCompanyProfile();
+    const logo = await pdfLoadImage(cfg.logo);
+    const pdf = new jsPDFCtor({ unit: "mm", format: "a4", orientation: "portrait", compress: true });
+    pdf.setProperties({
+      title: d.number,
+      subject: d.title || d.projectType || "",
+      author: cfg.name,
+      creator: cfg.name,
     });
 
-    const pdf = new jsPDFCtor({unit:"mm", format:"a4", orientation:"portrait", compress:true});
-    const pageW = 210, pageH = 297;
-    const imgH = canvas.height * pageW / canvas.width;
-    const imgData = canvas.toDataURL("image/jpeg", 0.95);
-
-    let heightLeft = imgH;
-    let position = 0;
-    pdf.addImage(imgData, "JPEG", 0, position, pageW, imgH);
-    heightLeft -= pageH;
-    while(heightLeft > 0.5){
-      position -= pageH;
-      pdf.addPage();
-      pdf.addImage(imgData, "JPEG", 0, position, pageW, imgH);
-      heightLeft -= pageH;
-    }
+    const S = makeSheet(pdf);
+    if(type === "quotation") buildQuotationPdf(S, d, cfg, logo);
+    else                     buildInvoicePdf(S, d, cfg, logo);
 
     pdf.save(docFileName(type, d));
     toast(`PDF saved — ${d.number}`);
@@ -4732,7 +5448,6 @@ async function exportDocPDF(type, id, btn){
     toast("Could not build the PDF — opening the print dialog instead.");
     printDoc(type, id);
   }finally{
-    stage.innerHTML = "";
     if(btn){ btn.disabled = false; btn.innerHTML = original; }
   }
 }
@@ -4789,7 +5504,7 @@ function shareDocWhatsApp(type, id){
    QUOTATION -> INVOICE, PAYMENTS & DELETION
    ================================================================= */
 function convertQuotationToInvoice(quoteId){
-  if(!canManageWork()){ toast("Only Sahan and Subodha can convert quotations."); return; }
+  if(!canManageBusiness()){ toast("Sign in to convert quotations."); return; }
   const q = findDoc("quotation", quoteId);
   if(!q) return;
 
@@ -4862,7 +5577,7 @@ function convertQuotationToInvoice(quoteId){
 }
 
 function markInvoicePaidModal(invId){
-  if(!canManageWork()){ toast("Only Sahan and Subodha can settle invoices."); return; }
+  if(!canManageBusiness()){ toast("Sign in to settle invoices."); return; }
   const inv = findDoc("invoice", invId);
   if(!inv) return;
 
@@ -5022,7 +5737,7 @@ function markInvoicePaidModal(invId){
 }
 
 function deleteSalesDoc(type, id){
-  if(!canManageWork()){ toast("Only Sahan and Subodha can delete these documents."); return; }
+  if(!canManageBusiness()){ toast("Sign in to delete these documents."); return; }
   const d = findDoc(type, id);
   if(!d) return;
   const isQuote = type === "quotation";
@@ -5048,7 +5763,7 @@ function deleteSalesDoc(type, id){
    COMPANY & BILLING SETUP
    ================================================================= */
 function companyProfileModal(){
-  if(!canManageWork()){ toast("Only Sahan and Subodha can change the billing setup."); return; }
+  if(!canManageBusiness()){ toast("Sign in to change the billing setup."); return; }
   const c = getCompanyProfile();
 
   openModal(`<div class="modal" style="max-width:800px;width:96vw"><header>
@@ -12243,10 +12958,6 @@ $("#add-contact").onclick = ()=>{
       expenseForm(null);
     }
   } else if(VIEW === "business"){
-    if(!canManageWork()){
-      toast("Business Section: Only Sahan and Subodha can create products, quotations and invoices.");
-      return;
-    }
     if(BUSINESS_TAB === "products") productForm(null);
     else if(BUSINESS_TAB === "quotations") salesDocForm("quotation", null);
     else salesDocForm("invoice", null);
