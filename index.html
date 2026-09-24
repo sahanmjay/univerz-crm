@@ -4309,7 +4309,6 @@ function dsStamp(status){
   if(status === "overdue")   return `<div class="ds-stamp red">Overdue</div>`;
   if(status === "cancelled") return `<div class="ds-stamp red">Cancelled</div>`;
   if(status === "declined")  return `<div class="ds-stamp red">Declined</div>`;
-  if(status === "draft")     return `<div class="ds-stamp grey">Draft</div>`;
   if(status === "expired")   return `<div class="ds-stamp grey">Expired</div>`;
   return "";
 }
@@ -5096,11 +5095,10 @@ function pdfStamp(S, status, x, w){
     overdue:   ["OVERDUE",   PDF_COLOR.red],
     cancelled: ["CANCELLED", PDF_COLOR.red],
     declined:  ["DECLINED",  PDF_COLOR.red],
-    draft:     ["DRAFT",     PDF_COLOR.muted],
     expired:   ["EXPIRED",   PDF_COLOR.muted],
   };
   const hit = map[status];
-  if(!hit) return;
+  if(!hit) return false;
   const [label, color] = hit;
   const pdf = S.pdf;
   pdf.setFont("helvetica", "bold");
@@ -5113,6 +5111,7 @@ function pdfStamp(S, status, x, w){
   pdf.roundedRect(bx, S.y, bw, bh, 1, 1, "S");
   pdf.setTextColor(color[0], color[1], color[2]);
   pdf.text(label, bx + bw / 2, S.y + bh / 2 + 0.3, { align: "center", baseline: "middle" });
+  return true;
 }
 
 /* =================================================================
@@ -5126,11 +5125,8 @@ function buildQuotationPdf(S, d, cfg, logo){
   pdfBand(S, cfg, d.docTitle || cfg.quoteTitle || "Quotation", logo);
 
   // status stamp sits on its own line so it can never overlap the details table
-  if((d.status || "draft") !== "sent"){
-    S.ensure(12);
-    pdfStamp(S, d.status || "draft", M.mL, M.contentW);
-    S.y += 11;
-  }
+  S.ensure(12);
+  if(pdfStamp(S, d.status, M.mL, M.contentW)) S.y += 11;
 
   pdfSection(S, "Quotation Details");
   pdfKvTable(S, [
@@ -5325,11 +5321,8 @@ function buildInvoicePdf(S, d, cfg, logo){
   });
   S.y = topY + boxH + 3;
 
-  if(st !== "sent"){
-    S.ensure(10);
-    pdfStamp(S, st, M.mL, M.contentW);
-    S.y += 10;
-  }
+  S.ensure(10);
+  if(pdfStamp(S, st, M.mL, M.contentW)) S.y += 10;
 
   pdfSection(S, "Invoice Items");
   const rows = (d.items || []).map((it, i) => ({ cells: [
