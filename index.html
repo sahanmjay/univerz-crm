@@ -517,6 +517,235 @@ td .num{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
   background:var(--teal-wash);color:var(--teal-deep);
 }
 
+/* ================================================================
+   BUSINESS — products, quotations & invoices
+   ================================================================ */
+.biz-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:11px;margin-bottom:16px}
+.biz-kpi{
+  background:var(--surface);border:1px solid var(--line);border-radius:9px;
+  padding:12px 14px;box-shadow:var(--shadow);animation:rise .3s ease both;
+}
+.biz-kpi .k-lab{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:650}
+.biz-kpi .k-val{font-family:var(--mono);font-size:19px;font-weight:700;margin-top:4px;letter-spacing:-.4px}
+.biz-kpi .k-sub{font-size:11.5px;color:var(--muted);margin-top:2px}
+.biz-kpi.accent{border-color:var(--teal);background:linear-gradient(135deg,var(--surface) 0%,var(--teal-wash) 140%)}
+.biz-kpi.warn{border-color:var(--clay);background:linear-gradient(135deg,var(--surface) 0%,var(--clay-wash) 150%)}
+.biz-kpi.warn .k-val{color:var(--clay)}
+.biz-kpi.good .k-val{color:var(--green)}
+
+.biz-toolbar{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:13px}
+.biz-toolbar .biz-search{
+  flex:1;min-width:190px;display:flex;align-items:center;gap:7px;background:var(--surface);
+  border:1px solid var(--line-strong);border-radius:7px;padding:0 10px;
+}
+.biz-toolbar .biz-search input{border:0;background:none;outline:none;padding:8px 0;font-size:13px;width:100%;font-family:inherit;color:var(--ink)}
+
+.prod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:12px}
+.prod-card{
+  background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:13px 15px;
+  box-shadow:var(--shadow);animation:rise .3s ease both;display:flex;flex-direction:column;gap:8px;
+  transition:border-color .13s,transform .13s;
+}
+.prod-card:hover{border-color:var(--teal);transform:translateY(-1px)}
+.prod-card.inactive{opacity:.6;background:var(--surface-2)}
+.prod-card .p-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.prod-card .p-name{font-weight:650;font-size:14px;line-height:1.3}
+.prod-card .p-sku{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:2px}
+.prod-card .p-price{font-family:var(--mono);font-size:17px;font-weight:700;color:var(--teal-deep);letter-spacing:-.3px}
+.prod-card .p-unit{font-size:11px;color:var(--muted);font-weight:500;font-family:var(--sans)}
+.prod-card .p-desc{font-size:12.3px;color:var(--ink-soft);line-height:1.45}
+.prod-card .p-foot{display:flex;justify-content:space-between;align-items:center;gap:6px;border-top:1px solid var(--line);padding-top:9px;margin-top:auto}
+.prod-card .p-acts{display:flex;gap:5px}
+
+.doc-status{
+  display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  padding:3px 9px;border-radius:12px;white-space:nowrap;
+}
+.doc-status.draft{background:var(--surface-2);color:var(--muted)}
+.doc-status.sent{background:var(--amber-wash);color:var(--amber)}
+.doc-status.accepted,.doc-status.paid{background:var(--green-wash);color:var(--green)}
+.doc-status.declined,.doc-status.cancelled,.doc-status.overdue{background:var(--clay-wash);color:var(--clay)}
+.doc-status.expired{background:var(--surface-2);color:var(--clay)}
+.doc-status.converted{background:var(--teal-wash);color:var(--teal-deep)}
+
+.li-table{width:100%;border-collapse:collapse;margin-bottom:9px}
+.li-table th{
+  text-align:left;font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);
+  font-weight:650;padding:7px 8px;background:var(--surface-2);border-bottom:1px solid var(--line);
+}
+.li-table td{padding:5px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
+.li-table input,.li-table select{
+  width:100%;padding:6px 8px;border:1px solid var(--line-strong);border-radius:5px;
+  font-size:12.5px;font-family:inherit;background:var(--surface);color:var(--ink);
+}
+.li-table input.num{font-family:var(--mono);text-align:right}
+.li-table input:focus,.li-table select:focus{outline:2px solid var(--teal-wash);border-color:var(--teal)}
+.li-table .li-amt{font-family:var(--mono);font-size:12.5px;text-align:right;font-weight:600;white-space:nowrap}
+.li-table .li-del{
+  border:0;background:none;color:var(--muted);cursor:pointer;font-size:16px;line-height:1;padding:3px 5px;border-radius:4px;
+}
+.li-table .li-del:hover{background:var(--clay-wash);color:var(--clay)}
+
+.totals-box{
+  margin-left:auto;max-width:300px;background:var(--surface-2);border:1px solid var(--line);
+  border-radius:8px;padding:11px 14px;
+}
+.totals-box .t-row{display:flex;justify-content:space-between;gap:14px;font-size:12.5px;padding:3px 0;color:var(--ink-soft)}
+.totals-box .t-row span:last-child{font-family:var(--mono);font-weight:600}
+.totals-box .t-row.grand{
+  border-top:1.5px solid var(--line-strong);margin-top:6px;padding-top:8px;
+  font-size:15px;font-weight:750;color:var(--teal-deep);
+}
+.totals-box .t-row.grand span:last-child{font-size:16px;font-weight:800}
+
+/* Grouped sections inside the quotation / invoice builder */
+.biz-fieldset{
+  border:1px solid var(--line);border-radius:8px;padding:13px 15px 15px;margin-bottom:15px;background:var(--surface);
+}
+.biz-legend{
+  font-size:11px;font-weight:750;letter-spacing:.08em;text-transform:uppercase;color:var(--teal-deep);
+  margin-bottom:11px;padding-bottom:6px;border-bottom:1px solid var(--line);
+}
+
+/* ----------------------------------------------------------------
+   The printable / PDF document sheet.
+   Mirrors the Univerzlk Word templates: A4, Calibri, navy banding.
+   Colours are literal hex so the sheet also prints correctly from the
+   browser print dialog, which is the fallback when jsPDF is unavailable.
+   ----------------------------------------------------------------*/
+.doc-sheet{
+  width:794px;min-height:1123px;background:#ffffff;color:#1C1C2E;padding:38px 42px;
+  font-family:Calibri,Carlito,"Segoe UI",system-ui,sans-serif;font-size:12.5px;line-height:1.5;box-sizing:border-box;
+}
+
+/* Masthead band */
+.doc-sheet .ds-band{
+  display:flex;justify-content:space-between;align-items:stretch;
+  background:#1A3E6C;color:#ffffff;padding:14px 20px;border-radius:3px;
+}
+.doc-sheet .ds-band-l{display:flex;align-items:center;gap:12px;min-width:0}
+.doc-sheet .ds-logo{width:46px;height:46px;object-fit:contain;display:block;background:#ffffff;border-radius:3px;padding:3px}
+.doc-sheet .ds-co-name{font-size:19px;font-weight:700;letter-spacing:.4px;line-height:1.15}
+.doc-sheet .ds-co-tag{font-size:11px;color:#A8C8E0;margin-top:2px;letter-spacing:.2px}
+.doc-sheet .ds-band-r{text-align:right;display:flex;flex-direction:column;justify-content:center;flex:none}
+.doc-sheet .ds-country{font-size:10.5px;color:#A8C8E0;letter-spacing:.16em;text-transform:uppercase}
+.doc-sheet .ds-title{font-size:20px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;line-height:1.15;margin-top:3px}
+
+/* Company contact strip under the band */
+.doc-sheet .ds-contact{
+  font-size:10px;color:#545E6F;padding:6px 2px 0;display:flex;justify-content:space-between;gap:16px;
+  border-bottom:1px solid #E8ECF0;padding-bottom:8px;
+}
+.doc-sheet .ds-contact div{white-space:pre-line}
+
+/* Section heading */
+.doc-sheet .ds-sec{
+  font-size:13px;font-weight:700;color:#1A3E6C;margin:16px 0 7px;
+  padding-bottom:3px;border-bottom:2px solid #1A3E6C;letter-spacing:.2px;
+}
+
+/* Generic sheet table */
+.doc-sheet table.ds-tbl{width:100%;border-collapse:collapse;table-layout:fixed}
+.doc-sheet table.ds-tbl th{
+  background:#1A3E6C;color:#ffffff;font-size:9.5px;letter-spacing:.09em;text-transform:uppercase;
+  font-weight:700;padding:7px 9px;text-align:left;border:1px solid #1A3E6C;
+}
+.doc-sheet table.ds-tbl td{
+  padding:7px 9px;border:1px solid #E8ECF0;font-size:11.5px;vertical-align:top;word-wrap:break-word;
+}
+.doc-sheet table.ds-tbl td.r,.doc-sheet table.ds-tbl th.r{text-align:right}
+.doc-sheet table.ds-tbl td.c,.doc-sheet table.ds-tbl th.c{text-align:center}
+.doc-sheet table.ds-tbl tbody tr:nth-child(even) td{background:#F4F6F8}
+.doc-sheet table.ds-tbl td.lab{
+  background:#DCE3F0;font-weight:600;color:#1A3E6C;font-size:10.5px;width:38%;
+}
+.doc-sheet table.ds-tbl tbody tr:nth-child(even) td.lab{background:#DCE3F0}
+.doc-sheet .ds-it-name{font-weight:600}
+.doc-sheet .ds-it-desc{font-size:10px;color:#545E6F;margin-top:2px;line-height:1.45}
+
+/* Emphasised rows */
+.doc-sheet table.ds-tbl tr.ds-total td{
+  background:#1A3E6C;color:#ffffff;font-weight:700;font-size:12.5px;border-color:#1A3E6C;
+}
+.doc-sheet table.ds-tbl tr.ds-sub td{background:#EBF4FD;font-weight:600;color:#1A3E6C}
+.doc-sheet table.ds-tbl tr.ds-due td{
+  background:#9B3922;color:#ffffff;font-weight:700;font-size:13px;border-color:#9B3922;
+}
+.doc-sheet table.ds-tbl tr.ds-paid-row td{background:#E7F3EA}
+.doc-sheet .ds-free{color:#1A6B30;font-weight:700}
+.doc-sheet .ds-incl{color:#1A6B30;font-weight:600}
+.doc-sheet .ds-warn{color:#B45309;font-weight:600}
+
+/* Two column blocks (Invoice details | Bill to, Bank | When you pay, Included | Not included) */
+.doc-sheet .ds-2col{display:flex;gap:14px;align-items:stretch}
+.doc-sheet .ds-2col > *{flex:1;min-width:0}
+.doc-sheet .ds-box{border:1px solid #E8ECF0;border-radius:3px;overflow:hidden}
+.doc-sheet .ds-box-h{
+  background:#1A3E6C;color:#ffffff;font-size:9.5px;font-weight:700;letter-spacing:.09em;
+  text-transform:uppercase;padding:7px 10px;
+}
+.doc-sheet .ds-box-b{padding:9px 11px;font-size:11.5px;line-height:1.65}
+.doc-sheet .ds-box-b.pre{white-space:pre-line}
+.doc-sheet .ds-kv{display:flex;gap:8px;padding:3px 0;font-size:11.5px}
+.doc-sheet .ds-kv .k{color:#545E6F;flex:none;width:44%}
+.doc-sheet .ds-kv .v{font-weight:600;flex:1;word-wrap:break-word}
+
+/* Bullet lists inside package inclusions */
+.doc-sheet .ds-list{margin:0;padding-left:16px;font-size:11px;line-height:1.7}
+.doc-sheet .ds-list li{margin-bottom:1px}
+
+/* Amount in words */
+.doc-sheet .ds-words{
+  background:#F4F6F8;border-left:3px solid #1A3E6C;padding:8px 12px;margin-top:10px;font-size:11.5px;
+}
+.doc-sheet .ds-words b{color:#1A3E6C}
+
+/* Numbered terms */
+.doc-sheet .ds-terms{margin:0;padding-left:17px;font-size:10.5px;line-height:1.6;color:#2B3746}
+.doc-sheet .ds-terms li{margin-bottom:3px}
+
+.doc-sheet .ds-note{font-size:10.5px;color:#545E6F;line-height:1.6;margin-top:7px;white-space:pre-line}
+
+/* Signatures */
+.doc-sheet .ds-sign{display:flex;justify-content:space-between;gap:36px;margin-top:22px}
+.doc-sheet .ds-sign-col{flex:1}
+.doc-sheet .ds-sign-line{border-top:1px solid #1C1C2E;margin-bottom:5px;margin-top:30px}
+.doc-sheet .ds-sign-lab{font-size:10.5px;color:#2B3746;line-height:1.6}
+.doc-sheet .ds-sign-lab b{color:#1A3E6C}
+
+.doc-sheet .ds-foot{
+  margin-top:20px;padding-top:9px;border-top:1px solid #E8ECF0;
+  font-size:9.5px;color:#545E6F;text-align:center;line-height:1.6;
+}
+.doc-sheet .ds-stamp{
+  display:inline-block;border:2.5px solid #1A6B30;color:#1A6B30;font-size:15px;font-weight:800;
+  letter-spacing:2px;text-transform:uppercase;padding:4px 14px;border-radius:4px;transform:rotate(-6deg);
+}
+.doc-sheet .ds-stamp.red{border-color:#9B3922;color:#9B3922}
+.doc-sheet .ds-stamp.grey{border-color:#545E6F;color:#545E6F}
+.doc-sheet .ds-sp{height:10px}
+
+.doc-preview-scroll{
+  background:var(--surface-2);padding:18px;border-radius:8px;overflow:auto;max-height:66vh;
+  border:1px solid var(--line);
+}
+.doc-preview-scroll .doc-sheet{
+  margin:0 auto;box-shadow:0 4px 20px rgba(32,38,46,.14);min-height:auto;
+}
+
+@media (max-width:860px){
+  /* zoom (unlike transform) shrinks the layout box too, so the preview does not
+     leave a tall empty gap below the scaled-down sheet */
+  .doc-preview-scroll{padding:9px}
+  .doc-preview-scroll .doc-sheet-fit{zoom:.42}
+  @supports not (zoom:1){
+    .doc-preview-scroll .doc-sheet-fit{
+      transform:scale(.42);transform-origin:top left;width:794px;
+    }
+    .doc-preview-scroll{overflow:hidden auto}
+  }
+}
+
 /* ---- animations ---- */
 @keyframes rise{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
 @keyframes fade{from{opacity:0}to{opacity:1}}
@@ -1517,6 +1746,8 @@ body.auth-locked #auth-overlay {
       <button data-view="contacts"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>Contacts</button>
       <button data-view="appointments"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Appointments<span class="badge zero" id="badge-appt">0</span></button>
       <button data-view="pipeline"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg>Pipeline</button>
+      <div class="group-label">Business</div>
+      <button data-view="business"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 7h-3V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M9 7V5h6v2M2 12h20"/></svg>Products &amp; Billing<span class="badge zero" id="badge-invoices" title="Unpaid invoices">0</span></button>
       <div class="group-label">Finance</div>
       <button data-view="account"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>Accounts &amp; Balances<span class="badge zero" id="badge-debt-reminders" title="Loan &amp; Bill Reminders">0</span></button>
       <div class="group-label">Team &amp; HR</div>
@@ -1690,6 +1921,7 @@ body.auth-locked #auth-overlay {
 <nav class="bottom-nav" id="bottom-nav">
   <button data-view="today" class="on"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span>Today</span><span class="badge" id="badge-today-mobile">0</span></button>
   <button data-view="contacts"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Contacts</span></button>
+  <button data-view="business"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 7h-3V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M9 7V5h6v2M2 12h20"/></svg><span>Business</span><span class="badge zero" id="badge-invoices-mobile">0</span></button>
   <button data-view="account"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg><span>Accounts</span><span class="badge zero" id="badge-debt-reminders-mobile">0</span></button>
   <button data-view="appointments"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>Appts</span><span class="badge zero" id="badge-appt-mobile">0</span></button>
   <button data-view="pipeline"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg><span>Pipeline</span></button>
@@ -1699,6 +1931,9 @@ body.auth-locked #auth-overlay {
 
 <!-- Supabase JS v2 from CDN -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+<!-- PDF engine for quotations & invoices (jsPDF, vector output) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 
 <script>
@@ -1860,6 +2095,9 @@ function seed(){
     loans:[],
     bills:[],
     claims:[],
+    products:[],
+    quotations:[],
+    invoices:[],
     currentUserId:"u3",
   };
 }
@@ -2078,6 +2316,11 @@ function loadLocal(){
       if(!s.loans) s.loans = [];
       if(!s.bills) s.bills = [];
       if(!s.claims) s.claims = [];
+      if(!s.products) s.products = [];
+      if(!s.quotations) s.quotations = [];
+      else s.quotations.forEach(normalizeSalesDoc);
+      if(!s.invoices) s.invoices = [];
+      else s.invoices.forEach(normalizeSalesDoc);
       s.users = normalizeUsers(s.users);
       return s;
     }
@@ -2087,7 +2330,7 @@ function loadLocal(){
 
 /* ---- Supabase data functions ---- */
 async function loadFromSupabase(){
-  const [u,c,cl,a,acc,tx,fl,ln,bl,cm] = await Promise.all([
+  const [u,c,cl,a,acc,tx,fl,ln,bl,cm,pr,qt,iv] = await Promise.all([
     sb.from('app_user').select('*'),
     sb.from('contact').select('*'),
     sb.from('call').select('*'),
@@ -2098,6 +2341,9 @@ async function loadFromSupabase(){
     sb.from('finance_loan').select('*').then(r=>r).catch(()=>({data:[]})),
     sb.from('finance_bill').select('*').then(r=>r).catch(()=>({data:[]})),
     sb.from('finance_claim').select('*').then(r=>r).catch(()=>({data:[]})),
+    sb.from('catalog_product').select('*').then(r=>r).catch(()=>({data:[]})),
+    sb.from('sales_quotation').select('*').then(r=>r).catch(()=>({data:[]})),
+    sb.from('sales_invoice').select('*').then(r=>r).catch(()=>({data:[]})),
   ]);
   if(u.error) throw u.error;
   return {
@@ -2115,7 +2361,86 @@ async function loadFromSupabase(){
     loans: (ln.data || []).map(objToCamel),
     bills: (bl.data || []).map(objToCamel),
     claims: (cm.data || []).map(objToCamel),
+    // The business tables only exist once the setup SQL has been run. Until then the
+    // query comes back with an error, so keep the local cache rather than wiping it.
+    products: missingTable(pr) ? cachedCollection("products") : pr.data.map(objToCamel).map(p => {
+      p.price = Number(p.price) || 0;
+      p.cost = Number(p.cost) || 0;
+      return p;
+    }),
+    quotations: missingTable(qt) ? cachedCollection("quotations").map(normalizeSalesDoc)
+                                 : qt.data.map(objToCamel).map(normalizeSalesDoc),
+    invoices:   missingTable(iv) ? cachedCollection("invoices").map(normalizeSalesDoc)
+                                 : iv.data.map(objToCamel).map(normalizeSalesDoc),
   };
+}
+
+/* ---- True when a table is absent or unreachable, so its rows must not be trusted ---- */
+function missingTable(res){ return !res || !!res.error || !Array.isArray(res.data); }
+
+/* ---- Read one collection straight out of the localStorage cache ---- */
+function cachedCollection(key){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if(!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed[key]) ? parsed[key] : [];
+  }catch(e){ return []; }
+}
+
+/* ---- A JSONB column arrives as an array, a JSON string, or null ---- */
+function jsonbArray(v){
+  if(Array.isArray(v)) return v;
+  if(typeof v === "string"){
+    try{ const p = JSON.parse(v); return Array.isArray(p) ? p : []; }catch(e){ return []; }
+  }
+  return [];
+}
+
+/* ---- Normalize a quotation/invoice coming from Supabase JSONB or localStorage ---- */
+function normalizeSalesDoc(d){
+  if(!d) return d;
+  if(typeof d.items === "string"){
+    try{ d.items = JSON.parse(d.items); }catch(e){ d.items = []; }
+  }
+  if(!Array.isArray(d.items)) d.items = [];
+  d.items = d.items.map(it => ({
+    productId: it.productId || "",
+    name: it.name || "",
+    description: it.description || "",
+    qty: Number(it.qty) || 0,
+    rate: Number(it.rate) || 0,
+    amountText: it.amountText || "",
+  }));
+
+  // Univerzlk document sections, all stored as JSONB
+  d.milestones = jsonbArray(d.milestones).map(m => ({
+    label: m.label || "",
+    whenDue: m.whenDue || "",
+    amount: Number(m.amount) || 0,
+    paid: !!m.paid,
+    paidAt: m.paidAt != null ? parseTxAt(m.paidAt) : null,
+    transactionId: m.transactionId || null,
+  }));
+  d.timeline = jsonbArray(d.timeline).map(p => ({
+    phase: p.phase || "", activity: p.activity || "", duration: p.duration || "",
+  }));
+  d.inclusions = jsonbArray(d.inclusions).map(String);
+  d.exclusions = jsonbArray(d.exclusions).map(String);
+  d.amountPaid = Number(d.amountPaid) || 0;
+  d.balanceDue = Number(d.balanceDue) || 0;
+  d.taxRate      = Number(d.taxRate) || 0;
+  d.discountVal  = Number(d.discountVal) || 0;
+  d.discountType = d.discountType === "percent" ? "percent" : "amount";
+  d.subtotal     = Number(d.subtotal) || 0;
+  d.discount     = Number(d.discount) || 0;
+  d.tax          = Number(d.tax) || 0;
+  d.total        = Number(d.total) || 0;
+  if(d.issuedAt  != null) d.issuedAt  = parseTxAt(d.issuedAt);
+  if(d.validUntil!= null) d.validUntil= parseTxAt(d.validUntil);
+  if(d.dueAt     != null) d.dueAt     = parseTxAt(d.dueAt);
+  if(d.createdAt != null) d.createdAt = parseTxAt(d.createdAt);
+  return d;
 }
 
 async function seedToSupabase(data){
@@ -2163,7 +2488,7 @@ async function seedToSupabase(data){
 }
 
 /* ---- The in-memory database ---- */
-let DB = {users:[],contacts:[],calls:[],appointments:[],accounts:[],transactions:[],financeLogs:[],loans:[],bills:[],claims:[],currentUserId:"u3"};
+let DB = {users:[],contacts:[],calls:[],appointments:[],accounts:[],transactions:[],financeLogs:[],loans:[],bills:[],claims:[],products:[],quotations:[],invoices:[],currentUserId:"u3"};
 let ONLINE = false;
 
 /* ---- Role & Sahan Access Checks ---- */
@@ -2373,11 +2698,119 @@ create table if not exists finance_claim (
   created_at bigint
 );
 
+-- =================================================================
+-- Business: Products, Quotations & Invoices
+-- =================================================================
+
+create table if not exists catalog_product (
+  id text primary key,
+  name text not null,
+  sku text default '',
+  category text default 'service',
+  unit text default 'project',
+  price numeric default 0,
+  cost numeric default 0,
+  currency text default 'Rs.',
+  description text default '',
+  active boolean default true,
+  created_by text references app_user(id),
+  created_at bigint
+);
+
+create table if not exists sales_quotation (
+  id text primary key,
+  number text not null,
+  contact_id text references contact(id) on delete set null,
+  client_name text default '',
+  client_company text default '',
+  client_address text default '',
+  client_email text default '',
+  client_phone text default '',
+  title text default '',
+  items jsonb default '[]'::jsonb,
+  subtotal numeric default 0,
+  discount_type text default 'amount',
+  discount_val numeric default 0,
+  discount numeric default 0,
+  tax_rate numeric default 0,
+  tax numeric default 0,
+  total numeric default 0,
+  currency text default 'Rs.',
+  notes text default '',
+  terms text default '',
+  status text default 'draft' check (status in ('draft', 'sent', 'accepted', 'declined', 'expired', 'converted')),
+  issued_at bigint,
+  valid_until bigint,
+  converted_invoice_id text,
+  user_id text references app_user(id),
+  created_at bigint
+);
+
+create table if not exists sales_invoice (
+  id text primary key,
+  number text not null,
+  quotation_id text references sales_quotation(id) on delete set null,
+  contact_id text references contact(id) on delete set null,
+  client_name text default '',
+  client_company text default '',
+  client_address text default '',
+  client_email text default '',
+  client_phone text default '',
+  title text default '',
+  items jsonb default '[]'::jsonb,
+  subtotal numeric default 0,
+  discount_type text default 'amount',
+  discount_val numeric default 0,
+  discount numeric default 0,
+  tax_rate numeric default 0,
+  tax numeric default 0,
+  total numeric default 0,
+  currency text default 'Rs.',
+  notes text default '',
+  terms text default '',
+  status text default 'draft' check (status in ('draft', 'sent', 'paid', 'overdue', 'cancelled')),
+  issued_at bigint,
+  due_at bigint,
+  paid_at bigint,
+  transaction_id text,
+  user_id text references app_user(id),
+  created_at bigint
+);
+
+-- =================================================================
+-- Univerzlk document structure (quotation + instalment invoice).
+-- Safe to run on an existing database: every column is added only if missing.
+-- =================================================================
+
+alter table catalog_product add column if not exists amount_text text default '';
+
+alter table sales_quotation add column if not exists project_type text default '';
+alter table sales_quotation add column if not exists prepared_by text default '';
+alter table sales_quotation add column if not exists valid_until_text text default '';
+alter table sales_quotation add column if not exists milestones jsonb default '[]'::jsonb;
+alter table sales_quotation add column if not exists timeline jsonb default '[]'::jsonb;
+alter table sales_quotation add column if not exists inclusions jsonb default '[]'::jsonb;
+alter table sales_quotation add column if not exists exclusions jsonb default '[]'::jsonb;
+alter table sales_quotation add column if not exists year2_note text default '';
+alter table sales_quotation add column if not exists payment_note text default '';
+alter table sales_quotation add column if not exists acceptance_text text default '';
+alter table sales_quotation add column if not exists amount_in_words text default '';
+
+alter table sales_invoice add column if not exists project_type text default '';
+alter table sales_invoice add column if not exists payment_terms text default '';
+alter table sales_invoice add column if not exists quotation_ref text default '';
+alter table sales_invoice add column if not exists milestones jsonb default '[]'::jsonb;
+alter table sales_invoice add column if not exists amount_in_words text default '';
+alter table sales_invoice add column if not exists amount_paid numeric default 0;
+alter table sales_invoice add column if not exists balance_due numeric default 0;
+alter table sales_invoice add column if not exists payment_note text default '';
+alter table sales_invoice add column if not exists acceptance_text text default '';
+
 -- Idempotent RLS configuration
 do $$
 declare
   t text;
-  tables text[] := array['finance_account', 'finance_transaction', 'finance_log', 'finance_loan', 'finance_bill', 'finance_claim'];
+  tables text[] := array['finance_account', 'finance_transaction', 'finance_log', 'finance_loan', 'finance_bill', 'finance_claim', 'catalog_product', 'sales_quotation', 'sales_invoice'];
 begin
   foreach t in array tables loop
     execute format('alter table %I enable row level security', t);
@@ -2390,7 +2823,7 @@ end $$;
 do $$
 declare
   t text;
-  tables text[] := array['finance_account', 'finance_transaction', 'finance_log', 'finance_loan', 'finance_bill', 'finance_claim'];
+  tables text[] := array['finance_account', 'finance_transaction', 'finance_log', 'finance_loan', 'finance_bill', 'finance_claim', 'catalog_product', 'sales_quotation', 'sales_invoice'];
 begin
   foreach t in array tables loop
     if not exists (select 1 from pg_publication_tables where pubname = 'supabase_realtime' and tablename = t) then
@@ -2475,6 +2908,7 @@ const PAGES = {
   account:{title:"Accounts & Balances", crumb:"Cashflow, agency balances, expenses and audit logs", render:renderAccount},
   appointments:{title:"Appointments", crumb:"Meetings, shoots and site visits", render:renderAppointments},
   accounts:{title:"Accounts & Balances", crumb:"Cashflow, agency balances, expenses and audit logs", render:renderAccount},
+  business:{title:"Products & Billing", crumb:"Product catalogue, quotations and invoices", render:renderBusiness},
   pipeline:{title:"Pipeline", crumb:"Drag a card to move its stage", render:renderPipeline},
   team:{title:"People & activity", crumb:"Who is doing what", render:renderTeam},
   humanresource:{title:"HR System & Task Board", crumb:"Team task manager, duty roster, calendar and performance reports", render:renderHumanResource},
@@ -2506,6 +2940,14 @@ function go(v){
         topBtn.style.color = "#fff";
         topBtn.style.border = "none";
       }
+    } else if(v === "business"){
+      topBtn.textContent = BUSINESS_TAB === "products" ? "+ New product"
+                         : BUSINESS_TAB === "quotations" ? "+ New quotation"
+                         : "+ New invoice";
+      topBtn.title = "Create a new " + (BUSINESS_TAB === "products" ? "product or service" : BUSINESS_TAB === "quotations" ? "quotation" : "invoice");
+      topBtn.style.background = "var(--teal)";
+      topBtn.style.color = "#fff";
+      topBtn.style.border = "none";
     } else if(v === "team"){
       topBtn.textContent = "👤 My Profile";
       topBtn.title = "Edit your profile & password";
@@ -2601,6 +3043,2911 @@ function renderHumanResource(){
       setTimeout(syncHRUserSession, 300);
     });
   }
+}
+
+/* =================================================================
+   BUSINESS — Product catalogue, Quotations & Invoices
+   ================================================================= */
+let BUSINESS_TAB = "products";   // "products" | "quotations" | "invoices"
+let BIZ_SEARCH = "";
+let BIZ_DOC_FILTER = "all";
+
+const PRODUCT_CATEGORIES = [
+  {id:"web",        label:"Web & Development"},
+  {id:"design",     label:"Branding & Design"},
+  {id:"social",     label:"Social Media"},
+  {id:"video",      label:"Video & Production"},
+  {id:"photo",      label:"Photography"},
+  {id:"print",      label:"Printing & Merchandise"},
+  {id:"hosting",    label:"Hosting & Maintenance"},
+  {id:"consulting", label:"Consulting & Strategy"},
+  {id:"other",      label:"Other"},
+];
+const PRODUCT_UNITS = ["project","hour","day","month","year","piece","post","page","package"];
+
+const QUOTE_STATUSES = [
+  {id:"draft",     label:"Draft"},
+  {id:"sent",      label:"Sent"},
+  {id:"accepted",  label:"Accepted"},
+  {id:"declined",  label:"Declined"},
+  {id:"expired",   label:"Expired"},
+  {id:"converted", label:"Converted"},
+];
+const INVOICE_STATUSES = [
+  {id:"draft",     label:"Draft"},
+  {id:"sent",      label:"Sent"},
+  {id:"paid",      label:"Paid"},
+  {id:"overdue",   label:"Overdue"},
+  {id:"cancelled", label:"Cancelled"},
+];
+
+/* The whole Business section is open to every signed-in team member.
+   Narrow this to canManageWork() (Sahan + Subodha) if it ever needs locking down. */
+function canManageBusiness(){ return true; }
+
+function prodCat(id){ return PRODUCT_CATEGORIES.find(c=>c.id===id) || {id:id||"other", label:id||"Other"}; }
+function docStatusLabel(type, id){
+  const list = type === "quotation" ? QUOTE_STATUSES : INVOICE_STATUSES;
+  return (list.find(s=>s.id===id) || {label:id||"Draft"}).label;
+}
+
+/* ---- Company profile printed on every quotation and invoice ----
+   Defaults match the Univerzlk Word templates; all of it is editable
+   under Business → Company & Billing Setup. */
+const DEFAULT_COMPANY = {
+  name:"UNIVERZLK.COM",
+  tagline:"Digital Innovation & Web Design Agency",
+  country:"Sri Lanka",
+  address:"",
+  phone:"",
+  email:"",
+  website:"",
+  regNo:"",
+  taxId:"",
+  logo:"/logo-placeholder.png",
+  bankName:"Bank of Ceylon",
+  bankBranch:"Yatiyantota Branch (477)",
+  bankAccountNo:"8206837",
+  bankAccountName:"MR K S K SAMARASINGHE",
+  defaultTaxRate:0,
+  taxLabel:"VAT",
+  currencyWord:"Sri Lanka Rupees",
+  currencySubWord:"Cents",
+  quotePrefix:"QT-UNIVZLK", invoicePrefix:"INV-UNIVZLK",
+  numberIncludesYear:false, numberPadding:1,
+  quoteValidDays:30, invoiceDueDays:14,
+  quoteTitle:"Website Development Quotation",
+  invoiceTitle:"Invoice",
+  validUntilText:"30 DAYS FROM DATE ISSUED",
+  projectType:"Professional Website Design & Development",
+  paymentTerms:"3 Instalments",
+  paymentNote:"Please quote the invoice number on the transfer.\nShare the payment slip via WhatsApp after each instalment.\nThis invoice is updated and re-issued after each instalment.",
+  quoteTerms:[
+    "This quotation is valid for 30 days from the date of issue.",
+    "Project work commences only after receipt of the down payment.",
+    "Client must provide all content (photos, text, logos, documents) within 3 days of project start. Delays may extend the timeline.",
+    "A review version will be delivered at the end of Week 2. Client must provide consolidated feedback within 5 business days.",
+    "Domain renewal after Year 1 is the client's responsibility. Failure to renew will result in website downtime.",
+    "Ongoing support after Year 1 is optional. This covers minor updates — not new pages or redesigns.",
+    "The down payment is non-refundable if the client cancels after project commencement.",
+    "Once the project scope is finalized, any subsequent modifications or add-ons requested by the client will be subject to additional costs and a revised delivery schedule.",
+  ].join("\n"),
+  invoiceTerms:[
+    "All amounts are in Sri Lankan Rupees (LKR). The total is payable in instalments as agreed with the client.",
+    "Work commences after the 1st instalment is received; final files, accounts and handover are released once the full balance is settled.",
+    "Instalments already paid are non-refundable once the related work has commenced.",
+    "Domain, hosting or advertising budget paid on the client's behalf is charged at cost and is non-refundable.",
+    "Delays in providing content, approvals or payments may extend the delivery timeline.",
+  ].join("\n"),
+  quoteAcceptance:"By signing below, the client confirms acceptance of this quotation and authorises Univerzlk.com to commence work upon receipt of the down payment. This signed quotation shall form part of the Client Service Agreement.",
+  quoteFooter:"Thank you for choosing Univerzlk.com. We look forward to building something great together.",
+  invoiceFooter:"Thank you for your business. Univerzlk.com — Digital Innovation & Web Design Agency.",
+  year2Note:"Year 2 Onwards: Domain must be renewed annually (client's responsibility). Continued support & maintenance available at Rs. 7,500 per year.",
+  defaultInclusions:[
+    "Custom website design & development","Domain registration — 1 year","Web hosting setup — 1 year",
+    "Mobile responsive design","Basic SEO setup","Contact form integration","Social media links",
+    "Up to 5 pages","SSL certificate","1-year free support & minor updates",
+  ],
+  defaultExclusions:[
+    "E-commerce / online store features","Custom logo design","Professional photography or videography",
+    "Copywriting / content writing services","Social media management","New pages added after project launch",
+    "Email marketing integration","Major redesign after deployment",
+  ],
+  defaultTimeline:[
+    {phase:"Kick-off",      activity:"Project start, content collection & wireframe planning", duration:"Day 1 – 3"},
+    {phase:"Development",   activity:"Full website design & development",                      duration:"Day 4 – 14"},
+    {phase:"Client Review", activity:"Site shared with client for feedback (5 days to review)", duration:"Day 15 – 19"},
+    {phase:"Revisions",     activity:"Corrections based on client review comments",            duration:"Day 20 – 26"},
+    {phase:"Client Review", activity:"Site shared for feedback & approval (2 days)",            duration:"Day 27 – 28"},
+    {phase:"Deployment",    activity:"Final testing, launch & go-live",                         duration:"Day 29 – 35"},
+  ],
+  signatory:"Subodha Kalhara",
+  signatoryTitle:"Tech Lead",
+};
+
+function getCompanyProfile(){
+  try{
+    const raw = localStorage.getItem("crm_company_profile");
+    if(raw) return Object.assign({}, DEFAULT_COMPANY, JSON.parse(raw));
+  }catch(e){}
+  return Object.assign({}, DEFAULT_COMPANY);
+}
+function saveCompanyProfile(cfg){
+  const merged = Object.assign({}, DEFAULT_COMPANY, cfg);
+  try{ localStorage.setItem("crm_company_profile", JSON.stringify(merged)); }catch(e){}
+  sbWrite(sb.from('app_setting').upsert({key:'company_profile', value:merged, updated_at:Date.now()}));
+  return merged;
+}
+
+/* ---- Document helpers ---- */
+function bizCurrency(){ return getCustomSettings().currency || "Rs."; }
+
+/* Numbers follow the Univerzlk format QT-UNIVZLK-14 / INV-UNIVZLK-7.
+   Turn on numberIncludesYear in the billing setup for QT-UNIVZLK-2026-014 instead. */
+function nextDocNumber(type){
+  const cfg = getCompanyProfile();
+  const prefix = (type === "quotation" ? cfg.quotePrefix : cfg.invoicePrefix) || (type === "quotation" ? "QT" : "INV");
+  const list = (type === "quotation" ? DB.quotations : DB.invoices) || [];
+  const safe = prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const withYear = !!cfg.numberIncludesYear;
+  const year = new Date().getFullYear();
+  const re = new RegExp("^" + safe + "-" + (withYear ? year + "-" : "") + "(\\d+)$");
+  let max = 0;
+  list.forEach(d => {
+    const m = re.exec(String(d.number || ""));
+    if(m) max = Math.max(max, Number(m[1]) || 0);
+  });
+  const pad = Math.max(1, Number(cfg.numberPadding) || 1);
+  const seq = String(max + 1).padStart(pad, "0");
+  return prefix + "-" + (withYear ? year + "-" : "") + seq;
+}
+
+/* A line printed as "Included" / "FREE" carries no figure, so it adds nothing to the total. */
+function lineAmount(it){
+  if(!it) return 0;
+  if((it.amountText || "").trim()) return 0;
+  return (Number(it.qty) || 0) * (Number(it.rate) || 0);
+}
+
+function computeDocTotals(items, discountType, discountVal, taxRate){
+  // Every figure is rounded to 2dp before the next one is derived from it, so the
+  // printed document always adds up: subtotal - discount + tax === total.
+  const r2 = n => Math.round((Number(n) || 0) * 100) / 100;
+  const subtotal = r2((items || []).reduce((s, it) => s + lineAmount(it), 0));
+  const dv = Number(discountVal) || 0;
+  const discount = r2(Math.max(0, Math.min(discountType === "percent" ? subtotal * dv / 100 : dv, subtotal)));
+  const taxable = r2(subtotal - discount);
+  const tax = r2(taxable * (Number(taxRate) || 0) / 100);
+  return { subtotal, discount, tax, total: r2(taxable + tax) };
+}
+
+/* ---- Amount in words, e.g. "Sri Lanka Rupees Thirty Five Thousand Only" ---- */
+const WORD_ONES = ["","One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten",
+  "Eleven","Twelve","Thirteen","Fourteen","Fifteen","Sixteen","Seventeen","Eighteen","Nineteen"];
+const WORD_TENS = ["","","Twenty","Thirty","Forty","Fifty","Sixty","Seventy","Eighty","Ninety"];
+
+function threeDigitWords(n){
+  let s = "";
+  if(n >= 100){ s += WORD_ONES[Math.floor(n / 100)] + " Hundred"; n %= 100; if(n) s += " "; }
+  if(n >= 20){ s += WORD_TENS[Math.floor(n / 10)]; n %= 10; if(n) s += " " + WORD_ONES[n]; }
+  else if(n > 0){ s += WORD_ONES[n]; }
+  return s;
+}
+
+function numberToWords(n){
+  n = Math.floor(Math.abs(Number(n) || 0));
+  if(n === 0) return "Zero";
+  // Indian/Sri Lankan grouping: crore, lakh, thousand, hundred
+  const parts = [];
+  const crore = Math.floor(n / 10000000); n %= 10000000;
+  const lakh  = Math.floor(n / 100000);   n %= 100000;
+  const thou  = Math.floor(n / 1000);     n %= 1000;
+  if(crore) parts.push(threeDigitWords(crore) + " Crore");
+  if(lakh)  parts.push(threeDigitWords(lakh) + " Lakh");
+  if(thou)  parts.push(threeDigitWords(thou) + " Thousand");
+  if(n)     parts.push(threeDigitWords(n));
+  return parts.join(" ");
+}
+
+function amountInWords(amount, cur){
+  const cfg = getCompanyProfile();
+  const unit = cfg.currencyWord || "Sri Lanka Rupees";
+  const sub  = cfg.currencySubWord || "Cents";
+  const v = Math.abs(Number(amount) || 0);
+  const whole = Math.floor(v);
+  const cents = Math.round((v - whole) * 100);
+  let s = unit + " " + numberToWords(whole);
+  if(cents) s += " and " + numberToWords(cents) + " " + sub;
+  return s + " Only";
+}
+
+/* ---- How much of an invoice has actually been settled ---- */
+function invoicePaidAmount(inv){
+  if(!inv) return 0;
+  const ms = inv.milestones || [];
+  if(ms.length) return ms.reduce((s, m) => s + (m.paid ? (Number(m.amount) || 0) : 0), 0);
+  return inv.status === "paid" ? (Number(inv.total) || 0) : (Number(inv.amountPaid) || 0);
+}
+function invoiceBalanceDue(inv){
+  return Math.max(0, (Number(inv.total) || 0) - invoicePaidAmount(inv));
+}
+
+function isInvoiceOverdue(inv){
+  if(!inv || inv.status === "paid" || inv.status === "cancelled" || inv.status === "draft") return false;
+  return !!inv.dueAt && inv.dueAt < Date.now();
+}
+function effectiveInvoiceStatus(inv){
+  return isInvoiceOverdue(inv) ? "overdue" : (inv.status || "draft");
+}
+function docList(type){ return ((type === "quotation" ? DB.quotations : DB.invoices) || []); }
+function findDoc(type, id){ return docList(type).find(d => d.id === id); }
+function docTable(type){ return type === "quotation" ? "sales_quotation" : "sales_invoice"; }
+
+function fmtDocDate(ts){
+  if(!ts) return "—";
+  const d = new Date(ts);
+  if(isNaN(d.getTime())) return "—";
+  return d.toLocaleDateString("en-GB", {day:"2-digit", month:"short", year:"numeric"});
+}
+function toDateInput(ts){
+  const d = new Date(ts || Date.now());
+  if(isNaN(d.getTime())) return "";
+  const p = n => String(n).padStart(2, "0");
+  return d.getFullYear() + "-" + p(d.getMonth()+1) + "-" + p(d.getDate());
+}
+function docMoney(n, cur){
+  const c = cur || bizCurrency();
+  const v = Number(n) || 0;
+  const s = Math.abs(v).toLocaleString("en-US", {minimumFractionDigits:2, maximumFractionDigits:2});
+  return (v < 0 ? "-" : "") + c + " " + s;
+}
+
+/* =================================================================
+   BUSINESS VIEW
+   ================================================================= */
+function renderBusiness(){
+  if(!DB.products)   DB.products = [];
+  if(!DB.quotations) DB.quotations = [];
+  if(!DB.invoices)   DB.invoices = [];
+
+  const canEdit = canManageBusiness();
+  const c = $("#content");
+
+  const activeProducts = DB.products.filter(p => p.active !== false);
+  const openInvoices   = DB.invoices.filter(i => i.status !== "paid" && i.status !== "cancelled" && i.status !== "draft");
+  const overdueInv     = DB.invoices.filter(isInvoiceOverdue);
+  const paidInvoices   = DB.invoices.filter(i => i.status === "paid");
+  const outstanding    = openInvoices.reduce((s, i) => s + (Number(i.total)||0), 0);
+  const overdueAmt     = overdueInv.reduce((s, i) => s + (Number(i.total)||0), 0);
+  const collected      = paidInvoices.reduce((s, i) => s + (Number(i.total)||0), 0);
+  const liveQuotes     = DB.quotations.filter(q => q.status === "sent");
+  const quotePipeline  = liveQuotes.reduce((s, q) => s + (Number(q.total)||0), 0);
+
+  const TABS = [
+    {id:"products",   icon:"📦", name:"Products &amp; Services", count:DB.products.length},
+    {id:"quotations", icon:"📝", name:"Quotations",              count:DB.quotations.length},
+    {id:"invoices",   icon:"🧾", name:"Invoices",                count:DB.invoices.length},
+  ];
+
+  let h = `
+  <div class="acc-top-tabs-wrapper" style="position:sticky;top:0;z-index:20;background:var(--paper);padding:4px 0 10px;margin-bottom:14px;border-bottom:1.5px solid var(--line)">
+    <div class="acc-top-tabs" style="display:flex;gap:8px;align-items:center;overflow-x:auto;padding:2px 0">`;
+
+  TABS.forEach(t => {
+    let badgeStyle = "";
+    if(t.id === "invoices" && overdueInv.length) badgeStyle = "background:var(--clay);color:#fff";
+    else if(t.id === "quotations" && liveQuotes.length) badgeStyle = "background:var(--amber);color:#fff";
+    h += `
+      <button class="acc-tab-item ${BUSINESS_TAB===t.id?'active':''}" data-biz-view="${t.id}">
+        <span class="tab-ico">${t.icon}</span><span>${t.name}</span>
+        <span class="tab-cnt" style="${badgeStyle}">${t.count}</span>
+      </button>`;
+  });
+
+  h += `
+      <div style="margin-left:auto;display:flex;gap:6px;align-items:center;flex:none">
+        ${canEdit ? `<button class="btn sm" id="btn-company-profile" title="Company details, logo, bank account and tax shown on quotations and invoices" style="background:var(--surface);border:1.5px solid var(--teal);color:var(--teal-deep);font-weight:700;font-size:11.5px;padding:6px 12px;border-radius:8px">&#127970; Company &amp; Billing Setup</button>` : ``}
+        <button class="btn ghost sm" id="btn-biz-refresh" title="Reload from the shared database" style="border:1px solid var(--line-strong);font-size:11.5px;padding:6px 9px">&#8635; Refresh</button>
+      </div>
+    </div>
+  </div>`;
+
+  h += `
+  <div class="biz-kpis">
+    <div class="biz-kpi accent">
+      <div class="k-lab">Catalogue</div>
+      <div class="k-val">${DB.products.length}</div>
+      <div class="k-sub">${activeProducts.length} active &middot; ${DB.products.length - activeProducts.length} archived</div>
+    </div>
+    <div class="biz-kpi">
+      <div class="k-lab">Quotation pipeline</div>
+      <div class="k-val">${fmtMoney(quotePipeline, bizCurrency())}</div>
+      <div class="k-sub">${liveQuotes.length} quotation${liveQuotes.length===1?'':'s'} awaiting a reply</div>
+    </div>
+    <div class="biz-kpi ${overdueAmt ? 'warn' : ''}">
+      <div class="k-lab">Outstanding invoices</div>
+      <div class="k-val">${fmtMoney(outstanding, bizCurrency())}</div>
+      <div class="k-sub">${openInvoices.length} unpaid${overdueInv.length ? ` &middot; <b style="color:var(--clay)">${overdueInv.length} overdue</b>` : ''}</div>
+    </div>
+    <div class="biz-kpi good">
+      <div class="k-lab">Collected</div>
+      <div class="k-val">${fmtMoney(collected, bizCurrency())}</div>
+      <div class="k-sub">${paidInvoices.length} invoice${paidInvoices.length===1?'':'s'} settled</div>
+    </div>
+  </div>`;
+
+
+  if(BUSINESS_TAB === "products")        h += businessProductsTab(canEdit);
+  else if(BUSINESS_TAB === "quotations") h += businessDocsTab("quotation", canEdit);
+  else                                   h += businessDocsTab("invoice", canEdit);
+
+  c.innerHTML = h;
+
+  const sIn = $("#biz-search-input");
+  if(sIn){
+    sIn.value = BIZ_SEARCH;
+    sIn.oninput = e => {
+      BIZ_SEARCH = e.target.value.trim();
+      const pos = e.target.selectionStart;
+      renderBusiness();
+      const again = $("#biz-search-input");
+      if(again){ again.focus(); try{ again.setSelectionRange(pos, pos); }catch(err){} }
+    };
+  }
+}
+
+/* ---- Products tab ---- */
+function businessProductsTab(canEdit){
+  const q = BIZ_SEARCH.toLowerCase();
+  let list = [...DB.products];
+  if(q){
+    list = list.filter(p =>
+      (p.name||"").toLowerCase().includes(q) ||
+      (p.sku||"").toLowerCase().includes(q) ||
+      (p.description||"").toLowerCase().includes(q) ||
+      prodCat(p.category).label.toLowerCase().includes(q)
+    );
+  }
+  if(BIZ_DOC_FILTER === "active")   list = list.filter(p => p.active !== false);
+  if(BIZ_DOC_FILTER === "archived") list = list.filter(p => p.active === false);
+  list.sort((a,b) => (a.name||"").localeCompare(b.name||""));
+
+  const cur = bizCurrency();
+  const nActive = DB.products.filter(p=>p.active!==false).length;
+  const nArch   = DB.products.filter(p=>p.active===false).length;
+
+  let h = `
+  <div class="biz-toolbar">
+    <div class="biz-search">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="biz-search-input" placeholder="Search products by name, SKU or category&hellip;" />
+    </div>
+    <button class="btn sm ${BIZ_DOC_FILTER==='all'?'primary':''}" data-biz-filter="all">All (${DB.products.length})</button>
+    <button class="btn sm ${BIZ_DOC_FILTER==='active'?'primary':''}" data-biz-filter="active">Active (${nActive})</button>
+    <button class="btn sm ${BIZ_DOC_FILTER==='archived'?'primary':''}" data-biz-filter="archived">Archived (${nArch})</button>
+    ${canEdit ? `<button class="btn primary sm" id="btn-add-product">+ New product</button>` : ``}
+  </div>`;
+
+  if(!list.length){
+    h += `<div class="empty">
+      <b>${DB.products.length ? "No products match that search" : "No products or services yet"}</b>
+      ${DB.products.length
+        ? "Try a different name, SKU or category."
+        : "Add the services you sell &mdash; web design, social media packages, video production &mdash; then drop them straight into a quotation or invoice."}
+      ${canEdit && !DB.products.length ? `<div style="margin-top:14px"><button class="btn primary" id="btn-empty-add-product">+ Add your first product</button></div>` : ``}
+    </div>`;
+    return h;
+  }
+
+  h += `<div class="prod-grid">`;
+  list.forEach((p, i) => {
+    const price = Number(p.price) || 0;
+    const margin = price - (Number(p.cost) || 0);
+    const marginPct = price ? Math.round(margin / price * 100) : 0;
+    const pillClass = p.category === "web" ? "web" : p.category === "social" ? "social" : p.category === "photo" ? "photo" : "stage";
+    h += `
+    <div class="prod-card ${p.active===false?'inactive':''}" style="--d:${Math.min(i,10)*.02}s">
+      <div class="p-top">
+        <div style="min-width:0">
+          <div class="p-name">${esc(p.name)}</div>
+          <div class="p-sku">${p.sku ? esc(p.sku) + " &middot; " : ""}${esc(prodCat(p.category).label)}</div>
+        </div>
+        <span class="pill ${pillClass}">${esc(prodCat(p.category).label.split(" ")[0])}</span>
+      </div>
+      <div>
+        <span class="p-price">${docMoney(p.price, p.currency || cur)}</span>
+        <span class="p-unit">/ ${esc(p.unit || "project")}</span>
+      </div>
+      ${p.description ? `<div class="p-desc">${esc(p.description)}</div>` : ``}
+      <div class="p-foot">
+        <span style="font-size:11px;color:var(--muted)">
+          ${Number(p.cost)
+            ? `Cost ${docMoney(p.cost, p.currency || cur)} &middot; <b style="color:${margin>=0?'var(--green)':'var(--clay)'}">${marginPct}% margin</b>`
+            : (p.active===false ? "Archived" : "Active")}
+        </span>
+        <span class="p-acts">
+          ${canEdit ? `
+            <button class="btn ghost sm" data-quote-product="${p.id}" title="Start a quotation with this product">&#128221;</button>
+            <button class="btn ghost sm" data-edit-product="${p.id}" title="Edit product">&#9998;</button>
+            <button class="btn ghost sm" data-del-product="${p.id}" title="Delete product">&#128465;</button>
+          ` : ``}
+        </span>
+      </div>
+    </div>`;
+  });
+  h += `</div>`;
+  return h;
+}
+
+/* ---- Quotations / Invoices list tab ---- */
+function businessDocsTab(type, canEdit){
+  const isQuote = type === "quotation";
+  const all = docList(type);
+  const statuses = isQuote ? QUOTE_STATUSES : INVOICE_STATUSES;
+  const q = BIZ_SEARCH.toLowerCase();
+
+  let list = [...all];
+  if(q){
+    list = list.filter(d =>
+      (d.number||"").toLowerCase().includes(q) ||
+      (d.clientName||"").toLowerCase().includes(q) ||
+      (d.clientCompany||"").toLowerCase().includes(q) ||
+      (d.title||"").toLowerCase().includes(q)
+    );
+  }
+  if(BIZ_DOC_FILTER !== "all"){
+    list = list.filter(d => (isQuote ? (d.status||"draft") : effectiveInvoiceStatus(d)) === BIZ_DOC_FILTER);
+  }
+  list.sort((a,b) => (b.issuedAt||b.createdAt||0) - (a.issuedAt||a.createdAt||0));
+
+  const countFor = sid => all.filter(d => (isQuote ? (d.status||"draft") : effectiveInvoiceStatus(d)) === sid).length;
+
+  let h = `
+  <div class="biz-toolbar">
+    <div class="biz-search">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="biz-search-input" placeholder="Search by number, client or subject&hellip;" />
+    </div>
+    <button class="btn sm ${BIZ_DOC_FILTER==='all'?'primary':''}" data-biz-filter="all">All (${all.length})</button>`;
+  statuses.forEach(s => {
+    const n = countFor(s.id);
+    if(!n && BIZ_DOC_FILTER !== s.id) return;
+    h += `<button class="btn sm ${BIZ_DOC_FILTER===s.id?'primary':''}" data-biz-filter="${s.id}">${s.label} (${n})</button>`;
+  });
+  h += `
+    ${canEdit ? `<button class="btn primary sm" id="btn-add-${type}">+ New ${isQuote ? "quotation" : "invoice"}</button>` : ``}
+  </div>`;
+
+  if(!list.length){
+    h += `<div class="empty">
+      <b>${all.length ? "Nothing matches that filter" : (isQuote ? "No quotations yet" : "No invoices yet")}</b>
+      ${all.length
+        ? "Clear the search or pick a different status."
+        : (isQuote
+            ? "Build a quotation from your catalogue, send it to the client, then convert it into an invoice in one click when they accept."
+            : "Create an invoice directly, or convert an accepted quotation into one. Marking it paid records the income in Accounts &amp; Balances.")}
+      ${canEdit && !all.length ? `<div style="margin-top:14px"><button class="btn primary" id="btn-empty-add-${type}">+ Create ${isQuote ? "a quotation" : "an invoice"}</button></div>` : ``}
+    </div>`;
+    return h;
+  }
+
+  h += `
+  <div class="tablewrap">
+    <table>
+      <thead><tr>
+        <th>${isQuote ? "Quotation" : "Invoice"}</th>
+        <th>Client</th>
+        <th>Issued</th>
+        <th>${isQuote ? "Valid until" : "Due"}</th>
+        <th style="text-align:right">Total</th>
+        <th>Status</th>
+        <th style="text-align:right">Actions</th>
+      </tr></thead>
+      <tbody>`;
+
+  list.forEach((d, i) => {
+    const st = isQuote ? (d.status || "draft") : effectiveInvoiceStatus(d);
+    const dateCol = isQuote ? d.validUntil : d.dueAt;
+    const isLate = !isQuote && isInvoiceOverdue(d);
+    const daysLate = isLate ? Math.floor((Date.now() - d.dueAt) / DAY) : 0;
+    h += `
+    <tr style="--d:${Math.min(i,12)*.02}s">
+      <td>
+        <div class="nm" style="font-family:var(--mono);font-size:12.5px">${esc(d.number)}</div>
+        ${d.title ? `<div style="font-size:11.5px;color:var(--muted);margin-top:2px">${esc(d.title)}</div>` : ``}
+        ${d.quotationId ? `<div style="font-size:10.5px;color:var(--teal-deep);margin-top:2px">from ${esc((findDoc("quotation", d.quotationId)||{}).number || "quotation")}</div>` : ``}
+      </td>
+      <td>
+        <div style="font-weight:600">${esc(d.clientName || "—")}</div>
+        ${d.clientCompany ? `<div style="font-size:11.5px;color:var(--muted)">${esc(d.clientCompany)}</div>` : ``}
+      </td>
+      <td class="num">${fmtDocDate(d.issuedAt)}</td>
+      <td class="num" style="${isLate?'color:var(--clay);font-weight:700':''}">
+        ${fmtDocDate(dateCol)}
+        ${isLate ? `<div style="font-size:10.5px">${daysLate}d late</div>` : ``}
+      </td>
+      <td style="text-align:right;font-family:var(--mono);font-weight:700">
+        ${docMoney(d.total, d.currency)}
+        ${!isQuote && invoicePaidAmount(d) > 0 && invoiceBalanceDue(d) > 0
+          ? `<div style="font-size:10.5px;font-weight:600;color:var(--clay)">Bal ${docMoney(invoiceBalanceDue(d), d.currency)}</div>` : ``}
+        ${!isQuote && (d.milestones||[]).length
+          ? `<div style="font-size:10px;color:var(--muted);font-family:var(--sans)">${(d.milestones||[]).filter(m=>m.paid).length}/${(d.milestones||[]).length} instalments paid</div>` : ``}
+      </td>
+      <td><span class="doc-status ${st}">${docStatusLabel(type, st)}</span></td>
+      <td style="text-align:right;white-space:nowrap">
+        <button class="btn ghost sm" data-doc-preview="${d.id}" data-doc-type="${type}" title="Open, print or download PDF">&#128196;</button>
+        ${canEdit ? `<button class="btn ghost sm" data-doc-edit="${d.id}" data-doc-type="${type}" title="Edit">&#9998;</button>` : ``}
+        ${canEdit && isQuote && d.status !== "converted" ? `<button class="btn ghost sm" data-doc-convert="${d.id}" title="Convert to an invoice">&#10142;&#129534;</button>` : ``}
+        ${canEdit && !isQuote && d.status !== "paid" && d.status !== "cancelled" ? `<button class="btn ghost sm" data-doc-pay="${d.id}" title="Record a payment and post the income">&#128176;</button>` : ``}
+        ${canEdit ? `<button class="btn ghost sm" data-doc-del="${d.id}" data-doc-type="${type}" title="Delete">&#128465;</button>` : ``}
+      </td>
+    </tr>`;
+  });
+
+  h += `</tbody></table></div>`;
+  return h;
+}
+
+/* =================================================================
+   PRODUCT FORM
+   ================================================================= */
+function productForm(p){
+  if(!canManageBusiness()){
+    toast("Business Section: sign in to manage the product catalogue.");
+    return;
+  }
+  const isNew = !p;
+  const d = p || {id:"", name:"", sku:"", category:"web", unit:"project", price:"", cost:"", amountText:"", description:"", active:true};
+  const cur = bizCurrency();
+
+  openModal(`<div class="modal"><header><h3>${isNew ? "Add product or service" : "Edit product"}</h3><button class="x" data-close>&times;</button></header>
+  <div class="pad">
+    <div class="field"><label>Name</label><input id="pf-name" value="${esc(d.name)}" placeholder="e.g. Business Website (5 pages)" autofocus></div>
+    <div class="grid2">
+      <div class="field"><label>SKU / code <span style="font-weight:400;color:var(--muted)">(optional)</span></label><input id="pf-sku" class="num" value="${esc(d.sku)}" placeholder="WEB-BIZ-05"></div>
+      <div class="field"><label>Category</label><select id="pf-cat">${PRODUCT_CATEGORIES.map(c=>`<option value="${c.id}" ${c.id===d.category?'selected':''}>${c.label}</option>`).join("")}</select></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Selling price (${esc(cur)})</label><input id="pf-price" class="num" type="number" step="0.01" value="${d.price===""?"":Number(d.price)}" placeholder="150000"></div>
+      <div class="field"><label>Billed per</label><select id="pf-unit">${PRODUCT_UNITS.map(u=>`<option value="${u}" ${u===(d.unit||'project')?'selected':''}>${u}</option>`).join("")}</select></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Internal cost (${esc(cur)}) <span style="font-weight:400;color:var(--muted)">(shows your margin, never printed)</span></label><input id="pf-cost" class="num" type="number" step="0.01" value="${d.cost===""?"":Number(d.cost)}" placeholder="40000"></div>
+      <div class="field"><label>Print instead of a price <span style="font-weight:400;color:var(--muted)">(optional)</span></label><input id="pf-amounttext" value="${esc(d.amountText||"")}" placeholder="Included / FREE"></div>
+    </div>
+    <div class="field"><label>Description <span style="font-weight:400;color:var(--muted)">(appears under the line item on quotations and invoices)</span></label><textarea id="pf-desc" placeholder="Responsive 5-page website, CMS, contact form, 1 year hosting included.">${esc(d.description)}</textarea></div>
+    <div class="field" style="margin-bottom:0">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:600">
+        <input type="checkbox" id="pf-active" ${d.active!==false?'checked':''} style="width:auto;margin:0">
+        <span>Active &mdash; show this in the quotation and invoice picker</span>
+      </label>
+    </div>
+  </div>
+  <footer>
+    ${!isNew ? `<button class="btn danger" id="pf-del" style="margin-right:auto">Delete</button>` : ``}
+    <button class="btn" data-close>Cancel</button>
+    <button class="btn primary" id="pf-save">${isNew ? "Add product" : "Save changes"}</button>
+  </footer></div>`);
+
+  if(!isNew){
+    $("#pf-del").onclick = () => deleteProduct(d.id);
+  }
+
+  $("#pf-save").onclick = () => {
+    const name = $("#pf-name").value.trim();
+    if(!name){ $("#pf-name").focus(); $("#pf-name").style.borderColor = "var(--clay)"; return; }
+    const price = Number($("#pf-price").value) || 0;
+
+    const rec = {
+      id: isNew ? uid() : d.id,
+      name,
+      sku: $("#pf-sku").value.trim(),
+      category: $("#pf-cat").value,
+      unit: $("#pf-unit").value,
+      price,
+      cost: Number($("#pf-cost").value) || 0,
+      amountText: $("#pf-amounttext").value.trim(),
+      currency: cur,
+      description: $("#pf-desc").value.trim(),
+      active: $("#pf-active").checked,
+      createdBy: isNew ? DB.currentUserId : (d.createdBy || DB.currentUserId),
+      createdAt: isNew ? Date.now() : (d.createdAt || Date.now()),
+    };
+
+    if(isNew){
+      DB.products.unshift(rec);
+      sbWrite(sb.from('catalog_product').insert(objToSnake(rec)));
+    } else {
+      const i = DB.products.findIndex(x => x.id === rec.id);
+      if(i > -1) DB.products[i] = rec;
+      sbWrite(sb.from('catalog_product').update(objToSnake(rec)).eq('id', rec.id));
+    }
+
+    cacheLocal(DB);
+    closeModal();
+    toast(isNew ? `Product added — ${name}` : "Product updated");
+    BUSINESS_TAB = "products";
+    draw();
+  };
+}
+
+function deleteProduct(id){
+  const p = DB.products.find(x => x.id === id);
+  if(!p) return;
+  if(!confirm(`Delete "${p.name}" from the catalogue?\n\nQuotations and invoices that already use it keep their own copy of the line and are not changed.`)) return;
+  DB.products = DB.products.filter(x => x.id !== id);
+  cacheLocal(DB);
+  sbWrite(sb.from('catalog_product').delete().eq('id', id));
+  closeModal();
+  toast("Product deleted");
+  draw();
+}
+
+/* =================================================================
+   QUOTATION / INVOICE BUILDER
+   ================================================================= */
+/* Working copies of the editable sections while a builder form is open */
+let DOC_ITEMS = [];
+let DOC_MILESTONES = [];
+let DOC_TIMELINE = [];
+let DOC_INCLUSIONS = [];
+let DOC_EXCLUSIONS = [];
+let DOC_CURRENCY = "Rs.";
+
+function blankItem(){ return {productId:"", name:"", description:"", qty:1, rate:0, amountText:""}; }
+
+function salesDocForm(type, doc, presetItems){
+  if(!canManageBusiness()){
+    toast("Business Section: sign in to create quotations and invoices.");
+    return;
+  }
+  const isQuote = type === "quotation";
+  const isNew = !doc;
+  const cfg = getCompanyProfile();
+  DOC_CURRENCY = bizCurrency();
+
+  const now = Date.now();
+  const defDays = isQuote ? (Number(cfg.quoteValidDays) || 30) : (Number(cfg.invoiceDueDays) || 14);
+  const d = doc || {
+    id:"", number: nextDocNumber(type), contactId:"", clientName:"", clientCompany:"",
+    clientAddress:"", clientEmail:"", clientPhone:"", title:"",
+    docTitle: isQuote ? cfg.quoteTitle : cfg.invoiceTitle,
+    projectType: cfg.projectType || "",
+    preparedBy: cfg.name,
+    validUntilText: isQuote ? (cfg.validUntilText || "") : "",
+    paymentTerms: isQuote ? "" : (cfg.paymentTerms || ""),
+    quotationRef: "",
+    items: presetItems && presetItems.length ? presetItems : [blankItem()],
+    milestones: isQuote ? [] : defaultInstalments(0, cfg),
+    timeline: isQuote ? (cfg.defaultTimeline || []).map(p => Object.assign({}, p)) : [],
+    inclusions: isQuote ? (cfg.defaultInclusions || []).slice() : [],
+    exclusions: isQuote ? (cfg.defaultExclusions || []).slice() : [],
+    year2Note: isQuote ? (cfg.year2Note || "") : "",
+    paymentNote: cfg.paymentNote || "",
+    acceptanceText: isQuote ? (cfg.quoteAcceptance || "") : "",
+    discountType:"amount", discountVal:0, taxRate: Number(cfg.defaultTaxRate) || 0,
+    notes:"", terms: isQuote ? cfg.quoteTerms : cfg.invoiceTerms,
+    status:"draft", issuedAt: now,
+    validUntil: isQuote ? now + defDays * DAY : undefined,
+    dueAt: isQuote ? undefined : now + defDays * DAY,
+    currency: DOC_CURRENCY,
+  };
+
+  DOC_ITEMS = (d.items && d.items.length ? d.items : [blankItem()]).map(it => ({
+    productId: it.productId || "",
+    name: it.name || "",
+    description: it.description || "",
+    qty: Number(it.qty) || 0,
+    rate: Number(it.rate) || 0,
+    amountText: it.amountText || "",
+  }));
+  DOC_MILESTONES = (d.milestones || []).map(m => Object.assign({}, m));
+  DOC_TIMELINE   = (d.timeline || []).map(p => Object.assign({}, p));
+  DOC_INCLUSIONS = (d.inclusions || []).slice();
+  DOC_EXCLUSIONS = (d.exclusions || []).slice();
+
+  const statuses = isQuote ? QUOTE_STATUSES : INVOICE_STATUSES;
+  const activeProducts = DB.products.filter(p => p.active !== false).sort((a,b)=>(a.name||"").localeCompare(b.name||""));
+  const heading = isQuote
+    ? (isNew ? "New quotation" : "Edit quotation " + d.number)
+    : (isNew ? "New invoice" : "Edit invoice " + d.number);
+
+  openModal(`<div class="modal" style="max-width:940px;width:96vw"><header>
+    <h3>${esc(heading)}</h3><button class="x" data-close>&times;</button>
+  </header>
+  <div class="pad" style="max-height:72vh;overflow:auto">
+
+    <div class="biz-fieldset">
+      <div class="biz-legend">${isQuote ? "Quotation" : "Invoice"} details</div>
+      <div class="grid2">
+        <div class="field"><label>${isQuote ? "Quotation" : "Invoice"} No.</label><input id="df-number" class="num" value="${esc(d.number)}"></div>
+        <div class="field"><label>Document heading (printed in the blue band)</label><input id="df-doctitle" value="${esc(d.docTitle || (isQuote ? cfg.quoteTitle : cfg.invoiceTitle))}"></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>Date issued</label><input id="df-issued" class="num" type="date" value="${toDateInput(d.issuedAt)}"></div>
+        <div class="field"><label>${isQuote ? "Valid until (date)" : "Payment due by"}</label><input id="df-until" class="num" type="date" value="${toDateInput(isQuote ? d.validUntil : d.dueAt)}"></div>
+      </div>
+      <div class="grid2">
+        ${isQuote
+          ? `<div class="field"><label>Valid until (printed text)</label><input id="df-validtext" value="${esc(d.validUntilText || "")}" placeholder="30 DAYS FROM DATE ISSUED"></div>`
+          : `<div class="field"><label>Payment terms</label><input id="df-payterms" value="${esc(d.paymentTerms || "")}" placeholder="3 Instalments"></div>`}
+        <div class="field"><label>Status</label><select id="df-status">${statuses.map(s=>`<option value="${s.id}" ${s.id===(d.status||'draft')?'selected':''}>${s.label}</option>`).join("")}</select></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>Project type / service</label><input id="df-projtype" value="${esc(d.projectType || "")}" placeholder="Professional Website Design &amp; Development"></div>
+        ${isQuote
+          ? `<div class="field"><label>Prepared by</label><input id="df-preparedby" value="${esc(d.preparedBy || cfg.name)}"></div>`
+          : `<div class="field"><label>Quotation ref.</label><input id="df-quoteref" class="num" value="${esc(d.quotationRef || (d.quotationId ? ((findDoc("quotation", d.quotationId)||{}).number || "") : ""))}" placeholder="QT-UNIVZLK-14"></div>`}
+      </div>
+      <div class="field" style="margin-bottom:0"><label>Internal subject <span style="font-weight:400;color:var(--muted)">(shown in your lists, not printed)</span></label><input id="df-title" value="${esc(d.title)}" placeholder="e.g. Perera Holdings corporate site"></div>
+    </div>
+
+    <div class="biz-fieldset">
+      <div class="biz-legend">Client information</div>
+      <div class="field">
+        <label>Pick an existing contact to auto-fill, or type the details below</label>
+        <select id="df-contact">
+          <option value="">&mdash; Enter client details manually &mdash;</option>
+          ${DB.contacts.map(ct=>`<option value="${ct.id}" ${ct.id===d.contactId?'selected':''}>${esc(ct.name)}${ct.company?" ("+esc(ct.company)+")":""}</option>`).join("")}
+        </select>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>Client / business name</label><input id="df-ccompany" value="${esc(d.clientCompany)}" placeholder="Perera Holdings (Pvt) Ltd"></div>
+        <div class="field"><label>Contact person</label><input id="df-cname" value="${esc(d.clientName)}" placeholder="Nimal Perera"></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>Phone / WhatsApp</label><input id="df-cphone" class="num" value="${esc(d.clientPhone)}" placeholder="+94 77 123 4567"></div>
+        <div class="field"><label>Email address</label><input id="df-cemail" value="${esc(d.clientEmail)}" placeholder="nimal@company.lk"></div>
+      </div>
+      <div class="field" style="margin-bottom:0"><label>Business address</label><textarea id="df-caddress" style="min-height:48px" placeholder="No. 25, Galle Road,&#10;Colombo 03">${esc(d.clientAddress)}</textarea></div>
+    </div>
+
+    <div class="biz-fieldset">
+      <div class="biz-legend" style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+        <span>${isQuote ? "Pricing breakdown" : "Invoice items"}</span>
+        <span style="display:flex;gap:7px;align-items:center;flex-wrap:wrap">
+          <select id="df-add-product" style="padding:5px 8px;border:1px solid var(--line-strong);border-radius:6px;font-size:11.5px;font-family:inherit;max-width:240px;background:var(--surface);color:var(--ink);font-weight:500">
+            <option value="">+ Add from catalogue&hellip;</option>
+            ${activeProducts.map(p=>`<option value="${p.id}">${esc(p.name)} — ${p.amountText ? esc(p.amountText) : docMoney(p.price, p.currency||DOC_CURRENCY)}</option>`).join("")}
+          </select>
+          <button class="btn sm" id="df-add-blank" type="button">+ Blank line</button>
+        </span>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="li-table">
+          <thead><tr>
+            <th style="min-width:200px">Item &amp; description</th>
+            <th style="width:76px;text-align:right">Qty</th>
+            <th style="width:112px;text-align:right">Rate</th>
+            <th style="width:108px">Or print</th>
+            <th style="width:118px;text-align:right">Amount</th>
+            <th style="width:34px"></th>
+          </tr></thead>
+          <tbody id="df-items-body"></tbody>
+        </table>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:5px">
+        Put <b>Included</b>, <b>FREE</b> or similar in <b>Or print</b> to show that word instead of a figure. Those lines add nothing to the total.
+      </div>
+
+      <div class="grid2" style="margin-top:12px;align-items:start">
+        <div class="grid2">
+          <div class="field">
+            <label>Discount</label>
+            <div style="display:flex;gap:6px">
+              <input id="df-disc-val" class="num" type="number" step="0.01" value="${Number(d.discountVal)||0}" style="flex:1">
+              <select id="df-disc-type" style="width:84px;flex:none">
+                <option value="amount"  ${d.discountType!=='percent'?'selected':''}>${esc(DOC_CURRENCY)}</option>
+                <option value="percent" ${d.discountType==='percent'?'selected':''}>%</option>
+              </select>
+            </div>
+          </div>
+          <div class="field"><label>${esc(cfg.taxLabel||"VAT")} rate (%)</label><input id="df-tax-rate" class="num" type="number" step="0.01" value="${Number(d.taxRate)||0}"></div>
+        </div>
+        <div class="totals-box" id="df-totals"></div>
+      </div>
+    </div>
+
+    <div class="biz-fieldset">
+      <div class="biz-legend" style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+        <span>${isQuote ? "Payment schedule" : "Instalment schedule"}</span>
+        <span style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn sm" id="df-ms-25" type="button" title="25% down payment, 75% on delivery">25 / 75</button>
+          <button class="btn sm" id="df-ms-3" type="button" title="Split into three equal instalments">3 equal</button>
+          <button class="btn sm" id="df-ms-add" type="button">+ Row</button>
+          <button class="btn sm ghost" id="df-ms-clear" type="button" style="border:1px solid var(--line-strong)">Clear</button>
+        </span>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="li-table">
+          <thead><tr>
+            <th style="min-width:150px">${isQuote ? "Milestone" : "Instalment"}</th>
+            <th style="min-width:150px">When due</th>
+            <th style="width:124px;text-align:right">Amount</th>
+            ${isQuote ? `` : `<th style="width:68px;text-align:center">Paid</th>`}
+            <th style="width:34px"></th>
+          </tr></thead>
+          <tbody id="df-ms-body"></tbody>
+        </table>
+      </div>
+      <div id="df-ms-warn" style="font-size:11px;margin-top:5px"></div>
+    </div>
+
+    ${isQuote ? `
+    <div class="biz-fieldset">
+      <div class="biz-legend" style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+        <span>Project timeline</span>
+        <span style="display:flex;gap:6px">
+          <button class="btn sm" id="df-tl-add" type="button">+ Row</button>
+          <button class="btn sm ghost" id="df-tl-reset" type="button" style="border:1px solid var(--line-strong)">Load default</button>
+          <button class="btn sm ghost" id="df-tl-clear" type="button" style="border:1px solid var(--line-strong)">Clear</button>
+        </span>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="li-table">
+          <thead><tr><th style="width:150px">Phase</th><th style="min-width:200px">Activity</th><th style="width:130px">Duration</th><th style="width:34px"></th></tr></thead>
+          <tbody id="df-tl-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="biz-fieldset">
+      <div class="biz-legend">Package inclusions</div>
+      <div class="grid2">
+        <div class="field"><label>Included in this package <span style="font-weight:400;color:var(--muted)">(one per line)</span></label><textarea id="df-inclusions" style="min-height:120px">${esc(DOC_INCLUSIONS.join("\n"))}</textarea></div>
+        <div class="field"><label>Not included / add-ons <span style="font-weight:400;color:var(--muted)">(one per line)</span></label><textarea id="df-exclusions" style="min-height:120px">${esc(DOC_EXCLUSIONS.join("\n"))}</textarea></div>
+      </div>
+      <div class="field" style="margin-bottom:0"><label>Year 2 onwards note</label><textarea id="df-year2" style="min-height:46px">${esc(d.year2Note || "")}</textarea></div>
+    </div>` : ``}
+
+    <div class="biz-fieldset">
+      <div class="biz-legend">Terms, notes &amp; payment</div>
+      <div class="field"><label>Terms &amp; notes <span style="font-weight:400;color:var(--muted)">(one clause per line &mdash; they print as a numbered list)</span></label><textarea id="df-terms" style="min-height:120px">${esc(d.terms || (isQuote ? cfg.quoteTerms : cfg.invoiceTerms))}</textarea></div>
+      <div class="field"><label>&ldquo;When you pay&rdquo; instructions</label><textarea id="df-paynote" style="min-height:62px">${esc(d.paymentNote || cfg.paymentNote || "")}</textarea></div>
+      ${isQuote ? `<div class="field"><label>Acceptance wording</label><textarea id="df-acceptance" style="min-height:56px">${esc(d.acceptanceText || cfg.quoteAcceptance || "")}</textarea></div>` : ``}
+      <div class="field" style="margin-bottom:0"><label>Extra note to the client <span style="font-weight:400;color:var(--muted)">(optional)</span></label><textarea id="df-notes" style="min-height:44px">${esc(d.notes)}</textarea></div>
+    </div>
+
+  </div>
+  <footer>
+    <button class="btn" data-close>Cancel</button>
+    <button class="btn" id="df-save">Save</button>
+    <button class="btn primary" id="df-save-preview">Save &amp; preview PDF</button>
+  </footer></div>`);
+
+  renderDocItemRows();
+  renderMilestoneRows(isQuote);
+  if(isQuote) renderTimelineRows();
+
+  $("#df-contact").onchange = e => {
+    const ct = contact(e.target.value);
+    if(!ct) return;
+    $("#df-cname").value    = ct.name || "";
+    $("#df-ccompany").value = ct.company || "";
+    $("#df-cemail").value   = ct.email || "";
+    $("#df-cphone").value   = ct.phone || "";
+    if(ct.address) $("#df-caddress").value = ct.address;
+  };
+
+  /* ---- line items ---- */
+  $("#df-add-blank").onclick = () => { DOC_ITEMS.push(blankItem()); renderDocItemRows(); };
+  $("#df-add-product").onchange = e => {
+    const p = DB.products.find(x => x.id === e.target.value);
+    e.target.value = "";
+    if(!p) return;
+    const blankIdx = DOC_ITEMS.findIndex(it => !it.name && !Number(it.rate) && !it.amountText);
+    const row = {productId:p.id, name:p.name, description:p.description||"", qty:1, rate:Number(p.price)||0, amountText:p.amountText||""};
+    if(blankIdx > -1) DOC_ITEMS[blankIdx] = row; else DOC_ITEMS.push(row);
+    renderDocItemRows();
+  };
+  $("#df-items-body").addEventListener("input", e => {
+    const inp = e.target.closest("[data-li-field]");
+    if(!inp) return;
+    const i = Number(inp.dataset.liI);
+    const f = inp.dataset.liField;
+    if(!DOC_ITEMS[i]) return;
+    DOC_ITEMS[i][f] = (f === "qty" || f === "rate") ? (Number(inp.value) || 0) : inp.value;
+    const cell = $(`#df-items-body tr[data-li-row="${i}"] .li-amt`);
+    if(cell) cell.textContent = (DOC_ITEMS[i].amountText || "").trim() || docMoney(lineAmount(DOC_ITEMS[i]), DOC_CURRENCY);
+    recalcDocTotals();
+  });
+  $("#df-items-body").addEventListener("click", e => {
+    const del = e.target.closest("[data-li-del]");
+    if(!del) return;
+    DOC_ITEMS.splice(Number(del.dataset.liDel), 1);
+    if(!DOC_ITEMS.length) DOC_ITEMS.push(blankItem());
+    renderDocItemRows();
+  });
+
+  /* ---- milestones ---- */
+  $("#df-ms-body").addEventListener("input", e => {
+    const inp = e.target.closest("[data-ms-field]");
+    if(!inp) return;
+    const i = Number(inp.dataset.msI), f = inp.dataset.msField;
+    if(!DOC_MILESTONES[i]) return;
+    DOC_MILESTONES[i][f] = f === "amount" ? (Number(inp.value) || 0) : inp.value;
+    checkMilestoneSum();
+  });
+  $("#df-ms-body").addEventListener("change", e => {
+    const chk = e.target.closest("[data-ms-paid]");
+    if(!chk) return;
+    const i = Number(chk.dataset.msPaid);
+    if(!DOC_MILESTONES[i]) return;
+    DOC_MILESTONES[i].paid = chk.checked;
+    if(chk.checked && !DOC_MILESTONES[i].paidAt) DOC_MILESTONES[i].paidAt = Date.now();
+    if(!chk.checked) DOC_MILESTONES[i].paidAt = null;
+    checkMilestoneSum();
+  });
+  $("#df-ms-body").addEventListener("click", e => {
+    const del = e.target.closest("[data-ms-del]");
+    if(!del) return;
+    DOC_MILESTONES.splice(Number(del.dataset.msDel), 1);
+    renderMilestoneRows(isQuote);
+  });
+  $("#df-ms-add").onclick   = () => { DOC_MILESTONES.push({label:"", whenDue:"", amount:0, paid:false, paidAt:null, transactionId:null}); renderMilestoneRows(isQuote); };
+  $("#df-ms-clear").onclick = () => { DOC_MILESTONES = []; renderMilestoneRows(isQuote); };
+  $("#df-ms-25").onclick    = () => { DOC_MILESTONES = splitMilestones(currentFormTotal(), [["Down Payment — 25%","Before project work begins",25],["Balance Payment — 75%","After deployment / site goes live",75]]); renderMilestoneRows(isQuote); };
+  $("#df-ms-3").onclick     = () => { DOC_MILESTONES = splitMilestones(currentFormTotal(), [["1st Instalment","Before project work begins",34],["2nd Instalment","At review stage",33],["3rd Instalment","On handover / go-live",33]]); renderMilestoneRows(isQuote); };
+
+  /* ---- timeline ---- */
+  if(isQuote){
+    $("#df-tl-body").addEventListener("input", e => {
+      const inp = e.target.closest("[data-tl-field]");
+      if(!inp) return;
+      const i = Number(inp.dataset.tlI);
+      if(!DOC_TIMELINE[i]) return;
+      DOC_TIMELINE[i][inp.dataset.tlField] = inp.value;
+    });
+    $("#df-tl-body").addEventListener("click", e => {
+      const del = e.target.closest("[data-tl-del]");
+      if(!del) return;
+      DOC_TIMELINE.splice(Number(del.dataset.tlDel), 1);
+      renderTimelineRows();
+    });
+    $("#df-tl-add").onclick   = () => { DOC_TIMELINE.push({phase:"", activity:"", duration:""}); renderTimelineRows(); };
+    $("#df-tl-clear").onclick = () => { DOC_TIMELINE = []; renderTimelineRows(); };
+    $("#df-tl-reset").onclick = () => { DOC_TIMELINE = (cfg.defaultTimeline||[]).map(p=>Object.assign({},p)); renderTimelineRows(); };
+  }
+
+  ["df-disc-val","df-disc-type","df-tax-rate"].forEach(id => {
+    const el = $("#" + id);
+    if(el){ el.oninput = recalcDocTotals; el.onchange = recalcDocTotals; }
+  });
+
+  const collect = () => {
+    const items = DOC_ITEMS
+      .filter(it => (it.name || "").trim() || Number(it.qty) || Number(it.rate) || (it.amountText || "").trim())
+      .map(it => ({
+        productId: it.productId || "",
+        name: (it.name || "").trim() || "Item",
+        description: (it.description || "").trim(),
+        qty: Number(it.qty) || 0,
+        rate: Number(it.rate) || 0,
+        amountText: (it.amountText || "").trim(),
+      }));
+    if(!items.length){ toast("Add at least one line item before saving."); return null; }
+
+    const discountType = $("#df-disc-type").value;
+    const discountVal  = Number($("#df-disc-val").value) || 0;
+    const taxRate      = Number($("#df-tax-rate").value) || 0;
+    const t = computeDocTotals(items, discountType, discountVal, taxRate);
+    const untilTs = $("#df-until").value ? parseTxAt($("#df-until").value) : null;
+
+    const milestones = DOC_MILESTONES
+      .filter(m => (m.label || "").trim() || Number(m.amount))
+      .map(m => ({
+        label: (m.label || "").trim(),
+        whenDue: (m.whenDue || "").trim(),
+        amount: Number(m.amount) || 0,
+        paid: !!m.paid,
+        paidAt: m.paid ? (m.paidAt || Date.now()) : null,
+        transactionId: m.transactionId || null,
+      }));
+
+    const rec = {
+      id: isNew ? uid() : d.id,
+      number: $("#df-number").value.trim() || nextDocNumber(type),
+      docTitle: $("#df-doctitle").value.trim(),
+      projectType: $("#df-projtype").value.trim(),
+      contactId: $("#df-contact").value || "",
+      clientName: $("#df-cname").value.trim(),
+      clientCompany: $("#df-ccompany").value.trim(),
+      clientAddress: $("#df-caddress").value.trim(),
+      clientEmail: $("#df-cemail").value.trim(),
+      clientPhone: $("#df-cphone").value.trim(),
+      title: $("#df-title").value.trim(),
+      items,
+      subtotal: t.subtotal,
+      discountType, discountVal,
+      discount: t.discount,
+      taxRate, tax: t.tax,
+      total: t.total,
+      amountInWords: amountInWords(t.total, DOC_CURRENCY),
+      currency: DOC_CURRENCY,
+      milestones,
+      notes: $("#df-notes").value.trim(),
+      terms: $("#df-terms").value.trim(),
+      paymentNote: $("#df-paynote").value.trim(),
+      status: $("#df-status").value,
+      issuedAt: $("#df-issued").value ? parseTxAt($("#df-issued").value) : Date.now(),
+      userId: isNew ? DB.currentUserId : (d.userId || DB.currentUserId),
+      createdAt: isNew ? Date.now() : (d.createdAt || Date.now()),
+    };
+
+    if(isQuote){
+      rec.validUntil = untilTs;
+      rec.validUntilText = $("#df-validtext").value.trim();
+      rec.preparedBy = $("#df-preparedby").value.trim();
+      rec.timeline = DOC_TIMELINE.filter(p => (p.phase||"").trim() || (p.activity||"").trim());
+      rec.inclusions = splitLines($("#df-inclusions").value);
+      rec.exclusions = splitLines($("#df-exclusions").value);
+      rec.year2Note = $("#df-year2").value.trim();
+      rec.acceptanceText = $("#df-acceptance").value.trim();
+      rec.convertedInvoiceId = d.convertedInvoiceId || null;
+    } else {
+      rec.dueAt = untilTs;
+      rec.paymentTerms = $("#df-payterms").value.trim();
+      rec.quotationRef = $("#df-quoteref").value.trim();
+      rec.quotationId = d.quotationId || null;
+      rec.amountPaid = milestones.length
+        ? milestones.reduce((s, m) => s + (m.paid ? m.amount : 0), 0)
+        : (rec.status === "paid" ? t.total : (Number(d.amountPaid) || 0));
+      rec.balanceDue = Math.max(0, t.total - rec.amountPaid);
+      rec.paidAt = d.paidAt || null;
+      rec.transactionId = d.transactionId || null;
+      // Every instalment ticked means the invoice is settled
+      if(milestones.length && rec.balanceDue === 0 && rec.status !== "cancelled"){
+        rec.status = "paid";
+        rec.paidAt = rec.paidAt || Date.now();
+      }
+    }
+
+    if(!rec.clientName && !rec.clientCompany){
+      toast("Add a client name or company before saving.");
+      return null;
+    }
+    return rec;
+  };
+
+  const persist = rec => {
+    const list = isQuote ? DB.quotations : DB.invoices;
+    if(isNew){
+      list.unshift(rec);
+      sbWrite(sb.from(docTable(type)).insert(objToSnake(rec)));
+    } else {
+      const i = list.findIndex(x => x.id === rec.id);
+      if(i > -1) list[i] = rec; else list.unshift(rec);
+      sbWrite(sb.from(docTable(type)).update(objToSnake(rec)).eq('id', rec.id));
+    }
+    cacheLocal(DB);
+    logFinanceAction(
+      (isNew ? "Created " : "Updated ") + (isQuote ? "Quotation" : "Invoice"),
+      `${rec.number} — ${rec.clientCompany || rec.clientName} — ${docMoney(rec.total, rec.currency)}`,
+      0
+    );
+  };
+
+  $("#df-save").onclick = () => {
+    const rec = collect();
+    if(!rec) return;
+    persist(rec);
+    closeModal();
+    toast(`${isQuote ? "Quotation" : "Invoice"} ${rec.number} saved`);
+    BUSINESS_TAB = isQuote ? "quotations" : "invoices";
+    draw();
+  };
+
+  $("#df-save-preview").onclick = () => {
+    const rec = collect();
+    if(!rec) return;
+    persist(rec);
+    BUSINESS_TAB = isQuote ? "quotations" : "invoices";
+    draw();
+    previewDocModal(type, rec.id);
+  };
+}
+
+function splitLines(s){
+  return String(s || "").split(/\r?\n/).map(x => x.replace(/^\s*[-•]\s*/, "").trim()).filter(Boolean);
+}
+
+function currentFormTotal(){
+  const dt = $("#df-disc-type") ? $("#df-disc-type").value : "amount";
+  const dv = $("#df-disc-val")  ? Number($("#df-disc-val").value) || 0 : 0;
+  const tr = $("#df-tax-rate")  ? Number($("#df-tax-rate").value) || 0 : 0;
+  return computeDocTotals(DOC_ITEMS, dt, dv, tr).total;
+}
+
+/* Split a total across named milestones by percentage, giving any rounding remainder to the last one */
+function splitMilestones(total, spec){
+  const t = Number(total) || 0;
+  const rows = spec.map(([label, whenDue, pct]) => ({
+    label, whenDue,
+    amount: Math.round(t * pct) / 100,
+    paid:false, paidAt:null, transactionId:null,
+  }));
+  const diff = Math.round((t - rows.reduce((s, r) => s + r.amount, 0)) * 100) / 100;
+  if(rows.length && diff) rows[rows.length - 1].amount = Math.round((rows[rows.length - 1].amount + diff) * 100) / 100;
+  return rows;
+}
+
+function defaultInstalments(total, cfg){
+  return splitMilestones(total, [
+    ["1st Instalment", "Before project work begins", 34],
+    ["2nd Instalment", "At review stage", 33],
+    ["3rd Instalment", "On handover / go-live", 33],
+  ]);
+}
+
+function renderDocItemRows(){
+  const body = $("#df-items-body");
+  if(!body) return;
+  body.innerHTML = DOC_ITEMS.map((it, i) => `
+    <tr data-li-row="${i}">
+      <td>
+        <input data-li-field="name" data-li-i="${i}" value="${esc(it.name)}" placeholder="Item or service name">
+        <input data-li-field="description" data-li-i="${i}" value="${esc(it.description)}" placeholder="Description (optional)" style="margin-top:4px;font-size:11.5px;color:var(--muted)">
+      </td>
+      <td><input class="num" data-li-field="qty" data-li-i="${i}" type="number" step="0.01" value="${Number(it.qty)||0}"></td>
+      <td><input class="num" data-li-field="rate" data-li-i="${i}" type="number" step="0.01" value="${Number(it.rate)||0}"></td>
+      <td><input data-li-field="amountText" data-li-i="${i}" value="${esc(it.amountText||"")}" placeholder="Included"></td>
+      <td class="li-amt">${(it.amountText||"").trim() || docMoney(lineAmount(it), DOC_CURRENCY)}</td>
+      <td><button class="li-del" type="button" data-li-del="${i}" title="Remove this line">&times;</button></td>
+    </tr>`).join("");
+  recalcDocTotals();
+}
+
+function renderMilestoneRows(isQuote){
+  const body = $("#df-ms-body");
+  if(!body) return;
+  if(!DOC_MILESTONES.length){
+    body.innerHTML = `<tr><td colspan="${isQuote?4:5}" style="text-align:center;color:var(--muted);font-size:12px;padding:12px">
+      No ${isQuote ? "payment schedule" : "instalments"} &mdash; the ${isQuote ? "quotation" : "invoice"} prints without that table.
+    </td></tr>`;
+    checkMilestoneSum();
+    return;
+  }
+  body.innerHTML = DOC_MILESTONES.map((m, i) => `
+    <tr data-ms-row="${i}">
+      <td><input data-ms-field="label" data-ms-i="${i}" value="${esc(m.label||"")}" placeholder="${isQuote?'Down Payment — 25%':'1st Instalment'}"></td>
+      <td><input data-ms-field="whenDue" data-ms-i="${i}" value="${esc(m.whenDue||"")}" placeholder="Before project work begins"></td>
+      <td><input class="num" data-ms-field="amount" data-ms-i="${i}" type="number" step="0.01" value="${Number(m.amount)||0}"></td>
+      ${isQuote ? `` : `<td style="text-align:center"><input type="checkbox" data-ms-paid="${i}" ${m.paid?'checked':''} style="width:auto"></td>`}
+      <td><button class="li-del" type="button" data-ms-del="${i}" title="Remove">&times;</button></td>
+    </tr>`).join("");
+  checkMilestoneSum();
+}
+
+/* Warn when the schedule does not reconcile with the document total */
+function checkMilestoneSum(){
+  const warn = $("#df-ms-warn");
+  if(!warn) return;
+  if(!DOC_MILESTONES.length){ warn.innerHTML = ""; return; }
+  const sum = DOC_MILESTONES.reduce((s, m) => s + (Number(m.amount) || 0), 0);
+  const total = currentFormTotal();
+  const diff = Math.round((total - sum) * 100) / 100;
+  const paid = DOC_MILESTONES.reduce((s, m) => s + (m.paid ? (Number(m.amount) || 0) : 0), 0);
+  const balance = Math.round((total - paid) * 100) / 100;
+  warn.innerHTML = diff === 0
+    ? `<span style="color:var(--green)">✓ Schedule totals ${docMoney(sum, DOC_CURRENCY)} — matches the document total.</span>
+       <span style="color:var(--muted)"> Paid ${docMoney(paid, DOC_CURRENCY)} · Balance due ${docMoney(balance, DOC_CURRENCY)}.</span>`
+    : `<span style="color:var(--clay);font-weight:600">⚠ Schedule totals ${docMoney(sum, DOC_CURRENCY)}, which is ${docMoney(Math.abs(diff), DOC_CURRENCY)} ${diff > 0 ? "short of" : "over"} the document total of ${docMoney(total, DOC_CURRENCY)}.</span>`;
+}
+
+function renderTimelineRows(){
+  const body = $("#df-tl-body");
+  if(!body) return;
+  if(!DOC_TIMELINE.length){
+    body.innerHTML = `<tr><td colspan="4" style="text-align:center;color:var(--muted);font-size:12px;padding:12px">No timeline &mdash; that section is left off the quotation.</td></tr>`;
+    return;
+  }
+  body.innerHTML = DOC_TIMELINE.map((p, i) => `
+    <tr>
+      <td><input data-tl-field="phase" data-tl-i="${i}" value="${esc(p.phase||"")}" placeholder="Kick-off"></td>
+      <td><input data-tl-field="activity" data-tl-i="${i}" value="${esc(p.activity||"")}" placeholder="Project start, content collection"></td>
+      <td><input data-tl-field="duration" data-tl-i="${i}" value="${esc(p.duration||"")}" placeholder="Day 1 – 3"></td>
+      <td><button class="li-del" type="button" data-tl-del="${i}" title="Remove">&times;</button></td>
+    </tr>`).join("");
+}
+
+function recalcDocTotals(){
+  const box = $("#df-totals");
+  if(!box) return;
+  const discountType = $("#df-disc-type") ? $("#df-disc-type").value : "amount";
+  const discountVal  = $("#df-disc-val")  ? Number($("#df-disc-val").value) || 0 : 0;
+  const taxRate      = $("#df-tax-rate")  ? Number($("#df-tax-rate").value) || 0 : 0;
+  const t = computeDocTotals(DOC_ITEMS, discountType, discountVal, taxRate);
+  const taxLabel = getCompanyProfile().taxLabel || "VAT";
+
+  box.innerHTML = `
+    <div class="t-row"><span>Subtotal</span><span>${docMoney(t.subtotal, DOC_CURRENCY)}</span></div>
+    ${t.discount ? `<div class="t-row"><span>Discount${discountType==='percent'?` (${discountVal}%)`:''}</span><span style="color:var(--clay)">-${docMoney(t.discount, DOC_CURRENCY)}</span></div>` : ``}
+    ${taxRate ? `<div class="t-row"><span>${esc(taxLabel)} ${taxRate}%</span><span>+${docMoney(t.tax, DOC_CURRENCY)}</span></div>` : ``}
+    <div class="t-row grand"><span>Total</span><span>${docMoney(t.total, DOC_CURRENCY)}</span></div>
+    <div style="font-size:10.5px;color:var(--muted);margin-top:6px;line-height:1.45">${esc(amountInWords(t.total, DOC_CURRENCY))}</div>`;
+  checkMilestoneSum();
+}
+
+/* =================================================================
+   THE PRINTED / PDF DOCUMENT SHEET
+   ================================================================= */
+function docSheetHTML(type, d){
+  return type === "quotation" ? quotationSheetHTML(d) : invoiceSheetHTML(d);
+}
+
+/* ---- Shared pieces ---- */
+function dsBand(cfg, titleText){
+  return `
+  <div class="ds-band">
+    <div class="ds-band-l">
+      ${cfg.logo ? `<img class="ds-logo" src="${esc(cfg.logo)}" alt="" onerror="this.style.display='none'">` : ``}
+      <div style="min-width:0">
+        <div class="ds-co-name">${esc(cfg.name)}</div>
+        ${cfg.tagline ? `<div class="ds-co-tag">${esc(cfg.tagline)}</div>` : ``}
+      </div>
+    </div>
+    <div class="ds-band-r">
+      ${cfg.country ? `<div class="ds-country">${esc(cfg.country)}</div>` : ``}
+      <div class="ds-title">${esc(titleText)}</div>
+    </div>
+  </div>
+  ${(cfg.address || cfg.phone || cfg.email || cfg.website || cfg.regNo)
+    ? `<div class="ds-contact">
+         <div>${esc([cfg.address].filter(Boolean).join("\n"))}</div>
+         <div style="text-align:right">${esc([
+             [cfg.phone, cfg.email].filter(Boolean).join("  ·  "),
+             [cfg.website, cfg.regNo ? "Reg. " + cfg.regNo : ""].filter(Boolean).join("  ·  "),
+             cfg.taxId ? "VAT/TIN " + cfg.taxId : "",
+           ].filter(Boolean).join("\n"))}</div>
+       </div>`
+    : ``}`;
+}
+
+function dsStamp(status){
+  if(status === "paid")      return `<div class="ds-stamp">Paid</div>`;
+  if(status === "accepted")  return `<div class="ds-stamp">Accepted</div>`;
+  if(status === "overdue")   return `<div class="ds-stamp red">Overdue</div>`;
+  if(status === "cancelled") return `<div class="ds-stamp red">Cancelled</div>`;
+  if(status === "declined")  return `<div class="ds-stamp red">Declined</div>`;
+  if(status === "expired")   return `<div class="ds-stamp grey">Expired</div>`;
+  return "";
+}
+
+/* A line item prints one Amount column: either a figure, or free text like "Included" / "FREE" */
+function dsItemAmount(it, cur){
+  const txt = (it.amountText || "").trim();
+  if(txt){
+    const t = txt.toLowerCase();
+    const cls = (t === "free" || t === "included" || t === "n/a") ? "ds-incl" : "";
+    return `<span class="${cls}">${esc(txt)}</span>`;
+  }
+  return docMoney(lineAmount(it), cur);
+}
+
+function dsClientRows(d){
+  return [
+    ["Client / Business Name", d.clientCompany || d.clientName],
+    ["Contact Person",         d.clientCompany ? d.clientName : ""],
+    ["Phone / WhatsApp",       d.clientPhone],
+    ["Email Address",          d.clientEmail],
+    ["Business Address",       d.clientAddress],
+  ];
+}
+
+function dsKvBox(title, rows){
+  return `
+  <div class="ds-box">
+    <div class="ds-box-h">${title}</div>
+    <div class="ds-box-b">
+      ${rows.map(([k, v]) => `<div class="ds-kv"><span class="k">${esc(k)}</span><span class="v">${v ? esc(v) : "—"}</span></div>`).join("")}
+    </div>
+  </div>`;
+}
+
+/* =================================================================
+   QUOTATION SHEET  (mirrors "WEBSITE DEVELOPMENT QUOTATION")
+   ================================================================= */
+function quotationSheetHTML(d){
+  const cfg = getCompanyProfile();
+  const cur = d.currency || bizCurrency();
+  const taxLabel = cfg.taxLabel || "VAT";
+  const ms = d.milestones || [];
+  const tl = d.timeline || [];
+  const inc = d.inclusions || [];
+  const exc = d.exclusions || [];
+
+  const itemRows = (d.items || []).map(it => `
+    <tr>
+      <td><div class="ds-it-name">${esc(it.name)}</div></td>
+      <td>${esc(it.description || "—")}</td>
+      <td class="r">${dsItemAmount(it, cur)}</td>
+    </tr>`).join("");
+
+  return `
+<div class="doc-sheet" id="doc-sheet-node">
+  ${dsBand(cfg, d.docTitle || "Website Development Quotation")}
+
+  <div class="ds-sec">Quotation Details</div>
+  <div class="ds-2col">
+    <table class="ds-tbl"><tbody>
+      <tr><td class="lab">Quotation No.</td><td>${esc(d.number)}</td></tr>
+      <tr><td class="lab">Date Issued</td><td>${fmtDocDate(d.issuedAt)}</td></tr>
+      <tr><td class="lab">Valid Until</td><td>${esc(d.validUntilText || fmtDocDate(d.validUntil))}</td></tr>
+      <tr><td class="lab">Project Type</td><td>${esc(d.projectType || d.title || "—")}</td></tr>
+      <tr><td class="lab">Prepared By</td><td>${esc(d.preparedBy || cfg.name)}</td></tr>
+    </tbody></table>
+    <div style="flex:none;width:150px;text-align:right;padding-top:8px">${dsStamp(d.status || "draft")}</div>
+  </div>
+
+  <div class="ds-sec">Client Information</div>
+  <table class="ds-tbl"><tbody>
+    ${dsClientRows(d).map(([k, v]) => `<tr><td class="lab">${esc(k)}</td><td>${v ? esc(v) : "—"}</td></tr>`).join("")}
+  </tbody></table>
+
+  <div class="ds-sec">Pricing Breakdown</div>
+  <table class="ds-tbl">
+    <colgroup><col style="width:26%"><col><col style="width:22%"></colgroup>
+    <thead><tr><th>Item</th><th>Description</th><th class="r">Amount</th></tr></thead>
+    <tbody>
+      ${itemRows}
+      ${Number(d.discount) ? `<tr class="ds-sub"><td colspan="2">Discount${d.discountType === 'percent' ? ` (${Number(d.discountVal)}%)` : ''}</td><td class="r">-${docMoney(d.discount, cur)}</td></tr>` : ``}
+      ${Number(d.taxRate) ? `<tr class="ds-sub"><td colspan="2">${esc(taxLabel)} @ ${Number(d.taxRate)}%</td><td class="r">+${docMoney(d.tax, cur)}</td></tr>` : ``}
+      <tr class="ds-total"><td colspan="2">Total Project Cost</td><td class="r">${docMoney(d.total, cur)}</td></tr>
+    </tbody>
+  </table>
+  ${(d.amountInWords || d.total) ? `<div class="ds-words"><b>Amount in Words:</b> ${esc(d.amountInWords || amountInWords(d.total, cur))}</div>` : ``}
+
+  ${ms.length ? `
+  <div class="ds-sec">Payment Schedule</div>
+  <table class="ds-tbl">
+    <colgroup><col style="width:34px"><col style="width:34%"><col><col style="width:22%"></colgroup>
+    <thead><tr><th class="c">#</th><th>Milestone</th><th>When Due</th><th class="r">Amount</th></tr></thead>
+    <tbody>
+      ${ms.map((m, i) => `
+        <tr>
+          <td class="c">${i + 1}</td>
+          <td>${esc(m.label || "")}</td>
+          <td>${esc(m.whenDue || "")}</td>
+          <td class="r">${docMoney(m.amount, cur)}</td>
+        </tr>`).join("")}
+      <tr class="ds-total"><td colspan="3">Total</td><td class="r">${docMoney(ms.reduce((s, m) => s + (Number(m.amount) || 0), 0), cur)}</td></tr>
+    </tbody>
+  </table>` : ``}
+
+  ${d.year2Note ? `<div class="ds-note">${esc(d.year2Note)}</div>` : ``}
+
+  ${dsBankBlock(cfg, d, "Bank Details")}
+
+  ${tl.length ? `
+  <div class="ds-sec">Project Timeline</div>
+  <table class="ds-tbl">
+    <colgroup><col style="width:22%"><col><col style="width:22%"></colgroup>
+    <thead><tr><th>Phase</th><th>Activity</th><th>Duration</th></tr></thead>
+    <tbody>
+      ${tl.map(p => `<tr><td><b>${esc(p.phase || "")}</b></td><td>${esc(p.activity || "")}</td><td>${esc(p.duration || "")}</td></tr>`).join("")}
+    </tbody>
+  </table>` : ``}
+
+  ${(inc.length || exc.length) ? `
+  <div class="ds-sec">Package Inclusions</div>
+  <div class="ds-2col">
+    <div class="ds-box">
+      <div class="ds-box-h">Included in this package</div>
+      <div class="ds-box-b"><ul class="ds-list">${inc.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>
+    </div>
+    <div class="ds-box">
+      <div class="ds-box-h">Not included (available as add-ons)</div>
+      <div class="ds-box-b"><ul class="ds-list">${exc.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>
+    </div>
+  </div>` : ``}
+
+  ${dsTermsBlock(d.terms)}
+  ${d.notes ? `<div class="ds-note">${esc(d.notes)}</div>` : ``}
+
+  <div class="ds-sec">Acceptance</div>
+  <div style="font-size:11px;color:#2B3746;line-height:1.6">${esc(d.acceptanceText || cfg.quoteAcceptance || "")}</div>
+  ${dsSignBlock(cfg, "Authorized Signature — " + cfg.name, "Client Signature")}
+
+  <div class="ds-foot">${esc(cfg.quoteFooter || "Thank you for choosing " + cfg.name + ".")}</div>
+</div>`;
+}
+
+/* =================================================================
+   INVOICE SHEET  (mirrors the 3-instalment invoice)
+   ================================================================= */
+function invoiceSheetHTML(d){
+  const cfg = getCompanyProfile();
+  const cur = d.currency || bizCurrency();
+  const taxLabel = cfg.taxLabel || "VAT";
+  const st = effectiveInvoiceStatus(d);
+  const ms = d.milestones || [];
+  const paid = invoicePaidAmount(d);
+  const balance = Math.max(0, (Number(d.total) || 0) - paid);
+
+  const itemRows = (d.items || []).map((it, i) => `
+    <tr>
+      <td class="c">${i + 1}</td>
+      <td>
+        <div class="ds-it-name">${esc(it.name)}</div>
+        ${it.description ? `<div class="ds-it-desc">${esc(it.description)}</div>` : ``}
+      </td>
+      <td class="r">${dsItemAmount(it, cur)}</td>
+    </tr>`).join("");
+
+  return `
+<div class="doc-sheet" id="doc-sheet-node">
+  ${dsBand(cfg, d.docTitle || "Invoice")}
+
+  <div class="ds-sec">Invoice &amp; Client Details</div>
+  <div class="ds-2col">
+    ${dsKvBox("Invoice Details", [
+      ["Invoice No.",      d.number],
+      ["Invoice Date",     fmtDocDate(d.issuedAt)],
+      ["Payment Terms",    d.paymentTerms || (ms.length ? ms.length + " Instalments" : "")],
+      ["Quotation Ref.",   d.quotationRef || (d.quotationId ? (findDoc("quotation", d.quotationId) || {}).number : "")],
+      ["Project / Service", d.projectType || d.title],
+    ])}
+    ${dsKvBox("Bill To", dsClientRows(d))}
+  </div>
+  ${dsStamp(st) ? `<div style="text-align:right;margin-top:8px">${dsStamp(st)}</div>` : ``}
+
+  <div class="ds-sec">Invoice Items</div>
+  <table class="ds-tbl">
+    <colgroup><col style="width:34px"><col><col style="width:24%"></colgroup>
+    <thead><tr><th class="c">#</th><th>Description</th><th class="r">Amount</th></tr></thead>
+    <tbody>
+      ${itemRows}
+      <tr class="ds-sub"><td colspan="2">Sub Total</td><td class="r">${docMoney(d.subtotal, cur)}</td></tr>
+      ${Number(d.discount) ? `<tr class="ds-sub"><td colspan="2">Discount${d.discountType === 'percent' ? ` (${Number(d.discountVal)}%)` : ''}</td><td class="r">-${docMoney(d.discount, cur)}</td></tr>` : ``}
+      ${Number(d.taxRate) ? `<tr class="ds-sub"><td colspan="2">${esc(taxLabel)} @ ${Number(d.taxRate)}%</td><td class="r">+${docMoney(d.tax, cur)}</td></tr>` : ``}
+      <tr class="ds-total"><td colspan="2">Total Invoice Value</td><td class="r">${docMoney(d.total, cur)}</td></tr>
+    </tbody>
+  </table>
+  <div class="ds-words"><b>Amount in Words:</b> ${esc(d.amountInWords || amountInWords(d.total, cur))}</div>
+
+  ${ms.length ? `
+  <div class="ds-sec">Instalment Schedule</div>
+  <table class="ds-tbl">
+    <colgroup><col style="width:34px"><col style="width:30%"><col><col style="width:20%"><col style="width:17%"></colgroup>
+    <thead><tr><th class="c">#</th><th>Instalment</th><th>When Due</th><th class="r">Amount</th><th class="c">Status</th></tr></thead>
+    <tbody>
+      ${ms.map((m, i) => `
+        <tr class="${m.paid ? 'ds-paid-row' : ''}">
+          <td class="c">${i + 1}</td>
+          <td>${esc(m.label || "")}</td>
+          <td>${esc(m.whenDue || "")}</td>
+          <td class="r">${docMoney(m.amount, cur)}</td>
+          <td class="c">${m.paid ? `<span class="ds-incl">Paid${m.paidAt ? "<br>" + fmtDocDate(m.paidAt) : ""}</span>` : `<span class="ds-warn">Due</span>`}</td>
+        </tr>`).join("")}
+      <tr class="ds-sub"><td colspan="3">Total Paid to Date</td><td class="r">${docMoney(paid, cur)}</td><td></td></tr>
+    </tbody>
+  </table>` : ``}
+
+  <table class="ds-tbl" style="margin-top:10px"><tbody>
+    <tr class="ds-due"><td>Balance Due</td><td class="r" style="width:24%">${docMoney(balance, cur)}</td></tr>
+  </tbody></table>
+
+  <div class="ds-sec">Payment Details</div>
+  <div class="ds-2col">
+    <div class="ds-box">
+      <div class="ds-box-h">Bank Account Details</div>
+      <div class="ds-box-b pre">${esc(bankLines(cfg).join("\n")) || "—"}</div>
+    </div>
+    <div class="ds-box">
+      <div class="ds-box-h">When You Pay</div>
+      <div class="ds-box-b pre">${esc(d.paymentNote || cfg.paymentNote || "")}</div>
+    </div>
+  </div>
+
+  ${dsTermsBlock(d.terms)}
+  ${d.notes ? `<div class="ds-note">${esc(d.notes)}</div>` : ``}
+
+  ${dsSignBlock(cfg, "For " + cfg.name, "Received &amp; Accepted by Client")}
+
+  <div class="ds-foot">${esc(cfg.invoiceFooter || "Thank you for your business. " + cfg.name)}</div>
+</div>`;
+}
+
+/* ---- Shared blocks ---- */
+function bankLines(cfg){
+  return [
+    cfg.bankName        ? cfg.bankName + (cfg.bankBranch ? " — " + cfg.bankBranch : "") : "",
+    cfg.bankAccountNo   ? "Account Number: " + cfg.bankAccountNo : "",
+    cfg.bankAccountName ? "Account Holder: " + cfg.bankAccountName : "",
+  ].filter(Boolean);
+}
+
+function dsBankBlock(cfg, d, heading){
+  const lines = bankLines(cfg);
+  if(!lines.length) return "";
+  return `
+  <div class="ds-sec">${esc(heading)}</div>
+  <div class="ds-2col">
+    <div class="ds-box">
+      <div class="ds-box-h">Bank Account Details</div>
+      <div class="ds-box-b pre">${esc(lines.join("\n"))}</div>
+    </div>
+    <div class="ds-box">
+      <div class="ds-box-h">When You Pay</div>
+      <div class="ds-box-b pre">${esc(d.paymentNote || cfg.paymentNote || "")}</div>
+    </div>
+  </div>`;
+}
+
+function dsTermsBlock(terms){
+  const list = splitTerms(terms);
+  if(!list.length) return "";
+  return `
+  <div class="ds-sec">Terms &amp; Notes</div>
+  <ol class="ds-terms">${list.map(t => `<li>${esc(t)}</li>`).join("")}</ol>`;
+}
+
+function dsSignBlock(cfg, leftLabel, rightLabel){
+  return `
+  <div class="ds-sign">
+    <div class="ds-sign-col">
+      <div class="ds-sign-line"></div>
+      <div class="ds-sign-lab">
+        <b>${leftLabel}</b><br>
+        Name: ${esc(cfg.signatory || "______________________")}<br>
+        Title: ${esc(cfg.signatoryTitle || "______________________")}<br>
+        Date: ______________________
+      </div>
+    </div>
+    <div class="ds-sign-col">
+      <div class="ds-sign-line"></div>
+      <div class="ds-sign-lab">
+        <b>${rightLabel}</b><br>
+        Name: ______________________<br>
+        Title: ______________________<br>
+        Date: ______________________
+      </div>
+    </div>
+  </div>`;
+}
+
+/* Terms are stored as free text; each numbered or newline-separated clause becomes a list item */
+function splitTerms(terms){
+  if(!terms) return [];
+  return String(terms)
+    .split(/\r?\n/)
+    .map(s => s.replace(/^\s*\d+[.)]\s*/, "").trim())
+    .filter(Boolean);
+}
+
+/* =================================================================
+   PREVIEW, PDF EXPORT & PRINT
+   ================================================================= */
+function previewDocModal(type, id){
+  const d = findDoc(type, id);
+  if(!d){ toast("Document not found"); return; }
+  const isQuote = type === "quotation";
+  const canEdit = canManageBusiness();
+
+  openModal(`<div class="modal" style="max-width:900px;width:96vw"><header>
+    <h3>${isQuote ? "Quotation" : "Invoice"} ${esc(d.number)}</h3>
+    <button class="x" data-close>&times;</button>
+  </header>
+  <div class="pad" style="padding:14px 16px">
+    <div class="doc-preview-scroll"><div class="doc-sheet-fit">${docSheetHTML(type, d)}</div></div>
+  </div>
+  <footer style="flex-wrap:wrap;gap:7px">
+    ${canEdit && isQuote && d.status !== "converted" ? `<button class="btn" id="dp-convert" style="margin-right:auto">&#10142; Convert to invoice</button>` : ``}
+    ${canEdit && !isQuote && d.status !== "paid" && d.status !== "cancelled" ? `<button class="btn" id="dp-pay" style="margin-right:auto">&#128176; Record payment${(d.milestones||[]).length ? " (instalment)" : ""}</button>` : ``}
+    <button class="btn" id="dp-wa" title="Send a summary over WhatsApp">&#128241; WhatsApp</button>
+    <button class="btn" id="dp-print">&#128424; Print</button>
+    <button class="btn primary" id="dp-pdf">&#128196; Download PDF</button>
+  </footer></div>`);
+
+  $("#dp-pdf").onclick   = () => exportDocPDF(type, id, $("#dp-pdf"));
+  $("#dp-print").onclick = () => printDoc(type, id);
+  $("#dp-wa").onclick    = () => shareDocWhatsApp(type, id);
+  const conv = $("#dp-convert");
+  if(conv) conv.onclick = () => convertQuotationToInvoice(id);
+  const pay = $("#dp-pay");
+  if(pay) pay.onclick = () => markInvoicePaidModal(id);
+}
+
+/* =================================================================
+   NATIVE PDF ENGINE
+
+   The document is drawn with jsPDF vector primitives rather than
+   rasterised from the DOM. html2canvas ignores <colgroup>, so the
+   fixed-layout tables collapsed and the <thead> band vanished; it
+   also produced a blurry bitmap that page-breaks straight through
+   table rows. Drawing natively gives selectable text, crisp output
+   at any zoom, a small file, and page breaks that never split a row.
+   ================================================================= */
+
+const PDF_MM = {
+  pageW: 210, pageH: 297,
+  mL: 14, mR: 14, mT: 12, mB: 15,
+};
+PDF_MM.contentW = PDF_MM.pageW - PDF_MM.mL - PDF_MM.mR;
+
+const PDF_COLOR = {
+  navy:      [26, 62, 108],
+  navySoft:  [220, 227, 240],
+  navyPale:  [235, 244, 253],
+  bandTint:  [168, 200, 224],
+  rowAlt:    [244, 246, 248],
+  border:    [214, 221, 230],
+  ink:       [28, 28, 46],
+  body:      [43, 55, 70],
+  muted:     [84, 94, 111],
+  white:     [255, 255, 255],
+  green:     [26, 107, 48],
+  greenPale: [231, 243, 234],
+  red:       [155, 57, 34],
+  amber:     [180, 83, 9],
+};
+
+/* pt -> mm */
+function ptMm(pt){ return pt * 0.352778; }
+
+function docFileName(type, d){
+  const who = (d.clientCompany || d.clientName || "client").replace(/[^\w\s-]/g, "").trim().replace(/\s+/g, "-").slice(0, 40);
+  return `${d.number}${who ? "_" + who : ""}.pdf`;
+}
+
+/* Load an image as a data URL so jsPDF can embed it. Returns null on any failure. */
+function pdfLoadImage(src){
+  return new Promise(resolve => {
+    if(!src) return resolve(null);
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      try{
+        const cv = document.createElement("canvas");
+        cv.width = img.naturalWidth || img.width;
+        cv.height = img.naturalHeight || img.height;
+        if(!cv.width || !cv.height) return resolve(null);
+        cv.getContext("2d").drawImage(img, 0, 0);
+        resolve({ data: cv.toDataURL("image/png"), w: cv.width, h: cv.height });
+      }catch(e){ resolve(null); }
+    };
+    img.onerror = () => resolve(null);
+    img.src = src;
+  });
+}
+
+/* A thin drawing surface over jsPDF: keeps a y cursor and handles page breaks. */
+function makeSheet(pdf){
+  const M = PDF_MM;
+  const S = {
+    pdf,
+    y: M.mT,
+    page: 1,
+    onNewPage: null,
+
+    setFont(size, style, color){
+      pdf.setFont("helvetica", style || "normal");
+      pdf.setFontSize(size);
+      const c = color || PDF_COLOR.ink;
+      pdf.setTextColor(c[0], c[1], c[2]);
+      return S;
+    },
+    fill(c){ pdf.setFillColor(c[0], c[1], c[2]); return S; },
+    stroke(c, w){ pdf.setDrawColor(c[0], c[1], c[2]); pdf.setLineWidth(w == null ? 0.2 : w); return S; },
+
+    /* Start a new page and run the per-page header hook */
+    newPage(){
+      pdf.addPage();
+      S.page++;
+      S.y = M.mT;
+      if(S.onNewPage) S.onNewPage(S);
+      return S;
+    },
+    /* Ensure h mm of room; break the page if not */
+    ensure(h){
+      if(S.y + h > M.pageH - M.mB) S.newPage();
+      return S;
+    },
+    gap(h){ S.y += h; return S; },
+
+    /* Wrap text and return the lines */
+    wrap(text, width, size, style){
+      pdf.setFont("helvetica", style || "normal");
+      pdf.setFontSize(size);
+      return pdf.splitTextToSize(String(text == null ? "" : text), width);
+    },
+    lineH(size){ return ptMm(size) * 1.32; },
+
+    /* Draw wrapped text from the top-left; returns the height used */
+    textBlock(text, x, y, width, size, style, color, align){
+      const lines = S.wrap(text, width, size, style);
+      S.setFont(size, style, color);
+      const lh = S.lineH(size);
+      lines.forEach((ln, i) => {
+        const tx = align === "right" ? x + width : align === "center" ? x + width / 2 : x;
+        pdf.text(ln, tx, y + i * lh, { align: align || "left", baseline: "top" });
+      });
+      return lines.length * lh;
+    },
+    measureBlock(text, width, size, style){
+      return S.wrap(text, width, size, style).length * S.lineH(size);
+    },
+  };
+  return S;
+}
+
+/* ---- Masthead band ---- */
+function pdfBand(S, cfg, titleText, logo){
+  const M = PDF_MM, pdf = S.pdf;
+  const h = 20;
+  S.fill(PDF_COLOR.navy);
+  pdf.rect(M.mL, S.y, M.contentW, h, "F");
+
+  let tx = M.mL + 5;
+  if(logo){
+    const boxH = 13;
+    const ratio = logo.w && logo.h ? logo.w / logo.h : 1;
+    const imgH = boxH, imgW = Math.min(boxH * ratio, 22);
+    S.fill(PDF_COLOR.white);
+    pdf.roundedRect(tx, S.y + (h - boxH) / 2, imgW + 2, boxH, 0.8, 0.8, "F");
+    try{ pdf.addImage(logo.data, "PNG", tx + 1, S.y + (h - imgH) / 2, imgW, imgH); }catch(e){}
+    tx += imgW + 6;
+  }
+
+  const rightW = 66;
+  const leftW = M.contentW - (tx - M.mL) - rightW - 8;
+  S.setFont(14.5, "bold", PDF_COLOR.white);
+  pdf.text(S.wrap(cfg.name, leftW, 14.5, "bold")[0] || "", tx, S.y + 8.4, { baseline: "alphabetic" });
+  if(cfg.tagline){
+    S.setFont(7.8, "normal", PDF_COLOR.bandTint);
+    pdf.text(S.wrap(cfg.tagline, leftW, 7.8)[0] || "", tx, S.y + 12.6, { baseline: "alphabetic" });
+  }
+
+  const rx = M.mL + M.contentW - 5;
+  if(cfg.country){
+    S.setFont(7.2, "normal", PDF_COLOR.bandTint);
+    pdf.text(String(cfg.country).toUpperCase(), rx, S.y + 7.6, { align: "right", baseline: "alphabetic" });
+  }
+  S.setFont(13, "bold", PDF_COLOR.white);
+  pdf.text(String(titleText || "").toUpperCase(), rx, S.y + 14.2, { align: "right", baseline: "alphabetic" });
+
+  S.y += h;
+
+  // contact strip
+  const left = [cfg.address].filter(Boolean).join("\n");
+  const right = [
+    [cfg.phone, cfg.email].filter(Boolean).join("   "),
+    [cfg.website, cfg.regNo ? "Reg. " + cfg.regNo : ""].filter(Boolean).join("   "),
+    cfg.taxId ? "VAT/TIN " + cfg.taxId : "",
+  ].filter(Boolean).join("\n");
+
+  if(left || right){
+    S.y += 2.2;
+    const colW = (M.contentW - 8) / 2;
+    const hL = left  ? S.textBlock(left,  M.mL, S.y, colW, 7.2, "normal", PDF_COLOR.muted) : 0;
+    const hR = right ? S.textBlock(right, M.mL + colW + 8, S.y, colW, 7.2, "normal", PDF_COLOR.muted, "right") : 0;
+    S.y += Math.max(hL, hR) + 2.2;
+    S.stroke(PDF_COLOR.border, 0.2);
+    S.pdf.line(M.mL, S.y, M.mL + M.contentW, S.y);
+  }
+  S.y += 4;
+}
+
+/* ---- Section heading with a navy rule ---- */
+function pdfSection(S, text){
+  const M = PDF_MM;
+  S.ensure(12);
+  S.setFont(10.5, "bold", PDF_COLOR.navy);
+  S.pdf.text(String(text), M.mL, S.y, { baseline: "top" });
+  S.y += S.lineH(10.5) + 1;
+  S.stroke(PDF_COLOR.navy, 0.5);
+  S.pdf.line(M.mL, S.y, M.mL + M.contentW, S.y);
+  S.y += 3;
+}
+
+/* ---- Table ----
+   cols: [{ w (mm), align, head }]
+   rows: [{ cells:[string|{text,style,color,align}], variant }]
+   variant: undefined | 'total' | 'sub' | 'due' | 'paid'
+*/
+function pdfTable(S, cols, rows, opts){
+  const M = PDF_MM, pdf = S.pdf;
+  const o = opts || {};
+  const padX = 2.2, padY = 1.9;
+  const headSize = 7.4, bodySize = 8.6;
+
+  // normalise widths to the content width
+  const totalW = cols.reduce((s, c) => s + c.w, 0);
+  const scale = M.contentW / totalW;
+  const w = cols.map(c => c.w * scale);
+
+  const drawHead = () => {
+    if(!o.head) return;
+    const hh = S.lineH(headSize) + padY * 2;
+    S.ensure(hh + 6);
+    S.fill(PDF_COLOR.navy);
+    pdf.rect(M.mL, S.y, M.contentW, hh, "F");
+    S.setFont(headSize, "bold", PDF_COLOR.white);
+    let x = M.mL;
+    cols.forEach((c, i) => {
+      const t = String(c.head || "").toUpperCase();
+      const a = c.align || "left";
+      const tx = a === "right" ? x + w[i] - padX : a === "center" ? x + w[i] / 2 : x + padX;
+      pdf.text(t, tx, S.y + padY + 0.3, { align: a, baseline: "top" });
+      x += w[i];
+    });
+    S.y += hh;
+  };
+
+  drawHead();
+
+  rows.forEach((row, ri) => {
+    const cells = row.cells.map((c, i) => {
+      const cell = (typeof c === "object" && c !== null) ? c : { text: c };
+      const style = cell.style || (row.variant === "total" || row.variant === "due" ? "bold" : "normal");
+      const size = row.variant === "total" || row.variant === "due" ? 9.2 : bodySize;
+      const cw = w[i] - padX * 2;
+      return {
+        cell, style, size,
+        lines: S.wrap(cell.text == null ? "" : cell.text, cw, size, style),
+        sub: cell.sub ? S.wrap(cell.sub, cw, 7.2, "normal") : null,
+      };
+    });
+
+    const bodyH = Math.max(...cells.map(c =>
+      c.lines.length * S.lineH(c.size) + (c.sub ? c.sub.length * S.lineH(7.2) : 0)
+    ));
+    const rowH = bodyH + padY * 2;
+
+    // never split a row across pages; repeat the header on the new page
+    if(S.y + rowH > M.pageH - M.mB){
+      S.newPage();
+      drawHead();
+    }
+
+    let bg = null, fg = PDF_COLOR.body;
+    if(row.variant === "total"){ bg = PDF_COLOR.navy;      fg = PDF_COLOR.white; }
+    else if(row.variant === "due"){ bg = PDF_COLOR.red;    fg = PDF_COLOR.white; }
+    else if(row.variant === "sub"){ bg = PDF_COLOR.navyPale; fg = PDF_COLOR.navy; }
+    else if(row.variant === "paid"){ bg = PDF_COLOR.greenPale; }
+    else if(ri % 2 === 1){ bg = PDF_COLOR.rowAlt; }
+
+    if(bg){ S.fill(bg); pdf.rect(M.mL, S.y, M.contentW, rowH, "F"); }
+
+    let x = M.mL;
+    cells.forEach((c, i) => {
+      const a = c.cell.align || cols[i].align || "left";
+      const color = c.cell.color || fg;
+      const tx = a === "right" ? x + w[i] - padX : a === "center" ? x + w[i] / 2 : x + padX;
+      S.setFont(c.size, c.style, color);
+      c.lines.forEach((ln, li) => {
+        pdf.text(ln, tx, S.y + padY + li * S.lineH(c.size), { align: a, baseline: "top" });
+      });
+      if(c.sub){
+        const subY = S.y + padY + c.lines.length * S.lineH(c.size);
+        S.setFont(7.2, "normal", row.variant ? color : PDF_COLOR.muted);
+        c.sub.forEach((ln, li) => {
+          pdf.text(ln, tx, subY + li * S.lineH(7.2), { align: a, baseline: "top" });
+        });
+      }
+      x += w[i];
+    });
+
+    // horizontal rule under the row
+    S.stroke(PDF_COLOR.border, 0.15);
+    pdf.line(M.mL, S.y + rowH, M.mL + M.contentW, S.y + rowH);
+    S.y += rowH;
+  });
+
+  S.y += 3;
+}
+
+/* ---- Label / value table (Quotation Details, Client Information) ---- */
+function pdfKvTable(S, pairs, labelW){
+  const rows = pairs.map(([k, v]) => ({
+    cells: [
+      { text: k, style: "bold", color: PDF_COLOR.navy },
+      { text: (v == null || v === "") ? "—" : String(v) },
+    ],
+    variant: "kv",
+  }));
+  // draw with a tinted label column
+  const M = PDF_MM, pdf = S.pdf;
+  const lw = (labelW || 0.36) * M.contentW;
+  const vw = M.contentW - lw;
+  const padX = 2.2, padY = 1.9, size = 8.6;
+
+  rows.forEach(r => {
+    const kLines = S.wrap(r.cells[0].text, lw - padX * 2, size, "bold");
+    const vLines = S.wrap(r.cells[1].text, vw - padX * 2, size, "normal");
+    const rowH = Math.max(kLines.length, vLines.length) * S.lineH(size) + padY * 2;
+    S.ensure(rowH);
+
+    S.fill(PDF_COLOR.navySoft);
+    pdf.rect(M.mL, S.y, lw, rowH, "F");
+    S.fill(PDF_COLOR.white);
+    pdf.rect(M.mL + lw, S.y, vw, rowH, "F");
+
+    S.setFont(size, "bold", PDF_COLOR.navy);
+    kLines.forEach((ln, i) => pdf.text(ln, M.mL + padX, S.y + padY + i * S.lineH(size), { baseline: "top" }));
+    S.setFont(size, "normal", PDF_COLOR.body);
+    vLines.forEach((ln, i) => pdf.text(ln, M.mL + lw + padX, S.y + padY + i * S.lineH(size), { baseline: "top" }));
+
+    S.stroke(PDF_COLOR.border, 0.15);
+    pdf.rect(M.mL, S.y, M.contentW, rowH, "S");
+    pdf.line(M.mL + lw, S.y, M.mL + lw, S.y + rowH);
+    S.y += rowH;
+  });
+  S.y += 3;
+}
+
+/* ---- Measure a titled box so two of them can share a row ---- */
+function pdfBoxHeight(S, body, boxW, isList){
+  const headH = S.lineH(7.4) + 3.4;
+  const inner = boxW - 5;
+  let h;
+  if(isList){
+    h = body.reduce((s, t) => s + S.measureBlock("•  " + t, inner - 2, 8) , 0);
+  } else {
+    h = S.measureBlock(body, inner, 8.6);
+  }
+  return headH + h + 4;
+}
+
+/* ---- Draw a titled box at an explicit x/width ---- */
+function pdfBox(S, title, body, x, boxW, boxH, isList){
+  const pdf = S.pdf;
+  const headH = S.lineH(7.4) + 3.4;
+
+  S.fill(PDF_COLOR.white);
+  pdf.rect(x, S.y, boxW, boxH, "F");
+  S.fill(PDF_COLOR.navy);
+  pdf.rect(x, S.y, boxW, headH, "F");
+  S.setFont(7.4, "bold", PDF_COLOR.white);
+  pdf.text(String(title).toUpperCase(), x + 2.6, S.y + 1.7, { baseline: "top" });
+
+  let ty = S.y + headH + 2;
+  if(isList){
+    body.forEach(t => {
+      ty += S.textBlock("•  " + t, x + 2.6, ty, boxW - 5.2, 8, "normal", PDF_COLOR.body);
+    });
+  } else {
+    S.textBlock(body, x + 2.6, ty, boxW - 5.2, 8.6, "normal", PDF_COLOR.body);
+  }
+
+  S.stroke(PDF_COLOR.border, 0.2);
+  pdf.rect(x, S.y, boxW, boxH, "S");
+}
+
+/* ---- Two titled boxes side by side, aligned to the taller one ---- */
+function pdfTwoBoxes(S, left, right){
+  const M = PDF_MM;
+  const gap = 5;
+  const boxW = (M.contentW - gap) / 2;
+  const hL = pdfBoxHeight(S, left.body, boxW, left.isList);
+  const hR = pdfBoxHeight(S, right.body, boxW, right.isList);
+  const h = Math.max(hL, hR);
+  S.ensure(h + 2);
+  pdfBox(S, left.title,  left.body,  M.mL, boxW, h, left.isList);
+  pdfBox(S, right.title, right.body, M.mL + boxW + gap, boxW, h, right.isList);
+  S.y += h + 3;
+}
+
+/* ---- Numbered terms ---- */
+function pdfTerms(S, terms){
+  const list = splitTerms(terms);
+  if(!list.length) return;
+  pdfSection(S, "Terms & Notes");
+  const M = PDF_MM;
+  list.forEach((t, i) => {
+    const num = (i + 1) + ".";
+    const indent = 5.5;
+    const h = S.measureBlock(t, M.contentW - indent, 8);
+    S.ensure(h + 1);
+    S.setFont(8, "bold", PDF_COLOR.navy);
+    S.pdf.text(num, M.mL, S.y, { baseline: "top" });
+    S.textBlock(t, M.mL + indent, S.y, M.contentW - indent, 8, "normal", PDF_COLOR.body);
+    S.y += h + 1.1;
+  });
+  S.y += 2;
+}
+
+/* ---- Signature blocks ---- */
+function pdfSignatures(S, cfg, leftLabel, rightLabel){
+  const M = PDF_MM, pdf = S.pdf;
+  const blockH = 30;
+  S.ensure(blockH + 4);
+  S.y += 8;
+  const gap = 14;
+  const colW = (M.contentW - gap) / 2;
+
+  [[M.mL, leftLabel, cfg.signatory, cfg.signatoryTitle],
+   [M.mL + colW + gap, rightLabel, "", ""]].forEach(([x, label, name, title]) => {
+    S.stroke(PDF_COLOR.ink, 0.3);
+    pdf.line(x, S.y, x + colW, S.y);
+    let ty = S.y + 1.8;
+    ty += S.textBlock(label, x, ty, colW, 8.2, "bold", PDF_COLOR.navy);
+    ty += S.textBlock("Name:  " + (name || "______________________"), x, ty, colW, 8, "normal", PDF_COLOR.body);
+    ty += S.textBlock("Title:  " + (title || "______________________"), x, ty, colW, 8, "normal", PDF_COLOR.body);
+    S.textBlock("Date:  ______________________", x, ty, colW, 8, "normal", PDF_COLOR.body);
+  });
+  S.y += 22;
+}
+
+/* ---- Footer on every page ---- */
+function pdfFooters(S, cfg, footerText){
+  const M = PDF_MM, pdf = S.pdf;
+  const total = pdf.getNumberOfPages();
+  for(let p = 1; p <= total; p++){
+    pdf.setPage(p);
+    const fy = M.pageH - M.mB + 4;
+    pdf.setDrawColor(PDF_COLOR.border[0], PDF_COLOR.border[1], PDF_COLOR.border[2]);
+    pdf.setLineWidth(0.2);
+    pdf.line(M.mL, fy - 3, M.mL + M.contentW, fy - 3);
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(7);
+    pdf.setTextColor(PDF_COLOR.muted[0], PDF_COLOR.muted[1], PDF_COLOR.muted[2]);
+    pdf.text(String(footerText || ""), M.mL, fy, { baseline: "top", maxWidth: M.contentW - 24 });
+    pdf.text("Page " + p + " of " + total, M.mL + M.contentW, fy, { align: "right", baseline: "top" });
+  }
+}
+
+/* ---- Status stamp ---- */
+function pdfStamp(S, status, x, w){
+  const map = {
+    paid:      ["PAID",      PDF_COLOR.green],
+    accepted:  ["ACCEPTED",  PDF_COLOR.green],
+    overdue:   ["OVERDUE",   PDF_COLOR.red],
+    cancelled: ["CANCELLED", PDF_COLOR.red],
+    declined:  ["DECLINED",  PDF_COLOR.red],
+    expired:   ["EXPIRED",   PDF_COLOR.muted],
+  };
+  const hit = map[status];
+  if(!hit) return false;
+  const [label, color] = hit;
+  const pdf = S.pdf;
+  pdf.setFont("helvetica", "bold");
+  pdf.setFontSize(12);
+  const tw = pdf.getTextWidth(label);
+  const bw = tw + 9, bh = 8;
+  const bx = x + w - bw;
+  pdf.setDrawColor(color[0], color[1], color[2]);
+  pdf.setLineWidth(0.7);
+  pdf.roundedRect(bx, S.y, bw, bh, 1, 1, "S");
+  pdf.setTextColor(color[0], color[1], color[2]);
+  pdf.text(label, bx + bw / 2, S.y + bh / 2 + 0.3, { align: "center", baseline: "middle" });
+  return true;
+}
+
+/* =================================================================
+   QUOTATION PDF
+   ================================================================= */
+function buildQuotationPdf(S, d, cfg, logo){
+  const M = PDF_MM;
+  const cur = d.currency || bizCurrency();
+  const taxLabel = cfg.taxLabel || "VAT";
+
+  pdfBand(S, cfg, d.docTitle || cfg.quoteTitle || "Quotation", logo);
+
+  // status stamp sits on its own line so it can never overlap the details table
+  S.ensure(12);
+  if(pdfStamp(S, d.status, M.mL, M.contentW)) S.y += 11;
+
+  pdfSection(S, "Quotation Details");
+  pdfKvTable(S, [
+    ["Quotation No.", d.number],
+    ["Date Issued",   fmtDocDate(d.issuedAt)],
+    ["Valid Until",   d.validUntilText || fmtDocDate(d.validUntil)],
+    ["Project Type",  d.projectType || d.title],
+    ["Prepared By",   d.preparedBy || cfg.name],
+  ], 0.34);
+
+  pdfSection(S, "Client Information");
+  pdfKvTable(S, dsClientRows(d), 0.34);
+
+  pdfSection(S, "Pricing Breakdown");
+  const itemRows = (d.items || []).map(it => ({
+    cells: [
+      { text: it.name, style: "bold" },
+      { text: it.description || "—" },
+      (it.amountText || "").trim()
+        ? { text: it.amountText, align: "right", style: "bold",
+            color: /^(free|included|n\/a)$/i.test(it.amountText.trim()) ? PDF_COLOR.green : PDF_COLOR.body }
+        : { text: docMoney(lineAmount(it), cur), align: "right" },
+    ],
+  }));
+  if(Number(d.discount)){
+    itemRows.push({ variant: "sub", cells: [
+      { text: "Discount" + (d.discountType === "percent" ? " (" + Number(d.discountVal) + "%)" : ""), style: "bold" },
+      "", { text: "-" + docMoney(d.discount, cur), align: "right", style: "bold" },
+    ]});
+  }
+  if(Number(d.taxRate)){
+    itemRows.push({ variant: "sub", cells: [
+      { text: taxLabel + " @ " + Number(d.taxRate) + "%", style: "bold" },
+      "", { text: "+" + docMoney(d.tax, cur), align: "right", style: "bold" },
+    ]});
+  }
+  itemRows.push({ variant: "total", cells: [
+    "Total Project Cost", "", { text: docMoney(d.total, cur), align: "right" },
+  ]});
+
+  pdfTable(S, [
+    { w: 46, head: "Item" },
+    { w: 92, head: "Description" },
+    { w: 44, head: "Amount", align: "right" },
+  ], itemRows, { head: true });
+
+  // amount in words
+  const words = d.amountInWords || amountInWords(d.total, cur);
+  const wh = S.measureBlock("Amount in Words:  " + words, M.contentW - 6, 8.4) + 4;
+  S.ensure(wh);
+  S.fill(PDF_COLOR.rowAlt);
+  S.pdf.rect(M.mL, S.y, M.contentW, wh, "F");
+  S.fill(PDF_COLOR.navy);
+  S.pdf.rect(M.mL, S.y, 1.1, wh, "F");
+  S.textBlock("Amount in Words:  " + words, M.mL + 4, S.y + 2, M.contentW - 8, 8.4, "bold", PDF_COLOR.navy);
+  S.y += wh + 4;
+
+  const ms = d.milestones || [];
+  if(ms.length){
+    pdfSection(S, "Payment Schedule");
+    const rows = ms.map((m, i) => ({ cells: [
+      { text: String(i + 1), align: "center" },
+      { text: m.label || "", style: "bold" },
+      m.whenDue || "",
+      { text: docMoney(m.amount, cur), align: "right" },
+    ]}));
+    rows.push({ variant: "total", cells: [
+      "", "Total", "", { text: docMoney(ms.reduce((s, m) => s + (Number(m.amount) || 0), 0), cur), align: "right" },
+    ]});
+    pdfTable(S, [
+      { w: 10, head: "#", align: "center" },
+      { w: 62, head: "Milestone" },
+      { w: 66, head: "When Due" },
+      { w: 44, head: "Amount", align: "right" },
+    ], rows, { head: true });
+  }
+
+  if(d.year2Note){
+    S.ensure(10);
+    S.y += S.textBlock(d.year2Note, M.mL, S.y, M.contentW, 7.8, "normal", PDF_COLOR.muted) + 4;
+  }
+
+  const bank = bankLines(cfg);
+  if(bank.length){
+    pdfSection(S, "Bank Details");
+    pdfTwoBoxes(S,
+      { title: "Bank Account Details", body: bank.join("\n") },
+      { title: "When You Pay", body: d.paymentNote || cfg.paymentNote || "" });
+  }
+
+  const tl = d.timeline || [];
+  if(tl.length){
+    pdfSection(S, "Project Timeline");
+    pdfTable(S, [
+      { w: 40, head: "Phase" },
+      { w: 100, head: "Activity" },
+      { w: 42, head: "Duration" },
+    ], tl.map(p => ({ cells: [
+      { text: p.phase || "", style: "bold" }, p.activity || "", p.duration || "",
+    ]})), { head: true });
+  }
+
+  const inc = d.inclusions || [], exc = d.exclusions || [];
+  if(inc.length || exc.length){
+    pdfSection(S, "Package Inclusions");
+    pdfTwoBoxes(S,
+      { title: "Included in this package", body: inc, isList: true },
+      { title: "Not included (available as add-ons)", body: exc, isList: true });
+  }
+
+  pdfTerms(S, d.terms);
+
+  if(d.notes){
+    S.ensure(10);
+    S.y += S.textBlock(d.notes, M.mL, S.y, M.contentW, 8, "normal", PDF_COLOR.body) + 3;
+  }
+
+  const acc = d.acceptanceText || cfg.quoteAcceptance || "";
+  if(acc){
+    pdfSection(S, "Acceptance");
+    S.ensure(12);
+    S.y += S.textBlock(acc, M.mL, S.y, M.contentW, 8, "normal", PDF_COLOR.body) + 2;
+  }
+
+  pdfSignatures(S, cfg, "Authorized Signature — " + cfg.name, "Client Signature");
+  pdfFooters(S, cfg, cfg.quoteFooter || ("Thank you for choosing " + cfg.name + "."));
+}
+
+/* =================================================================
+   INVOICE PDF
+   ================================================================= */
+function buildInvoicePdf(S, d, cfg, logo){
+  const M = PDF_MM;
+  const cur = d.currency || bizCurrency();
+  const taxLabel = cfg.taxLabel || "VAT";
+  const st = effectiveInvoiceStatus(d);
+  const ms = d.milestones || [];
+  const paid = invoicePaidAmount(d);
+  const balance = Math.max(0, (Number(d.total) || 0) - paid);
+
+  pdfBand(S, cfg, d.docTitle || cfg.invoiceTitle || "Invoice", logo);
+
+  pdfSection(S, "Invoice & Client Details");
+  const detail = [
+    ["Invoice No.",       d.number],
+    ["Invoice Date",      fmtDocDate(d.issuedAt)],
+    ["Payment Terms",     d.paymentTerms || (ms.length ? ms.length + " Instalments" : "")],
+    ["Quotation Ref.",    d.quotationRef || (d.quotationId ? (findDoc("quotation", d.quotationId) || {}).number : "")],
+    ["Project / Service", d.projectType || d.title],
+  ];
+  const client = dsClientRows(d);
+
+  // two label/value tables side by side
+  const gap = 5, colW = (M.contentW - gap) / 2;
+  const kvPairH = (pairs, boxW) => {
+    const lw = boxW * 0.42, vw = boxW - lw;
+    return pairs.reduce((s, [k, v]) => {
+      const kl = S.wrap(k, lw - 4.4, 8.2, "bold").length;
+      const vl = S.wrap((v == null || v === "") ? "—" : String(v), vw - 4.4, 8.2, "normal").length;
+      return s + Math.max(kl, vl) * S.lineH(8.2) + 3.6;
+    }, 0);
+  };
+  const headH = S.lineH(7.4) + 3.4;
+  const bodyH = Math.max(kvPairH(detail, colW), kvPairH(client, colW));
+  const boxH = headH + bodyH + 2;
+  S.ensure(boxH + 3);
+  const topY = S.y;
+
+  [[M.mL, "Invoice Details", detail], [M.mL + colW + gap, "Bill To", client]].forEach(([x, title, pairs]) => {
+    S.y = topY;
+    const pdf = S.pdf;
+    S.fill(PDF_COLOR.white); pdf.rect(x, S.y, colW, boxH, "F");
+    S.fill(PDF_COLOR.navy);  pdf.rect(x, S.y, colW, headH, "F");
+    S.setFont(7.4, "bold", PDF_COLOR.white);
+    pdf.text(title.toUpperCase(), x + 2.6, S.y + 1.7, { baseline: "top" });
+
+    const lw = colW * 0.42;
+    let ty = S.y + headH + 1;
+    pairs.forEach(([k, v]) => {
+      const kl = S.wrap(k, lw - 4.4, 8.2, "bold");
+      const vv = (v == null || v === "") ? "—" : String(v);
+      const vl = S.wrap(vv, colW - lw - 4.4, 8.2, "normal");
+      const rh = Math.max(kl.length, vl.length) * S.lineH(8.2) + 3.6;
+      S.setFont(8.2, "normal", PDF_COLOR.muted);
+      kl.forEach((ln, i) => pdf.text(ln, x + 2.6, ty + 1.4 + i * S.lineH(8.2), { baseline: "top" }));
+      S.setFont(8.2, "bold", PDF_COLOR.body);
+      vl.forEach((ln, i) => pdf.text(ln, x + lw + 1.6, ty + 1.4 + i * S.lineH(8.2), { baseline: "top" }));
+      ty += rh;
+    });
+    S.stroke(PDF_COLOR.border, 0.2);
+    pdf.rect(x, topY, colW, boxH, "S");
+  });
+  S.y = topY + boxH + 3;
+
+  S.ensure(10);
+  if(pdfStamp(S, st, M.mL, M.contentW)) S.y += 10;
+
+  pdfSection(S, "Invoice Items");
+  const rows = (d.items || []).map((it, i) => ({ cells: [
+    { text: String(i + 1), align: "center" },
+    { text: it.name, style: "bold", sub: it.description || "" },
+    (it.amountText || "").trim()
+      ? { text: it.amountText, align: "right", style: "bold",
+          color: /^(free|included|n\/a)$/i.test(it.amountText.trim()) ? PDF_COLOR.green : PDF_COLOR.body }
+      : { text: docMoney(lineAmount(it), cur), align: "right" },
+  ]}));
+  rows.push({ variant: "sub", cells: ["", { text: "Sub Total", style: "bold" }, { text: docMoney(d.subtotal, cur), align: "right", style: "bold" }] });
+  if(Number(d.discount)){
+    rows.push({ variant: "sub", cells: ["", { text: "Discount" + (d.discountType === "percent" ? " (" + Number(d.discountVal) + "%)" : ""), style: "bold" }, { text: "-" + docMoney(d.discount, cur), align: "right", style: "bold" }] });
+  }
+  if(Number(d.taxRate)){
+    rows.push({ variant: "sub", cells: ["", { text: taxLabel + " @ " + Number(d.taxRate) + "%", style: "bold" }, { text: "+" + docMoney(d.tax, cur), align: "right", style: "bold" }] });
+  }
+  rows.push({ variant: "total", cells: ["", "Total Invoice Value", { text: docMoney(d.total, cur), align: "right" }] });
+
+  pdfTable(S, [
+    { w: 10, head: "#", align: "center" },
+    { w: 128, head: "Description" },
+    { w: 44, head: "Amount", align: "right" },
+  ], rows, { head: true });
+
+  const words = d.amountInWords || amountInWords(d.total, cur);
+  const wh = S.measureBlock("Amount in Words:  " + words, M.contentW - 8, 8.4) + 4;
+  S.ensure(wh);
+  S.fill(PDF_COLOR.rowAlt);
+  S.pdf.rect(M.mL, S.y, M.contentW, wh, "F");
+  S.fill(PDF_COLOR.navy);
+  S.pdf.rect(M.mL, S.y, 1.1, wh, "F");
+  S.textBlock("Amount in Words:  " + words, M.mL + 4, S.y + 2, M.contentW - 8, 8.4, "bold", PDF_COLOR.navy);
+  S.y += wh + 4;
+
+  if(ms.length){
+    pdfSection(S, "Instalment Schedule");
+    const mrows = ms.map((m, i) => ({
+      variant: m.paid ? "paid" : undefined,
+      cells: [
+        { text: String(i + 1), align: "center" },
+        { text: m.label || "", style: "bold" },
+        m.whenDue || "",
+        { text: docMoney(m.amount, cur), align: "right" },
+        { text: m.paid ? "PAID" : "DUE", align: "center", style: "bold",
+          color: m.paid ? PDF_COLOR.green : PDF_COLOR.amber,
+          sub: m.paid && m.paidAt ? fmtDocDate(m.paidAt) : "" },
+      ],
+    }));
+    mrows.push({ variant: "sub", cells: ["", "Total Paid to Date", "", { text: docMoney(paid, cur), align: "right", style: "bold" }, ""] });
+    pdfTable(S, [
+      { w: 10, head: "#", align: "center" },
+      { w: 54, head: "Instalment" },
+      { w: 54, head: "When Due" },
+      { w: 36, head: "Amount", align: "right" },
+      { w: 28, head: "Status", align: "center" },
+    ], mrows, { head: true });
+  }
+
+  pdfTable(S, [{ w: 138 }, { w: 44, align: "right" }],
+    [{ variant: "due", cells: ["Balance Due", { text: docMoney(balance, cur), align: "right" }] }],
+    { head: false });
+
+  pdfSection(S, "Payment Details");
+  pdfTwoBoxes(S,
+    { title: "Bank Account Details", body: bankLines(cfg).join("\n") || "—" },
+    { title: "When You Pay", body: d.paymentNote || cfg.paymentNote || "" });
+
+  pdfTerms(S, d.terms);
+
+  if(d.notes){
+    S.ensure(10);
+    S.y += S.textBlock(d.notes, M.mL, S.y, M.contentW, 8, "normal", PDF_COLOR.body) + 3;
+  }
+
+  pdfSignatures(S, cfg, "For " + cfg.name, "Received & Accepted by Client");
+  pdfFooters(S, cfg, cfg.invoiceFooter || ("Thank you for your business. " + cfg.name));
+}
+
+/* =================================================================
+   EXPORT
+   ================================================================= */
+async function exportDocPDF(type, id, btn){
+  const d = findDoc(type, id);
+  if(!d){ toast("Document not found"); return; }
+
+  const jsPDFCtor = window.jspdf && window.jspdf.jsPDF;
+  if(!jsPDFCtor){
+    toast("PDF engine did not load — opening the print dialog instead, choose “Save as PDF”.");
+    printDoc(type, id);
+    return;
+  }
+
+  const original = btn ? btn.innerHTML : "";
+  if(btn){ btn.disabled = true; btn.innerHTML = "Building PDF…"; }
+
+  try{
+    const cfg = getCompanyProfile();
+    const logo = await pdfLoadImage(cfg.logo);
+    const pdf = new jsPDFCtor({ unit: "mm", format: "a4", orientation: "portrait", compress: true });
+    pdf.setProperties({
+      title: d.number,
+      subject: d.title || d.projectType || "",
+      author: cfg.name,
+      creator: cfg.name,
+    });
+
+    const S = makeSheet(pdf);
+    if(type === "quotation") buildQuotationPdf(S, d, cfg, logo);
+    else                     buildInvoicePdf(S, d, cfg, logo);
+
+    pdf.save(docFileName(type, d));
+    toast(`PDF saved — ${d.number}`);
+  }catch(err){
+    console.error("PDF export failed:", err);
+    toast("Could not build the PDF — opening the print dialog instead.");
+    printDoc(type, id);
+  }finally{
+    if(btn){ btn.disabled = false; btn.innerHTML = original; }
+  }
+}
+
+function printDoc(type, id){
+  const d = findDoc(type, id);
+  if(!d) return;
+  const css = [...document.querySelectorAll("style")].map(s => s.textContent).join("\n");
+  const w = window.open("", "_blank", "width=900,height=1100");
+  if(!w){ toast("Allow pop-ups for this site to print the document."); return; }
+  w.document.write(`<!doctype html><html><head><meta charset="utf-8">
+    <title>${esc(d.number)}</title>
+    <style>${css}</style>
+    <style>
+      @page { size:A4; margin:0 }
+      html,body{margin:0;padding:0;background:#fff}
+      .doc-sheet{box-shadow:none;margin:0 auto}
+      @media print { .doc-sheet{width:100%;min-height:auto;padding:14mm 14mm} }
+    </style>
+  </head><body>${docSheetHTML(type, d)}</body></html>`);
+  w.document.close();
+  w.focus();
+  setTimeout(() => { try{ w.print(); }catch(e){} }, 450);
+}
+
+function shareDocWhatsApp(type, id){
+  const d = findDoc(type, id);
+  if(!d) return;
+  const cfg = getCompanyProfile();
+  const isQuote = type === "quotation";
+  const cur = d.currency || bizCurrency();
+  const lines = [
+    `*${cfg.name}*`,
+    ``,
+    `${isQuote ? "Quotation" : "Invoice"}: *${d.number}*`,
+    d.title ? `Subject: ${d.title}` : "",
+    `Date: ${fmtDocDate(d.issuedAt)}`,
+    `${isQuote ? "Valid until" : "Payment due"}: ${fmtDocDate(isQuote ? d.validUntil : d.dueAt)}`,
+    ``,
+    ...(d.items || []).map(it => `• ${it.name} — ${Number(it.qty)||0} × ${docMoney(it.rate, cur)} = ${docMoney((Number(it.qty)||0)*(Number(it.rate)||0), cur)}`),
+    ``,
+    `*${isQuote ? "Total estimate" : "Amount due"}: ${docMoney(d.total, cur)}*`,
+    ``,
+    isQuote ? "Please let us know if you would like to proceed." : "Thank you for your business.",
+  ].filter(l => l !== undefined);
+
+  const text = encodeURIComponent(lines.join("\n"));
+  const phone = (d.clientPhone || "").replace(/[^\d]/g, "");
+  const url = phone ? `https://wa.me/${phone}?text=${text}` : `https://wa.me/?text=${text}`;
+  window.open(url, "_blank");
+}
+
+/* =================================================================
+   QUOTATION -> INVOICE, PAYMENTS & DELETION
+   ================================================================= */
+function convertQuotationToInvoice(quoteId){
+  if(!canManageBusiness()){ toast("Sign in to convert quotations."); return; }
+  const q = findDoc("quotation", quoteId);
+  if(!q) return;
+
+  if(q.convertedInvoiceId && findDoc("invoice", q.convertedInvoiceId)){
+    const existing = findDoc("invoice", q.convertedInvoiceId);
+    if(!confirm(`This quotation was already converted into invoice ${existing.number}.\n\nCreate a second invoice from it anyway?`)) {
+      closeModal();
+      BUSINESS_TAB = "invoices";
+      draw();
+      previewDocModal("invoice", existing.id);
+      return;
+    }
+  }
+
+  const cfg = getCompanyProfile();
+  const now = Date.now();
+  // The quotation's payment schedule becomes the invoice's instalment plan.
+  const milestones = (q.milestones || []).map(m => ({
+    label: m.label || "", whenDue: m.whenDue || "", amount: Number(m.amount) || 0,
+    paid: false, paidAt: null, transactionId: null,
+  }));
+
+  const inv = {
+    id: uid(),
+    number: nextDocNumber("invoice"),
+    docTitle: cfg.invoiceTitle || "Invoice",
+    quotationId: q.id,
+    quotationRef: q.number,
+    projectType: q.projectType || q.title || "",
+    paymentTerms: milestones.length ? milestones.length + " Instalments" : (cfg.paymentTerms || ""),
+    contactId: q.contactId || "",
+    clientName: q.clientName, clientCompany: q.clientCompany, clientAddress: q.clientAddress,
+    clientEmail: q.clientEmail, clientPhone: q.clientPhone,
+    title: q.title,
+    items: (q.items || []).map(it => Object.assign({}, it)),
+    subtotal: q.subtotal,
+    discountType: q.discountType, discountVal: q.discountVal, discount: q.discount,
+    taxRate: q.taxRate, tax: q.tax, total: q.total,
+    amountInWords: q.amountInWords || amountInWords(q.total, q.currency || bizCurrency()),
+    currency: q.currency || bizCurrency(),
+    milestones,
+    amountPaid: 0,
+    balanceDue: Number(q.total) || 0,
+    notes: q.notes,
+    terms: cfg.invoiceTerms || q.terms,
+    paymentNote: q.paymentNote || cfg.paymentNote || "",
+    status: "draft",
+    issuedAt: now,
+    dueAt: now + (Number(cfg.invoiceDueDays) || 14) * DAY,
+    paidAt: null,
+    transactionId: null,
+    userId: DB.currentUserId,
+    createdAt: now,
+  };
+
+  DB.invoices.unshift(inv);
+  sbWrite(sb.from('sales_invoice').insert(objToSnake(inv)));
+
+  q.status = "converted";
+  q.convertedInvoiceId = inv.id;
+  sbWrite(sb.from('sales_quotation').update({status:"converted", converted_invoice_id: inv.id}).eq('id', q.id));
+
+  logFinanceAction("Converted Quotation", `${q.number} → invoice ${inv.number} for ${docMoney(inv.total, inv.currency)}`, 0);
+  cacheLocal(DB);
+  closeModal();
+  toast(`Invoice ${inv.number} created from ${q.number}`);
+  BUSINESS_TAB = "invoices";
+  draw();
+  salesDocForm("invoice", inv);
+}
+
+function markInvoicePaidModal(invId){
+  if(!canManageBusiness()){ toast("Sign in to settle invoices."); return; }
+  const inv = findDoc("invoice", invId);
+  if(!inv) return;
+
+  ensureAccounts();
+  const canRecord = isSahan() && DB.accounts.length > 0;
+  const cur = inv.currency || bizCurrency();
+  const ms = inv.milestones || [];
+  const unpaid = ms.map((m, i) => ({m, i})).filter(x => !x.m.paid);
+  const paidSoFar = invoicePaidAmount(inv);
+  const balance = Math.max(0, (Number(inv.total) || 0) - paidSoFar);
+
+  if(ms.length && !unpaid.length){
+    toast(`${inv.number} is already settled in full.`);
+    return;
+  }
+
+  // With an instalment schedule you settle one instalment at a time; otherwise the whole invoice.
+  const options = ms.length
+    ? unpaid.map(x => `<option value="${x.i}">${esc(x.m.label || "Instalment " + (x.i+1))} — ${docMoney(x.m.amount, cur)}${x.m.whenDue ? " (" + esc(x.m.whenDue) + ")" : ""}</option>`).join("")
+    : "";
+
+  openModal(`<div class="modal"><header><h3>Record payment — ${esc(inv.number)}</h3><button class="x" data-close>&times;</button></header>
+  <div class="pad">
+    <div style="background:var(--teal-wash);border:1px solid var(--teal);border-radius:8px;padding:12px 14px;margin-bottom:15px">
+      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div>
+          <div style="font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--teal-deep);font-weight:700">Balance due</div>
+          <div style="font-family:var(--mono);font-size:24px;font-weight:800;color:var(--teal-deep);letter-spacing:-.5px;margin-top:3px">${docMoney(balance, cur)}</div>
+        </div>
+        <div style="text-align:right;font-size:11.5px;color:var(--ink-soft);line-height:1.6">
+          Invoice total <b>${docMoney(inv.total, cur)}</b><br>
+          Paid so far <b>${docMoney(paidSoFar, cur)}</b>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--ink-soft);margin-top:6px">${esc(inv.clientCompany || inv.clientName)}${inv.title ? " · " + esc(inv.title) : ""}</div>
+    </div>
+
+    ${ms.length ? `
+      <div class="field"><label>Which instalment is being paid?</label><select id="mp-milestone">${options}</select></div>
+    ` : ``}
+
+    <div class="field"><label>Amount received (${esc(cur)})</label><input id="mp-amount" class="num" type="number" step="0.01" value="${ms.length ? (unpaid[0] ? Number(unpaid[0].m.amount) || 0 : balance) : balance}"></div>
+
+    ${canRecord ? `
+      <label style="display:flex;align-items:flex-start;gap:9px;cursor:pointer;background:var(--surface-2);border:1px solid var(--line-strong);border-radius:7px;padding:11px 13px;margin-bottom:13px">
+        <input type="checkbox" id="mp-record" checked style="width:auto;margin:2px 0 0">
+        <span style="font-size:12.5px;line-height:1.5">
+          <b>Record this as income in Accounts &amp; Balances</b><br>
+          <span style="color:var(--muted)">Creates a matching income transaction, updates the account balance and writes an audit entry.</span>
+        </span>
+      </label>
+      <div class="grid2">
+        <div class="field"><label>Deposit into</label><select id="mp-account">${DB.accounts.map(a=>`<option value="${a.id}">${esc(a.name)} (${fmtMoney(a.balance)})</option>`).join("")}</select></div>
+        <div class="field"><label>Income category</label><select id="mp-category">${getIncomeCategories().map(c=>`<option value="${c.id}">${c.label}</option>`).join("")}</select></div>
+      </div>
+    ` : `
+      <div style="background:var(--amber-wash);border:1px solid var(--amber);border-radius:7px;padding:11px 13px;font-size:12.5px;color:var(--ink-soft);margin-bottom:13px">
+        ${DB.accounts.length
+          ? "Only Sahan can post income to the company accounts, so this records the payment against the invoice only. Sahan can add the matching ledger entry from the Accounts tab."
+          : "No finance accounts exist yet, so this records the payment against the invoice only. Add an account in Accounts &amp; Balances to post income automatically."}
+      </div>
+    `}
+    <div class="field" style="margin-bottom:0"><label>Payment date</label><input id="mp-at" class="num" type="date" value="${toDateInput(Date.now())}"></div>
+  </div>
+  <footer>
+    <button class="btn" data-close>Cancel</button>
+    <button class="btn primary" id="mp-confirm">Confirm payment</button>
+  </footer></div>`);
+
+  // Selecting a different instalment pre-fills its amount
+  const msSel = $("#mp-milestone");
+  if(msSel){
+    msSel.onchange = () => {
+      const m = (inv.milestones || [])[Number(msSel.value)];
+      if(m) $("#mp-amount").value = Number(m.amount) || 0;
+    };
+  }
+
+  $("#mp-confirm").onclick = () => {
+    const amount = Number($("#mp-amount").value) || 0;
+    if(amount <= 0){ $("#mp-amount").focus(); $("#mp-amount").style.borderColor = "var(--clay)"; return; }
+
+    const doRecord = canRecord && $("#mp-record") && $("#mp-record").checked;
+    const paidAt = $("#mp-at").value ? parseTxAt($("#mp-at").value) : Date.now();
+    const msIdx = msSel ? Number(msSel.value) : -1;
+    const label = msIdx > -1
+      ? ((inv.milestones[msIdx].label || "Instalment " + (msIdx + 1)))
+      : "Full settlement";
+
+    let txId = null;
+    if(doRecord){
+      const accountId = $("#mp-account").value;
+      const category  = $("#mp-category").value;
+
+      const tx = {
+        id: uid(),
+        accountId,
+        toAccountId: null,
+        type: "income",
+        amount,
+        category,
+        contactId: inv.contactId || "",
+        description: `${inv.number} — ${label}${inv.title ? " — " + inv.title : ""} (${inv.clientCompany || inv.clientName})`,
+        receiptRef: inv.number,
+        userId: DB.currentUserId,
+        at: paidAt,
+      };
+      const targetAcc = DB.accounts.find(a => a.id === accountId);
+      if(targetAcc) targetAcc.balance += amount;
+
+      DB.transactions.unshift(tx);
+      txId = tx.id;
+
+      logFinanceAction("Invoice Payment Received", `${inv.number} — ${label} — ${fmtMoney(amount)} into ${targetAcc ? targetAcc.name : "account"}`, amount);
+      sbWrite(sb.from('finance_transaction').insert(objToSnake(tx)));
+      if(targetAcc) sbWrite(sb.from('finance_account').update({balance: targetAcc.balance}).eq('id', targetAcc.id));
+    } else {
+      logFinanceAction("Invoice Payment Logged", `${inv.number} — ${label} — ${docMoney(amount, cur)} (no ledger entry)`, 0);
+    }
+
+    if(msIdx > -1){
+      inv.milestones[msIdx].paid = true;
+      inv.milestones[msIdx].paidAt = paidAt;
+      inv.milestones[msIdx].transactionId = txId;
+    }
+
+    inv.amountPaid = invoicePaidAmount(inv);
+    if(msIdx === -1) inv.amountPaid = Math.min(Number(inv.total) || 0, (Number(inv.amountPaid) || 0) + amount);
+    inv.balanceDue = Math.max(0, (Number(inv.total) || 0) - inv.amountPaid);
+
+    const settled = inv.balanceDue <= 0.009;
+    if(settled){
+      inv.status = "paid";
+      inv.paidAt = paidAt;
+      inv.transactionId = inv.transactionId || txId;
+    } else if(inv.status === "draft"){
+      inv.status = "sent";
+    }
+
+    sbWrite(sb.from('sales_invoice').update({
+      status: inv.status,
+      paid_at: inv.paidAt || null,
+      transaction_id: inv.transactionId || null,
+      milestones: inv.milestones || [],
+      amount_paid: inv.amountPaid,
+      balance_due: inv.balanceDue,
+    }).eq('id', inv.id));
+
+    cacheLocal(DB);
+    closeModal();
+    toast(settled
+      ? `${inv.number} settled in full — ${docMoney(inv.total, cur)}`
+      : `${label} recorded — ${docMoney(amount, cur)}. Balance ${docMoney(inv.balanceDue, cur)}`);
+    BUSINESS_TAB = "invoices";
+    draw();
+  };
+}
+
+function deleteSalesDoc(type, id){
+  if(!canManageBusiness()){ toast("Sign in to delete these documents."); return; }
+  const d = findDoc(type, id);
+  if(!d) return;
+  const isQuote = type === "quotation";
+
+  let warn = `Delete ${isQuote ? "quotation" : "invoice"} ${d.number}?`;
+  if(!isQuote && d.transactionId){
+    warn += `\n\nThe income transaction it created in Accounts & Balances is NOT removed — delete that separately if you need to.`;
+  }
+  if(!confirm(warn)) return;
+
+  if(isQuote) DB.quotations = DB.quotations.filter(x => x.id !== id);
+  else        DB.invoices   = DB.invoices.filter(x => x.id !== id);
+
+  logFinanceAction(`Deleted ${isQuote ? "Quotation" : "Invoice"}`, `${d.number} — ${docMoney(d.total, d.currency)}`, 0);
+  cacheLocal(DB);
+  sbWrite(sb.from(docTable(type)).delete().eq('id', id));
+  closeModal();
+  toast(`${isQuote ? "Quotation" : "Invoice"} deleted`);
+  draw();
+}
+
+/* =================================================================
+   COMPANY & BILLING SETUP
+   ================================================================= */
+function companyProfileModal(){
+  if(!canManageBusiness()){ toast("Sign in to change the billing setup."); return; }
+  const c = getCompanyProfile();
+
+  openModal(`<div class="modal" style="max-width:800px;width:96vw"><header>
+    <h3>Company &amp; billing setup</h3><button class="x" data-close>&times;</button>
+  </header>
+  <div class="pad" style="max-height:72vh;overflow:auto">
+    <div style="font-size:12px;color:var(--muted);margin-bottom:14px">These details print on every quotation and invoice PDF. Defaults match your Univerzlk Word templates.</div>
+
+    <div class="biz-fieldset">
+      <div class="biz-legend">Masthead</div>
+      <div class="grid2">
+        <div class="field"><label>Company name</label><input id="cp-name" value="${esc(c.name)}" placeholder="UNIVERZLK.COM"></div>
+        <div class="field"><label>Tagline</label><input id="cp-tagline" value="${esc(c.tagline)}" placeholder="Digital Innovation &amp; Web Design Agency"></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>Country line</label><input id="cp-country" value="${esc(c.country||"")}" placeholder="Sri Lanka"></div>
+        <div class="field"><label>Logo path or URL</label><input id="cp-logo" value="${esc(c.logo)}" placeholder="/logo-placeholder.png"></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>Quotation heading</label><input id="cp-qtitle" value="${esc(c.quoteTitle||"")}" placeholder="Website Development Quotation"></div>
+        <div class="field" style="margin-bottom:0"><label>Invoice heading</label><input id="cp-ititle" value="${esc(c.invoiceTitle||"")}" placeholder="Invoice"></div>
+      </div>
+    </div>
+
+    <div class="biz-fieldset">
+      <div class="biz-legend">Contact strip</div>
+      <div class="field"><label>Address</label><textarea id="cp-address" style="min-height:46px" placeholder="No. 12, Main Street,&#10;Colombo 05, Sri Lanka">${esc(c.address)}</textarea></div>
+      <div class="grid2">
+        <div class="field"><label>Phone</label><input id="cp-phone" class="num" value="${esc(c.phone)}" placeholder="+94 77 000 0000"></div>
+        <div class="field"><label>Email</label><input id="cp-email" value="${esc(c.email)}" placeholder="hello@univerzlk.com"></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>Website</label><input id="cp-website" value="${esc(c.website)}" placeholder="www.univerzlk.com"></div>
+        <div class="field"><label>Company reg. no.</label><input id="cp-regno" class="num" value="${esc(c.regNo)}" placeholder="PV 00123456"></div>
+      </div>
+      <div class="field" style="margin-bottom:0"><label>VAT / TIN number</label><input id="cp-taxid" class="num" value="${esc(c.taxId)}" placeholder="Leave blank if not registered"></div>
+    </div>
+
+    <div class="biz-fieldset">
+      <div class="biz-legend">Bank account (printed on invoices)</div>
+      <div class="grid2">
+        <div class="field"><label>Bank</label><input id="cp-bank" value="${esc(c.bankName)}" placeholder="Bank of Ceylon"></div>
+        <div class="field"><label>Branch</label><input id="cp-branch" value="${esc(c.bankBranch)}" placeholder="Yatiyantota Branch (477)"></div>
+      </div>
+      <div class="grid2" style="margin-bottom:0">
+        <div class="field" style="margin-bottom:0"><label>Account holder</label><input id="cp-accname" value="${esc(c.bankAccountName)}" placeholder="MR K S K SAMARASINGHE"></div>
+        <div class="field" style="margin-bottom:0"><label>Account number</label><input id="cp-accno" class="num" value="${esc(c.bankAccountNo)}" placeholder="8206837"></div>
+      </div>
+    </div>
+
+    <div class="biz-fieldset">
+      <div class="biz-legend">Numbering &amp; tax</div>
+      <div class="grid2">
+        <div class="field"><label>Quotation prefix</label><input id="cp-qprefix" class="num" value="${esc(c.quotePrefix)}" placeholder="QT-UNIVZLK"></div>
+        <div class="field"><label>Invoice prefix</label><input id="cp-iprefix" class="num" value="${esc(c.invoicePrefix)}" placeholder="INV-UNIVZLK"></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>Digits in the running number</label><input id="cp-pad" class="num" type="number" min="1" max="6" value="${Number(c.numberPadding)||1}"></div>
+        <div class="field">
+          <label>Include the year</label>
+          <label style="display:flex;align-items:center;gap:8px;font-weight:500;font-size:12.5px;padding-top:6px;cursor:pointer">
+            <input type="checkbox" id="cp-year" ${c.numberIncludesYear?'checked':''} style="width:auto;margin:0">
+            <span>QT-UNIVZLK-2026-014 instead of QT-UNIVZLK-14</span>
+          </label>
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>Tax label</label><input id="cp-taxlabel" value="${esc(c.taxLabel)}" placeholder="VAT"></div>
+        <div class="field"><label>Default tax rate (%)</label><input id="cp-taxrate" class="num" type="number" step="0.01" value="${Number(c.defaultTaxRate)||0}"></div>
+      </div>
+      <div class="grid2" style="margin-bottom:0">
+        <div class="field" style="margin-bottom:0"><label>Currency in words</label><input id="cp-curword" value="${esc(c.currencyWord||"")}" placeholder="Sri Lanka Rupees"></div>
+        <div class="field" style="margin-bottom:0"><label>Sub-unit in words</label><input id="cp-cursub" value="${esc(c.currencySubWord||"")}" placeholder="Cents"></div>
+      </div>
+    </div>
+
+    <div class="biz-fieldset">
+      <div class="biz-legend">Document defaults</div>
+      <div class="grid2">
+        <div class="field"><label>Quotation valid for (days)</label><input id="cp-qdays" class="num" type="number" value="${Number(c.quoteValidDays)||30}"></div>
+        <div class="field"><label>Invoice payment terms (days)</label><input id="cp-idays" class="num" type="number" value="${Number(c.invoiceDueDays)||14}"></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>&ldquo;Valid until&rdquo; printed text</label><input id="cp-validtext" value="${esc(c.validUntilText||"")}" placeholder="30 DAYS FROM DATE ISSUED"></div>
+        <div class="field"><label>Default payment terms</label><input id="cp-payterms" value="${esc(c.paymentTerms||"")}" placeholder="3 Instalments"></div>
+      </div>
+      <div class="field"><label>Default project type</label><input id="cp-projtype" value="${esc(c.projectType||"")}" placeholder="Professional Website Design &amp; Development"></div>
+      <div class="field" style="margin-bottom:0"><label>&ldquo;When you pay&rdquo; instructions</label><textarea id="cp-paynote" style="min-height:62px">${esc(c.paymentNote||"")}</textarea></div>
+    </div>
+
+    <div class="biz-fieldset">
+      <div class="biz-legend">Standard wording</div>
+      <div class="field"><label>Default quotation terms <span style="font-weight:400;color:var(--muted)">(one clause per line)</span></label><textarea id="cp-qterms" style="min-height:96px">${esc(c.quoteTerms)}</textarea></div>
+      <div class="field"><label>Default invoice terms <span style="font-weight:400;color:var(--muted)">(one clause per line)</span></label><textarea id="cp-iterms" style="min-height:82px">${esc(c.invoiceTerms)}</textarea></div>
+      <div class="field"><label>Acceptance wording (quotations)</label><textarea id="cp-acceptance" style="min-height:52px">${esc(c.quoteAcceptance||"")}</textarea></div>
+      <div class="field"><label>Year 2 onwards note</label><textarea id="cp-year2" style="min-height:44px">${esc(c.year2Note||"")}</textarea></div>
+      <div class="grid2" style="margin-bottom:0">
+        <div class="field" style="margin-bottom:0"><label>Quotation footer line</label><textarea id="cp-qfooter" style="min-height:44px">${esc(c.quoteFooter||"")}</textarea></div>
+        <div class="field" style="margin-bottom:0"><label>Invoice footer line</label><textarea id="cp-ifooter" style="min-height:44px">${esc(c.invoiceFooter||"")}</textarea></div>
+      </div>
+    </div>
+
+    <div class="biz-fieldset">
+      <div class="biz-legend">Default package inclusions</div>
+      <div class="grid2" style="margin-bottom:0">
+        <div class="field" style="margin-bottom:0"><label>Included <span style="font-weight:400;color:var(--muted)">(one per line)</span></label><textarea id="cp-inclusions" style="min-height:110px">${esc((c.defaultInclusions||[]).join("\n"))}</textarea></div>
+        <div class="field" style="margin-bottom:0"><label>Not included <span style="font-weight:400;color:var(--muted)">(one per line)</span></label><textarea id="cp-exclusions" style="min-height:110px">${esc((c.defaultExclusions||[]).join("\n"))}</textarea></div>
+      </div>
+    </div>
+
+    <div class="biz-fieldset" style="margin-bottom:0">
+      <div class="biz-legend">Signatory</div>
+      <div class="grid2" style="margin-bottom:0">
+        <div class="field" style="margin-bottom:0"><label>Name</label><input id="cp-signatory" value="${esc(c.signatory)}" placeholder="Subodha Kalhara"></div>
+        <div class="field" style="margin-bottom:0"><label>Title</label><input id="cp-signtitle" value="${esc(c.signatoryTitle)}" placeholder="Tech Lead"></div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <button class="btn" data-close>Cancel</button>
+    <button class="btn primary" id="cp-save">Save setup</button>
+  </footer></div>`);
+
+  $("#cp-save").onclick = () => {
+    saveCompanyProfile({
+      name: $("#cp-name").value.trim() || DEFAULT_COMPANY.name,
+      tagline: $("#cp-tagline").value.trim(),
+      country: $("#cp-country").value.trim(),
+      logo: $("#cp-logo").value.trim(),
+      quoteTitle: $("#cp-qtitle").value.trim(),
+      invoiceTitle: $("#cp-ititle").value.trim(),
+      address: $("#cp-address").value.trim(),
+      phone: $("#cp-phone").value.trim(),
+      email: $("#cp-email").value.trim(),
+      website: $("#cp-website").value.trim(),
+      regNo: $("#cp-regno").value.trim(),
+      taxId: $("#cp-taxid").value.trim(),
+      bankName: $("#cp-bank").value.trim(),
+      bankBranch: $("#cp-branch").value.trim(),
+      bankAccountName: $("#cp-accname").value.trim(),
+      bankAccountNo: $("#cp-accno").value.trim(),
+      quotePrefix: $("#cp-qprefix").value.trim() || "QT",
+      invoicePrefix: $("#cp-iprefix").value.trim() || "INV",
+      numberPadding: Math.min(6, Math.max(1, Number($("#cp-pad").value) || 1)),
+      numberIncludesYear: $("#cp-year").checked,
+      taxLabel: $("#cp-taxlabel").value.trim() || "VAT",
+      defaultTaxRate: Number($("#cp-taxrate").value) || 0,
+      currencyWord: $("#cp-curword").value.trim(),
+      currencySubWord: $("#cp-cursub").value.trim(),
+      quoteValidDays: Number($("#cp-qdays").value) || 30,
+      invoiceDueDays: Number($("#cp-idays").value) || 14,
+      validUntilText: $("#cp-validtext").value.trim(),
+      paymentTerms: $("#cp-payterms").value.trim(),
+      projectType: $("#cp-projtype").value.trim(),
+      paymentNote: $("#cp-paynote").value.trim(),
+      quoteTerms: $("#cp-qterms").value.trim(),
+      invoiceTerms: $("#cp-iterms").value.trim(),
+      quoteAcceptance: $("#cp-acceptance").value.trim(),
+      year2Note: $("#cp-year2").value.trim(),
+      quoteFooter: $("#cp-qfooter").value.trim(),
+      invoiceFooter: $("#cp-ifooter").value.trim(),
+      defaultInclusions: splitLines($("#cp-inclusions").value),
+      defaultExclusions: splitLines($("#cp-exclusions").value),
+      defaultTimeline: c.defaultTimeline || [],
+      signatory: $("#cp-signatory").value.trim(),
+      signatoryTitle: $("#cp-signtitle").value.trim(),
+    });
+    closeModal();
+    toast("Billing setup saved");
+    draw();
+  };
+}
+/* ---- Reload the shared database without leaving the Business view ---- */
+async function refreshBusinessData(){
+  toast("Refreshing products, quotations and invoices…");
+  try{
+    if(ONLINE && sb){
+      const remote = await loadFromSupabase();
+      if(remote && remote.users){
+        const curUid = DB.currentUserId;
+        DB = Object.assign(DB, remote);
+        DB.currentUserId = curUid;
+        cacheLocal(DB);
+      }
+    }
+    toast("✓ Business data refreshed");
+  }catch(e){
+    console.error(e);
+    toast("Refreshed from local cache");
+  }
+  draw();
 }
 
 /* ---- TODAY ---- */
@@ -9548,6 +12895,49 @@ document.addEventListener("keydown", e => {
   }
 });
 
+/* ---- Business section: products, quotations & invoices ---- */
+$("#content").addEventListener("click", e => {
+  const bizView    = e.target.closest("[data-biz-view]");
+  const bizFilter  = e.target.closest("[data-biz-filter]");
+  const addProduct = e.target.closest("#btn-add-product") || e.target.closest("#btn-empty-add-product");
+  const editProd   = e.target.closest("[data-edit-product]");
+  const delProd    = e.target.closest("[data-del-product]");
+  const quoteProd  = e.target.closest("[data-quote-product]");
+  const addQuote   = e.target.closest("#btn-add-quotation") || e.target.closest("#btn-empty-add-quotation");
+  const addInvoice = e.target.closest("#btn-add-invoice")   || e.target.closest("#btn-empty-add-invoice");
+  const docPreview = e.target.closest("[data-doc-preview]");
+  const docEdit    = e.target.closest("[data-doc-edit]");
+  const docConvert = e.target.closest("[data-doc-convert]");
+  const docPay     = e.target.closest("[data-doc-pay]");
+  const docDel     = e.target.closest("[data-doc-del]");
+  const coProfile  = e.target.closest("#btn-company-profile");
+  const bizRefresh = e.target.closest("#btn-biz-refresh");
+
+  if(bizView){
+    BUSINESS_TAB = bizView.dataset.bizView;
+    BIZ_SEARCH = "";
+    BIZ_DOC_FILTER = "all";
+    go("business");
+  }
+  else if(bizFilter){ BIZ_DOC_FILTER = bizFilter.dataset.bizFilter; renderBusiness(); }
+  else if(addProduct){ productForm(null); }
+  else if(editProd){ productForm(DB.products.find(p => p.id === editProd.dataset.editProduct)); }
+  else if(delProd){ deleteProduct(delProd.dataset.delProduct); }
+  else if(quoteProd){
+    const p = DB.products.find(x => x.id === quoteProd.dataset.quoteProduct);
+    if(p) salesDocForm("quotation", null, [{productId:p.id, name:p.name, description:p.description||"", qty:1, rate:Number(p.price)||0}]);
+  }
+  else if(addQuote){ salesDocForm("quotation", null); }
+  else if(addInvoice){ salesDocForm("invoice", null); }
+  else if(docPreview){ previewDocModal(docPreview.dataset.docType, docPreview.dataset.docPreview); }
+  else if(docEdit){ salesDocForm(docEdit.dataset.docType, findDoc(docEdit.dataset.docType, docEdit.dataset.docEdit)); }
+  else if(docConvert){ convertQuotationToInvoice(docConvert.dataset.docConvert); }
+  else if(docPay){ markInvoicePaidModal(docPay.dataset.docPay); }
+  else if(docDel){ deleteSalesDoc(docDel.dataset.docType, docDel.dataset.docDel); }
+  else if(coProfile){ companyProfileModal(); }
+  else if(bizRefresh){ refreshBusinessData(); }
+});
+
 $("#nav").addEventListener("click",e=>{
   const b=e.target.closest("[data-view]");
   if(b) go(b.dataset.view);
@@ -9560,6 +12950,10 @@ $("#add-contact").onclick = ()=>{
     } else {
       expenseForm(null);
     }
+  } else if(VIEW === "business"){
+    if(BUSINESS_TAB === "products") productForm(null);
+    else if(BUSINESS_TAB === "quotations") salesDocForm("quotation", null);
+    else salesDocForm("invoice", null);
   } else if(VIEW === "team"){
     userProfileModal(DB.currentUserId);
   } else if(VIEW === "humanresource"){
@@ -9747,6 +13141,28 @@ function refreshBadges(){
   const ap = DB.appointments.filter(a=>a.status==="scheduled" && a.at>=now).length;
   const ba=$("#badge-appt"); if(ba) { ba.textContent=ap; ba.classList.toggle("zero",ap===0); }
   const bam=$("#badge-appt-mobile"); if(bam) { bam.textContent=ap; bam.classList.toggle("zero",ap===0); }
+
+  // Unpaid (sent or overdue) invoices
+  const openInv = (DB.invoices || []).filter(i => i.status === "sent" || i.status === "overdue");
+  const overdueInv = openInv.filter(i => isInvoiceOverdue(i));
+  [$("#badge-invoices"), $("#badge-invoices-mobile")].forEach(badge => {
+    if(!badge) return;
+    badge.textContent = openInv.length;
+    badge.classList.toggle("zero", openInv.length === 0);
+    if(overdueInv.length){
+      badge.style.background = "var(--clay)";
+      badge.style.color = "#fff";
+      badge.title = `🚨 ${overdueInv.length} invoice(s) past their due date`;
+    } else if(openInv.length){
+      badge.style.background = "var(--amber)";
+      badge.style.color = "#fff";
+      badge.title = `${openInv.length} invoice(s) awaiting payment`;
+    } else {
+      badge.style.background = "";
+      badge.style.color = "";
+      badge.title = "All invoices settled";
+    }
+  });
 
   // Loan, Bill and Staff Claims Reminders badges (Director loans excluded from urgent due count)
   const currentCycle = getCycleBounds(0);
