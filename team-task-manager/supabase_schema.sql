@@ -75,12 +75,39 @@ create table if not exists public.attendance (
   unique(date, member_id)
 );
 
+-- 5C. Agency Notices & Reminders (Internal Mailbox)
+create table if not exists public.reminders (
+  id uuid primary key default uuid_generate_v4(),
+  title text not null,
+  body text,
+  category text not null default 'general' check (category in ('hr_notice', 'urgent', 'task_alert', 'meeting', 'general')),
+  priority text not null default 'normal' check (priority in ('low', 'normal', 'high', 'urgent')),
+  user_ids uuid[] default '{}', -- Target recipients (empty = Everyone)
+  is_all_team boolean not null default true,
+  created_by uuid references public.profiles(id) on delete set null,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- 5D. User Mailbox States (Read, Starred, Archived per User)
+create table if not exists public.reminder_user_states (
+  id uuid primary key default uuid_generate_v4(),
+  user_id uuid references public.profiles(id) on delete cascade not null,
+  reminder_id text not null,
+  is_read boolean not null default false,
+  is_starred boolean not null default false,
+  is_archived boolean not null default false,
+  updated_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  unique(user_id, reminder_id)
+);
+
 -- 6. Enable Row Level Security (RLS)
 alter table public.profiles enable row level security;
 alter table public.tasks enable row level security;
 alter table public.calendar_events enable row level security;
 alter table public.work_roster enable row level security;
 alter table public.attendance enable row level security;
+alter table public.reminders enable row level security;
+alter table public.reminder_user_states enable row level security;
 
 -- Open policies for team collaboration
 drop policy if exists "Allow public all profiles" on public.profiles;
@@ -98,14 +125,22 @@ create policy "Allow public all work_roster" on public.work_roster for all using
 drop policy if exists "Allow public all attendance" on public.attendance;
 create policy "Allow public all attendance" on public.attendance for all using (true);
 
+drop policy if exists "Allow public all reminders" on public.reminders;
+create policy "Allow public all reminders" on public.reminders for all using (true);
+
+drop policy if exists "Allow public all reminder_user_states" on public.reminder_user_states;
+create policy "Allow public all reminder_user_states" on public.reminder_user_states for all using (true);
+
 -- 7. Realtime Channel Setup
 alter publication supabase_realtime add table public.tasks;
 alter publication supabase_realtime add table public.profiles;
 alter publication supabase_realtime add table public.calendar_events;
 alter publication supabase_realtime add table public.work_roster;
 alter publication supabase_realtime add table public.attendance;
+alter publication supabase_realtime add table public.reminders;
+alter publication supabase_realtime add table public.reminder_user_states;
 
--- 7. Pre-seeded 6-Person Team Members
+-- 8. Pre-seeded 6-Person Team Members
 insert into public.profiles (id, full_name, username, email, department, role)
 values
   ('b8807887-5805-4005-bea3-c77ec4472543', 'Ashan Indusara', 'ashan', 'ashan@company.com', 'HR', 'admin'),
