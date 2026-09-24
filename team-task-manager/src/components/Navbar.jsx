@@ -19,14 +19,15 @@ export default function Navbar() {
     currentView,
     setCurrentView,
     calendarEvents,
-    tasks
+    tasks,
+    unreadRemindersCount
   } = useTasks();
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isAIModalOpen, setIsAIModalOpen] = useState(false);
 
-  // Active reminders count
-  const remindersCount = (calendarEvents || []).filter(e => e.type === 'reminder').length;
+  // Active reminders count fallback
+  const totalRemindersCount = (calendarEvents || []).filter(e => e.type === 'reminder' || e.event_type === 'reminder').length;
 
   return (
     <>
@@ -81,19 +82,27 @@ export default function Navbar() {
             </button>
             <button
               onClick={() => setCurrentView('reminders')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all relative ${
                 currentView === 'reminders'
                   ? 'bg-[#1f5c5a] text-white shadow-sm'
                   : 'text-[#6f6a60] hover:text-[#20262e] hover:bg-white/80'
               }`}
             >
-              <BellRing size={13} />
+              <BellRing size={13} className={unreadRemindersCount > 0 ? 'text-amber-300 animate-pulse' : ''} />
               <span>Reminders</span>
-              {remindersCount > 0 && (
-                <span className="text-[9px] px-1.5 py-0.2 rounded-full font-black bg-[#9a6a14] text-white">
-                  {remindersCount}
+              {unreadRemindersCount > 0 ? (
+                <span 
+                  className="text-[10px] px-1.5 py-0.2 rounded-full font-black bg-rose-600 text-white animate-pulse flex items-center gap-1 shadow-xs"
+                  title={`${unreadRemindersCount} unread kickoff notices`}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+                  <span>🔴 {unreadRemindersCount}</span>
                 </span>
-              )}
+              ) : totalRemindersCount > 0 ? (
+                <span className="text-[9px] px-1.5 py-0.2 rounded-full font-bold bg-[#faf8f4] text-[#6f6a60] border border-[#e7e1d6]">
+                  {totalRemindersCount}
+                </span>
+              ) : null}
             </button>
           </div>
 

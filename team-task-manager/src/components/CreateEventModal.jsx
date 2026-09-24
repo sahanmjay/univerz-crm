@@ -239,35 +239,35 @@ export default function CreateEventModal({ isOpen, onClose, editingEvent = null,
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-fade-in overflow-y-auto">
       <div 
-        className="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden animate-scale-up relative my-8"
+        className="w-full max-w-lg bg-white border border-[#e7e1d6] rounded-3xl shadow-2xl overflow-hidden animate-scale-up relative my-8"
       >
         {/* Modal Header */}
-        <div className="p-5 sm:p-6 border-b border-slate-800 bg-slate-950/40 flex justify-between items-center">
+        <div className="p-5 sm:p-6 border-b border-[#e7e1d6] bg-[#faf8f4] flex justify-between items-center">
           <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center border ${
-              eventType === 'roster' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' :
-              eventType === 'leave' ? 'bg-rose-500/10 border-rose-500/30 text-rose-400' :
-              eventType === 'meeting' ? 'bg-sky-500/10 border-sky-500/30 text-sky-400' :
-              eventType === 'holiday' ? 'bg-amber-500/10 border-amber-500/30 text-amber-400' :
-              'bg-purple-500/10 border-purple-500/30 text-purple-400'
+            <div className={`w-10 h-10 rounded-xl flex items-center justify-center border shadow-xs ${
+              eventType === 'roster' ? 'bg-[#e6f0e8] border-[#c2dfc8] text-[#2e6930]' :
+              eventType === 'leave' ? 'bg-[#f7e7e1] border-[#f0cac0] text-[#a82e2e]' :
+              eventType === 'meeting' ? 'bg-[#e8f0ef] border-[#a3c7c4] text-[#1f5c5a]' :
+              eventType === 'holiday' ? 'bg-[#f4ecd9] border-[#e5d2ac] text-[#855b14]' :
+              'bg-[#f1e8f8] border-[#dec8f0] text-[#6b21a8]'
             }`}>
               <CalendarIcon size={20} />
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-black text-white">
-                {editingEvent ? 'Edit Calendar Event' : (isAdmin ? 'Add Event / Leave' : 'Request Leave')}
+              <h2 className="text-base sm:text-lg font-black text-[#20262e]">
+                {editingEvent ? 'Edit Calendar Event' : (isAdmin ? 'Add Event / Notice' : 'Request Leave')}
               </h2>
-              <p className="text-[11px] text-slate-400">
-                Synchronized with <code className="text-indigo-300 font-mono">calendar_events.user_ids</code>
+              <p className="text-[11px] text-[#6f6a60]">
+                Target audience &amp; schedule dispatch
               </p>
             </div>
           </div>
 
           <button 
             onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-xl transition-colors"
+            className="p-1.5 text-[#6f6a60] hover:text-[#20262e] bg-[#f3f0e9] hover:bg-[#e7e1d6] rounded-xl transition-colors"
           >
             <X size={18} />
           </button>
@@ -347,135 +347,180 @@ export default function CreateEventModal({ isOpen, onClose, editingEvent = null,
 
           {/* 3. MULTI-SELECT MEMBER SELECTOR */}
           <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
-                <Users size={13} className="text-indigo-400" /> For Team Members
-                {userIds.length > 0 ? (
-                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-indigo-500/20 text-indigo-300 font-semibold border border-indigo-500/30">
-                    {userIds.length} selected
-                  </span>
-                ) : (
-                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 font-semibold border border-emerald-500/30">
-                    Entire Team
-                  </span>
-                )}
+          {/* 3. MULTI-SELECT MEMBER / TARGET AUDIENCE SELECTOR */}
+          <div className="rounded-2xl p-4 bg-[#faf8f4] border border-[#e7e1d6] space-y-3">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-black text-[#20262e] flex items-center gap-1.5">
+                <Users size={14} className="text-[#1f5c5a]" /> Send To / Target Audience <span className="text-rose-500">*</span>
               </label>
 
-              {isAdmin && eventType !== 'leave' && (
+              {isAdmin && eventType !== 'leave' && userIds.length > 0 && (
                 <button
                   type="button"
                   onClick={toggleSelectAll}
-                  className="text-[11px] font-bold text-indigo-400 hover:text-indigo-300 transition-colors"
+                  className="text-[11px] font-bold text-[#1f5c5a] hover:underline transition-colors"
                 >
-                  {isEntireTeam && userIds.length === 0 ? 'Select Individual Members' : isAllSelected ? 'Deselect All' : 'Select All'}
+                  {isAllSelected ? 'Clear All' : 'Select All 6 Members'}
                 </button>
               )}
             </div>
 
             {isAdmin ? (
-              <div className="space-y-2">
-                {/* Entire Team Quick Option (for meetings/holidays/reminders) */}
+              <div className="space-y-3">
+                {/* Target Mode Quick Options */}
                 {eventType !== 'leave' && (
-                  <button
-                    type="button"
-                    onClick={() => setUserIds([])}
-                    className={`w-full flex items-center justify-between p-2.5 rounded-xl border transition-all text-left ${
-                      userIds.length === 0
-                        ? 'bg-indigo-600/15 border-indigo-500/50 text-white'
-                        : 'bg-slate-950/60 border-slate-800/80 hover:bg-slate-900 text-slate-400'
-                    }`}
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 rounded-lg bg-indigo-500/20 text-indigo-300 flex items-center justify-center text-xs font-bold">
-                        👥
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {/* Option 1: Everyone (All 6 Members) */}
+                    <button
+                      type="button"
+                      onClick={() => setUserIds([])}
+                      className={`flex items-center justify-between p-3 rounded-xl border transition-all text-left ${
+                        userIds.length === 0
+                          ? 'bg-[#e8f0ef] border-[#1f5c5a] text-[#1f5c5a] ring-2 ring-[#1f5c5a]/20 shadow-xs'
+                          : 'bg-white border-[#d8d1c2] hover:bg-[#f3f0e9] text-[#6f6a60]'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold ${
+                          userIds.length === 0 ? 'bg-[#1f5c5a] text-white' : 'bg-[#e7e1d6] text-[#20262e]'
+                        }`}>
+                          👥
+                        </div>
+                        <div>
+                          <span className="text-xs font-black text-[#20262e] block">
+                            Option 1: Everyone
+                          </span>
+                          <span className="text-[10px] text-[#6f6a60] font-medium">
+                            All 6 Members
+                          </span>
+                        </div>
                       </div>
-                      <div>
-                        <span className="text-xs font-bold text-slate-200 block">
-                          Entire Team (All Members)
-                        </span>
-                        <span className="text-[10px] text-slate-500">
-                          Applies to company-wide schedule
-                        </span>
-                      </div>
-                    </div>
 
-                    {userIds.length === 0 && (
-                      <div className="w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center">
-                        <Check size={12} className="stroke-[3]" />
+                      {userIds.length === 0 && (
+                        <div className="w-5 h-5 rounded-full bg-[#1f5c5a] text-white flex items-center justify-center">
+                          <Check size={12} className="stroke-[3]" />
+                        </div>
+                      )}
+                    </button>
+
+                    {/* Option 2: Specific Members Indicator */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (userIds.length === 0) {
+                          setUserIds(profiles[0] ? [profiles[0].id] : []);
+                        }
+                      }}
+                      className={`flex items-center justify-between p-3 rounded-xl border transition-all text-left ${
+                        userIds.length > 0
+                          ? 'bg-[#e8f0ef] border-[#1f5c5a] text-[#1f5c5a] ring-2 ring-[#1f5c5a]/20 shadow-xs'
+                          : 'bg-white border-[#d8d1c2] hover:bg-[#f3f0e9] text-[#6f6a60]'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold ${
+                          userIds.length > 0 ? 'bg-[#1f5c5a] text-white' : 'bg-[#e7e1d6] text-[#20262e]'
+                        }`}>
+                          🎯
+                        </div>
+                        <div>
+                          <span className="text-xs font-black text-[#20262e] block">
+                            Option 2: Specific Members
+                          </span>
+                          <span className="text-[10px] text-[#6f6a60] font-medium">
+                            {userIds.length > 0 ? `${userIds.length} Selected` : 'Multi-Select'}
+                          </span>
+                        </div>
                       </div>
-                    )}
-                  </button>
+
+                      {userIds.length > 0 && (
+                        <div className="w-5 h-5 rounded-full bg-[#1f5c5a] text-white flex items-center justify-center">
+                          <Check size={12} className="stroke-[3]" />
+                        </div>
+                      )}
+                    </button>
+                  </div>
                 )}
 
-                {/* Grid of Team Members */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto pr-1">
-                  {profiles.map(p => {
-                    const isSelected = userIds.includes(p.id);
+                {/* Grid of Team Members (Multi-Select) */}
+                {(eventType === 'leave' || userIds.length > 0) && (
+                  <div className="space-y-1.5 pt-1">
+                    <div className="text-[11px] font-bold text-[#6f6a60] flex items-center justify-between">
+                      <span>Select individual team members:</span>
+                      <span className="text-[#1f5c5a]">{userIds.length} of {profiles.length} selected</span>
+                    </div>
 
-                    return (
-                      <button
-                        key={p.id}
-                        type="button"
-                        onClick={() => toggleMember(p.id)}
-                        className={`flex items-center justify-between p-2 rounded-xl border transition-all text-left group ${
-                          isSelected
-                            ? 'bg-indigo-600/20 border-indigo-500/50 text-white'
-                            : 'bg-slate-950/60 border-slate-800 hover:border-slate-700 text-slate-300'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2 min-w-0">
-                          <img
-                            src={p.avatar_url}
-                            alt={p.full_name}
-                            className="w-6 h-6 rounded-full object-cover ring-1 ring-slate-700 flex-shrink-0"
-                          />
-                          <div className="min-w-0">
-                            <span className="text-xs font-bold truncate block text-slate-200 group-hover:text-white">
-                              {p.full_name || p.username}
-                            </span>
-                            <span className="text-[9px] text-slate-500 truncate block">
-                              {p.department}
-                            </span>
-                          </div>
-                        </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto pr-1">
+                      {profiles.map(p => {
+                        const isSelected = userIds.includes(p.id);
 
-                        <div className={`w-4 h-4 rounded-md flex items-center justify-center transition-colors flex-shrink-0 ${
-                          isSelected
-                            ? 'bg-indigo-600 text-white'
-                            : 'border border-slate-700 bg-slate-900 group-hover:border-slate-600'
-                        }`}>
-                          {isSelected && <Check size={11} className="stroke-[3]" />}
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
+                        return (
+                          <button
+                            key={p.id}
+                            type="button"
+                            onClick={() => toggleMember(p.id)}
+                            className={`flex items-center justify-between p-2 rounded-xl border transition-all text-left group ${
+                              isSelected
+                                ? 'bg-white border-[#1f5c5a] ring-1 ring-[#1f5c5a] shadow-xs'
+                                : 'bg-white border-[#d8d1c2] hover:border-[#1f5c5a]/50 text-[#20262e]'
+                            }`}
+                          >
+                            <div className="flex items-center gap-2 min-w-0">
+                              <img
+                                src={p.avatar_url}
+                                alt={p.full_name}
+                                className="w-7 h-7 rounded-full object-cover ring-1 ring-[#d8d1c2] flex-shrink-0"
+                              />
+                              <div className="min-w-0">
+                                <span className="text-xs font-bold truncate block text-[#20262e]">
+                                  {p.full_name || p.username}
+                                </span>
+                                <span className="text-[10px] text-[#6f6a60] truncate block">
+                                  {p.department}
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className={`w-4 h-4 rounded-md flex items-center justify-center transition-colors flex-shrink-0 ${
+                              isSelected
+                                ? 'bg-[#1f5c5a] text-white'
+                                : 'border border-[#d8d1c2] bg-[#faf8f4] group-hover:border-[#1f5c5a]'
+                            }`}>
+                              {isSelected && <Check size={11} className="stroke-[3]" />}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               /* Non-Admin view: Locked to Current User */
-              <div className="p-2.5 rounded-xl bg-slate-950/70 border border-slate-800 flex items-center gap-2.5">
+              <div className="p-2.5 rounded-xl bg-white border border-[#d8d1c2] flex items-center gap-2.5">
                 <img 
                   src={currentUser?.avatar_url} 
                   alt={currentUser?.full_name} 
                   className="w-7 h-7 rounded-full object-cover" 
                 />
                 <div>
-                  <span className="text-xs font-bold text-slate-200 block">
+                  <span className="text-xs font-bold text-[#20262e] block">
                     {currentUser?.full_name || currentUser?.username} (You)
                   </span>
-                  <span className="text-[10px] text-slate-500">
+                  <span className="text-[10px] text-[#6f6a60]">
                     {currentUser?.department} &bull; {currentUser?.role}
                   </span>
                 </div>
               </div>
             )}
           </div>
+          </div>
 
           {/* 4. All Day Toggle */}
-          <div className="flex items-center justify-between p-3 rounded-xl bg-slate-950/60 border border-slate-800/80">
+          <div className="flex items-center justify-between p-3 rounded-xl bg-[#faf8f4] border border-[#e7e1d6]">
             <div className="flex items-center gap-2">
-              <Clock size={14} className="text-slate-400" />
-              <span className="text-xs font-semibold text-slate-300">All-Day Event</span>
+              <Clock size={14} className="text-[#1f5c5a]" />
+              <span className="text-xs font-bold text-[#20262e]">All-Day Event</span>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
@@ -484,7 +529,7 @@ export default function CreateEventModal({ isOpen, onClose, editingEvent = null,
                 onChange={(e) => setIsAllDay(e.target.checked)}
                 className="sr-only peer"
               />
-              <div className="w-9 h-5 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+              <div className="w-9 h-5 bg-[#d8d1c2] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#1f5c5a]"></div>
             </label>
           </div>
 
@@ -539,29 +584,29 @@ export default function CreateEventModal({ isOpen, onClose, editingEvent = null,
           {/* 6. Description / Notes */}
           <div>
             <label className="block text-xs font-bold text-[#20262e] mb-1.5 flex items-center gap-1.5">
-              <AlignLeft size={13} className="text-[#1f5c5a]" /> Description / Notes
+              <AlignLeft size={13} className="text-[#1f5c5a]" /> Description / Instructions
             </label>
             <textarea
               rows={3}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Add agenda, meeting link, leave reason, or additional details..."
+              placeholder="Add notice details, agenda, links, or instructions for the team..."
               className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#d8d1c2] text-xs text-[#20262e] placeholder:text-[#8c827a] focus:border-[#1f5c5a] focus:ring-1 focus:ring-[#1f5c5a] transition-all resize-none font-medium"
             />
           </div>
 
           {/* 7. Leave Status (For Admins Editing Leaves) */}
           {isAdmin && eventType === 'leave' && (
-            <div className="flex items-center justify-between p-3 rounded-xl bg-slate-950/60 border border-slate-800">
-              <span className="text-xs font-bold text-slate-300">Approval Status</span>
+            <div className="flex items-center justify-between p-3 rounded-xl bg-[#faf8f4] border border-[#e7e1d6]">
+              <span className="text-xs font-bold text-[#20262e]">Approval Status</span>
               <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={() => setStatus('approved')}
                   className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
                     status === 'approved' 
-                      ? 'bg-emerald-500 text-white shadow-md shadow-emerald-500/20' 
-                      : 'bg-slate-800 text-slate-400 hover:text-white'
+                      ? 'bg-[#1f5c5a] text-white shadow-xs' 
+                      : 'bg-white border border-[#d8d1c2] text-[#6f6a60] hover:text-[#20262e]'
                   }`}
                 >
                   Approved
@@ -571,8 +616,8 @@ export default function CreateEventModal({ isOpen, onClose, editingEvent = null,
                   onClick={() => setStatus('pending')}
                   className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
                     status === 'pending' 
-                      ? 'bg-amber-500 text-slate-950 shadow-md shadow-amber-500/20' 
-                      : 'bg-slate-800 text-slate-400 hover:text-white'
+                      ? 'bg-[#f4ecd9] border border-[#e5d2ac] text-[#855b14] font-bold shadow-xs' 
+                      : 'bg-white border border-[#d8d1c2] text-[#6f6a60] hover:text-[#20262e]'
                   }`}
                 >
                   Pending
@@ -588,7 +633,7 @@ export default function CreateEventModal({ isOpen, onClose, editingEvent = null,
                 type="button"
                 onClick={handleDelete}
                 disabled={isSubmitting}
-                className="px-4 py-2.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-400 text-xs font-bold transition-all flex items-center gap-1.5"
+                className="px-4 py-2.5 rounded-xl bg-[#f7e7e1] hover:bg-[#f0cac0] border border-[#f0cac0] text-[#a82e2e] text-xs font-bold transition-all flex items-center gap-1.5"
               >
                 <Trash2 size={15} />
                 <span>Delete</span>
@@ -598,15 +643,7 @@ export default function CreateEventModal({ isOpen, onClose, editingEvent = null,
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`flex-1 py-3 rounded-xl text-white text-xs font-bold transition-all shadow-lg flex items-center justify-center gap-2 ${
-                eventType === 'leave'
-                  ? 'bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 shadow-rose-500/20'
-                  : eventType === 'meeting'
-                  ? 'bg-gradient-to-r from-sky-600 to-sky-500 hover:from-sky-500 hover:to-sky-400 shadow-sky-500/20'
-                  : eventType === 'holiday'
-                  ? 'bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 shadow-amber-500/20'
-                  : 'bg-gradient-to-r from-purple-600 to-purple-500 hover:from-purple-500 hover:to-purple-400 shadow-purple-500/20'
-              }`}
+              className="flex-1 py-3 rounded-xl bg-[#1f5c5a] hover:bg-[#174644] text-white text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2"
             >
               <CheckCircle2 size={16} />
               <span>
@@ -615,7 +652,7 @@ export default function CreateEventModal({ isOpen, onClose, editingEvent = null,
                   : editingEvent
                   ? 'Update Event'
                   : isAdmin
-                  ? 'Add to Calendar'
+                  ? 'Dispatch Notice / Add to Calendar'
                   : 'Submit Leave Request'}
               </span>
             </button>
