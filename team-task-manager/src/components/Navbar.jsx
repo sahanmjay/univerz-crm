@@ -131,8 +131,8 @@ export default function Navbar() {
               </button>
             )}
 
-            {/* + New Task Button */}
-            {(currentUser?.role === 'HR' || currentUser?.role === 'admin' || currentUser?.role === 'Admin' || isAdmin) && (
+            {/* + New Task Button (HR Members Only) */}
+            {isAdmin && (
               <button
                 onClick={() => setIsCreateModalOpen(true)}
                 className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#1f5c5a] hover:bg-[#174644] text-xs font-bold text-white transition-all shadow-xs"
@@ -145,10 +145,12 @@ export default function Navbar() {
         </div>
       </header>
 
-      <CreateTaskModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-      />
+      {isAdmin && (
+        <CreateTaskModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+        />
+      )}
 
       <AIReportModal
         isOpen={isAIModalOpen}

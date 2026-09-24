@@ -712,7 +712,7 @@ export const TaskProvider = ({ children }) => {
     }
   };
 
-  // Role permissions: HR / Admins (Ashan, Widura & Sahan) have full management rights
+  // Role permissions: Only HR / Admins (Ashan & Widura or HR department) have full management rights
   const isAdmin = useMemo(() => {
     if (!currentUser) return false;
     const role = (currentUser.role || '').toLowerCase();
@@ -721,17 +721,18 @@ export const TaskProvider = ({ children }) => {
     const name = (currentUser.full_name || '').toLowerCase();
     return (
       role === 'admin' ||
-      role === 'manager' ||
       role === 'hr' ||
+      role === 'manager' ||
       dept === 'hr' ||
       username === 'ashan' ||
       username === 'widura' ||
-      username === 'sahan' ||
       name.includes('ashan') ||
-      name.includes('widura') ||
-      name.includes('sahan')
+      name.includes('widura')
     );
   }, [currentUser]);
+
+  const isHR = isAdmin;
+  const isHRorAdmin = isAdmin;
 
   // Available Month Options derived from tasks
   const monthOptions = useMemo(() => {
@@ -805,6 +806,13 @@ export const TaskProvider = ({ children }) => {
   }, [tasks, isAdmin, triggerConfetti]);
 
   const createTask = useCallback(async (taskData) => {
+    // Permission Guard: Only HR / Admins can create and assign tasks
+    const isUserHR = isAdmin || (currentUser?.department || '').toLowerCase() === 'hr' || (currentUser?.role || '').toLowerCase() === 'admin';
+    if (!isUserHR) {
+      console.warn('Unauthorized task creation attempt blocked: user is not HR');
+      throw new Error('Access Denied: Only HR team members (Ashan & Widura) are authorized to create and assign tasks.');
+    }
+
     const currentMonthKey = getCurrentMonthKey();
     const payload = {
       title: taskData.title.trim(),
@@ -840,7 +848,7 @@ export const TaskProvider = ({ children }) => {
       console.error('Create task exception:', err);
       throw err;
     }
-  }, [currentUser]);
+  }, [currentUser, isAdmin]);
 
   // 9. Update Task details
   const updateTask = useCallback(async (taskId, updates) => {
@@ -1473,8 +1481,14 @@ ${JSON.stringify(payload, null, 2)}`;
     }
   }, []);
 
-  // Attendance CRUD Actions
+  // Attendance CRUD Actions (HR / Admin Only)
   const markAttendance = useCallback(async (memberId, dateStr, status, checkInTime = null, notes = '') => {
+    const isUserHR = isAdmin || (currentUser?.department || '').toLowerCase() === 'hr' || (currentUser?.role || '').toLowerCase() === 'admin';
+    if (!isUserHR) {
+      console.warn('Unauthorized attendance modification attempt blocked: user is not HR');
+      throw new Error('Access Denied: Only HR members (Ashan & Widura) can record or modify attendance.');
+    }
+
     const formattedDate = toDateStringOnly(dateStr);
     const member = profiles.find(p => p.id === memberId);
     const nowTimeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -1526,9 +1540,15 @@ ${JSON.stringify(payload, null, 2)}`;
       console.warn('Exception marking attendance in Supabase:', err);
     }
     return payload;
-  }, [profiles, currentUser, triggerConfetti]);
+  }, [profiles, currentUser, isAdmin, triggerConfetti]);
 
   const bulkMarkAttendance = useCallback(async (records) => {
+    const isUserHR = isAdmin || (currentUser?.department || '').toLowerCase() === 'hr' || (currentUser?.role || '').toLowerCase() === 'admin';
+    if (!isUserHR) {
+      console.warn('Unauthorized bulk attendance modification attempt blocked: user is not HR');
+      throw new Error('Access Denied: Only HR members can record bulk attendance.');
+    }
+
     if (!Array.isArray(records) || records.length === 0) return;
 
     const payloads = records.map(r => {
@@ -1619,6 +1639,8 @@ ${JSON.stringify(payload, null, 2)}`;
     isRealtimeLive,
     lastSyncTime,
     isAdmin,
+    isHR,
+    isHRorAdmin,
     selectedStatus,
     setSelectedStatus,
     selectedPriority,

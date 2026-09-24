@@ -360,6 +360,426 @@ export default function AttendanceView() {
     return { days, memberStats };
   }, [selectedMonth, profiles, attendanceRecords, workRosters]);
 
+  // For Staff / Non-HR Personal View
+  const currentMemberId = currentUser?.id;
+  const myRecord = dayAttendanceMap[currentMemberId];
+  const isMyRostered = rosteredMemberIds.includes(currentMemberId);
+  const myApprovedLeave = leavesOnSelectedDate.find(
+    l => (Array.isArray(l.user_ids) && l.user_ids.includes(currentMemberId)) || l.member_id === currentMemberId || l.assignee_id === currentMemberId
+  );
+
+  const myMonthlyStats = useMemo(() => {
+    if (!currentMemberId) return null;
+    return monthlyData.memberStats.find(s => s.member.id === currentMemberId);
+  }, [currentMemberId, monthlyData.memberStats]);
+
+  // If Non-HR Staff Member: Render Dedicated Personal Attendance & Schedule View
+  if (!isAdmin) {
+    return (
+      <div className="space-y-6 max-w-7xl mx-auto animate-fade-in pb-10">
+        {/* Top Header Card */}
+        <div className="bg-white border border-[#e7e1d6] rounded-3xl p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="relative">
+              <img
+                src={currentUser?.avatar_url}
+                alt={currentUser?.full_name}
+                className="w-14 h-14 rounded-2xl object-cover border border-[#e7e1d6] shadow-xs"
+              />
+              <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-white shadow-xs" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl sm:text-2xl font-black text-[#20262e] tracking-tight">
+                  My Attendance &amp; Work Status
+                </h1>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#e8f0ef] text-[#1f5c5a] border border-[#a3c7c4]">
+                  {currentUser?.department} Team
+                </span>
+              </div>
+              <p className="text-xs text-[#6f6a60] mt-0.5">
+                Personal check-in times, leave records, duty roster shift status, and monthly summary for <strong>{currentUser?.full_name || currentUser?.username}</strong>.
+              </p>
+            </div>
+          </div>
+
+          {/* View Switcher: Daily vs Monthly for Staff */}
+          <div className="flex bg-[#f3f0e9] border border-[#e7e1d6] rounded-xl p-1 shadow-2xs">
+            <button
+              onClick={() => setViewMode('daily')}
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                viewMode === 'daily'
+                  ? 'bg-[#1f5c5a] text-white shadow-xs'
+                  : 'text-[#6f6a60] hover:text-[#20262e]'
+              }`}
+            >
+              <Calendar size={13} />
+              <span>Daily Check-In</span>
+            </button>
+            <button
+              onClick={() => setViewMode('monthly')}
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                viewMode === 'monthly'
+                  ? 'bg-[#1f5c5a] text-white shadow-xs'
+                  : 'text-[#6f6a60] hover:text-[#20262e]'
+              }`}
+            >
+              <BarChart3 size={13} />
+              <span>Monthly History</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Daily Mode View for Staff */}
+        {viewMode === 'daily' ? (
+          <div className="space-y-4">
+            {/* Date Control Bar */}
+            <div className="bg-white border border-[#e7e1d6] rounded-2xl p-4 shadow-xs flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="flex items-center bg-[#faf8f4] border border-[#e7e1d6] rounded-xl p-0.5">
+                  <button
+                    onClick={handlePrevDay}
+                    className="p-1.5 hover:bg-white rounded-lg text-[#6f6a60] hover:text-[#20262e] transition-colors"
+                    title="Previous Day"
+                  >
+                    <ChevronLeft size={16} />
+                  </button>
+                  <input
+                    type="date"
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    className="px-2 py-1 bg-transparent text-xs font-bold text-[#20262e] focus:outline-none border-0 cursor-pointer"
+                  />
+                  <button
+                    onClick={handleNextDay}
+                    className="p-1.5 hover:bg-white rounded-lg text-[#6f6a60] hover:text-[#20262e] transition-colors"
+                    title="Next Day"
+                  >
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
+
+                <button
+                  onClick={handleSetToday}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                    selectedDate === todayStr
+                      ? 'bg-[#1f5c5a] text-white shadow-2xs'
+                      : 'bg-[#faf8f4] hover:bg-[#e8f0ef] text-[#1f5c5a] border border-[#e7e1d6]'
+                  }`}
+                >
+                  Today
+                </button>
+
+                <button
+                  onClick={handleSetYesterday}
+                  className="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#faf8f4] hover:bg-[#e8f0ef] text-[#6f6a60] hover:text-[#20262e] border border-[#e7e1d6] transition-all"
+                >
+                  Yesterday
+                </button>
+              </div>
+
+              <div className="text-xs font-bold text-[#20262e] flex items-center gap-2 bg-[#faf8f4] px-3.5 py-1.5 rounded-xl border border-[#e7e1d6]">
+                <span>📅</span>
+                <span>{formatDisplayDate(selectedDate)}</span>
+              </div>
+            </div>
+
+            {/* Personal Status Hero Card */}
+            <div className={`border rounded-3xl p-6 sm:p-7 shadow-xs transition-all relative overflow-hidden ${
+              myRecord?.status === 'present'
+                ? 'bg-gradient-to-br from-emerald-50/90 via-white to-emerald-50/40 border-emerald-300'
+                : myRecord?.status === 'late'
+                ? 'bg-gradient-to-br from-amber-50/90 via-white to-amber-50/40 border-amber-300'
+                : myRecord?.status === 'half_day'
+                ? 'bg-gradient-to-br from-blue-50/90 via-white to-blue-50/40 border-blue-300'
+                : myRecord?.status === 'on_leave' || myApprovedLeave
+                ? 'bg-gradient-to-br from-purple-50/90 via-white to-purple-50/40 border-purple-300'
+                : myRecord?.status === 'absent'
+                ? 'bg-gradient-to-br from-rose-50/90 via-white to-rose-50/40 border-rose-300'
+                : 'bg-white border-[#e7e1d6]'
+            }`}>
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
+                {/* Left: Status Icon & Details */}
+                <div className="flex items-start gap-4">
+                  <div className={`w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center text-white shrink-0 shadow-md ${
+                    myRecord?.status === 'present'
+                      ? 'bg-emerald-600 shadow-emerald-600/30'
+                      : myRecord?.status === 'late'
+                      ? 'bg-amber-500 shadow-amber-500/30'
+                      : myRecord?.status === 'half_day'
+                      ? 'bg-blue-600 shadow-blue-600/30'
+                      : myRecord?.status === 'on_leave' || myApprovedLeave
+                      ? 'bg-purple-600 shadow-purple-600/30'
+                      : myRecord?.status === 'absent'
+                      ? 'bg-rose-600 shadow-rose-600/30'
+                      : 'bg-slate-400 shadow-slate-400/20'
+                  }`}>
+                    {myRecord?.status === 'present' ? (
+                      <CheckCircle2 size={32} className="stroke-[2.5]" />
+                    ) : myRecord?.status === 'late' ? (
+                      <Clock size={32} className="stroke-[2.5]" />
+                    ) : myRecord?.status === 'half_day' ? (
+                      <SunMedium size={32} className="stroke-[2.5]" />
+                    ) : myRecord?.status === 'on_leave' || myApprovedLeave ? (
+                      <CalendarDays size={32} className="stroke-[2.5]" />
+                    ) : myRecord?.status === 'absent' ? (
+                      <UserX size={32} className="stroke-[2.5]" />
+                    ) : (
+                      <HelpCircle size={32} className="stroke-[2.5]" />
+                    )}
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className={`text-xs font-black px-2.5 py-0.5 rounded-full uppercase tracking-wider ${
+                        myRecord?.status === 'present'
+                          ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                          : myRecord?.status === 'late'
+                          ? 'bg-amber-100 text-amber-900 border border-amber-300'
+                          : myRecord?.status === 'half_day'
+                          ? 'bg-blue-100 text-blue-800 border border-blue-300'
+                          : myRecord?.status === 'on_leave' || myApprovedLeave
+                          ? 'bg-purple-100 text-purple-800 border border-purple-300'
+                          : myRecord?.status === 'absent'
+                          ? 'bg-rose-100 text-rose-800 border border-rose-300'
+                          : 'bg-slate-100 text-slate-700 border border-slate-300'
+                      }`}>
+                        {myRecord?.status === 'present'
+                          ? 'Marked Present'
+                          : myRecord?.status === 'late'
+                          ? 'Marked Late'
+                          : myRecord?.status === 'half_day'
+                          ? 'Half Day Session'
+                          : myRecord?.status === 'on_leave' || myApprovedLeave
+                          ? 'On Approved Leave'
+                          : myRecord?.status === 'absent'
+                          ? 'Marked Absent'
+                          : 'Attendance Pending'}
+                      </span>
+
+                      {isMyRostered ? (
+                        <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-[#e8f0ef] text-[#1f5c5a] border border-[#a3c7c4] flex items-center gap-1">
+                          <CalendarDays size={12} />
+                          <span>Scheduled on Shift (Duty Roster)</span>
+                        </span>
+                      ) : (
+                        <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#faf8f4] text-[#6f6a60] border border-[#e7e1d6]">
+                          Off Roster
+                        </span>
+                      )}
+
+                      {myApprovedLeave && (
+                        <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-800 border border-purple-300 flex items-center gap-1">
+                          <span>🏖️ Approved Leave</span>
+                        </span>
+                      )}
+                    </div>
+
+                    <h2 className="text-xl sm:text-2xl font-black text-[#20262e]">
+                      {myRecord?.status === 'present'
+                        ? 'You are Present & Logged In'
+                        : myRecord?.status === 'late'
+                        ? 'Late Arrival Recorded by HR'
+                        : myRecord?.status === 'half_day'
+                        ? 'Half Day Recorded'
+                        : myRecord?.status === 'on_leave' || myApprovedLeave
+                        ? 'You are on Approved Leave on this date'
+                        : myRecord?.status === 'absent'
+                        ? 'Marked Absent for this shift'
+                        : 'Attendance for this date has not been marked yet.'}
+                    </h2>
+
+                    <p className="text-xs text-[#6f6a60] max-w-xl leading-relaxed">
+                      {myRecord?.status === 'present'
+                        ? 'Your attendance was verified and recorded by HR (Ashan / Widura).'
+                        : myRecord?.status === 'late'
+                        ? 'Your arrival time was noted as a delayed check-in by HR.'
+                        : myRecord?.status === 'on_leave' || myApprovedLeave
+                        ? 'Your leave request is active and registered in the company schedule.'
+                        : myRecord?.status === 'absent'
+                        ? 'An absence was recorded for this date. Please contact HR if this is an error.'
+                        : 'Attendance is recorded and managed by HR staff during working hours.'}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Right: Arrival Time Card & Remarks */}
+                <div className="flex flex-col gap-2 min-w-[240px]">
+                  <div className="bg-white/95 border border-[#e7e1d6] rounded-2xl p-4 shadow-2xs">
+                    <span className="text-[10px] font-extrabold text-[#6f6a60] block uppercase tracking-wider mb-1">
+                      Recorded Arrival / Check-In Time
+                    </span>
+                    <div className="text-xl font-black text-[#20262e] flex items-center gap-2">
+                      <Clock size={18} className="text-[#1f5c5a]" />
+                      <span>{myRecord?.check_in_time || 'No Check-in Logged'}</span>
+                    </div>
+                  </div>
+
+                  {myRecord?.notes && (
+                    <div className="bg-[#faf8f4] border border-[#e7e1d6] rounded-xl p-3 text-xs text-[#6f6a60]">
+                      <strong className="text-[#20262e] block mb-0.5 font-bold">HR Remark / Note:</strong>
+                      <span>{myRecord.notes}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Monthly KPIs for Staff */}
+            {myMonthlyStats && (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="bg-white border border-[#e7e1d6] rounded-2xl p-4 shadow-xs">
+                  <span className="text-xs font-bold text-[#6f6a60] block">Days Present</span>
+                  <div className="text-2xl font-black text-emerald-700 mt-1">
+                    {myMonthlyStats.presentCount} <span className="text-xs font-semibold text-[#6f6a60]">Days</span>
+                  </div>
+                  <span className="text-[11px] text-[#6f6a60] block mt-0.5">in {formatMonthLabel(selectedMonth)}</span>
+                </div>
+
+                <div className="bg-white border border-[#e7e1d6] rounded-2xl p-4 shadow-xs">
+                  <span className="text-xs font-bold text-[#6f6a60] block">Attendance Rate</span>
+                  <div className="text-2xl font-black text-[#1f5c5a] mt-1">
+                    {myMonthlyStats.attendanceRate}%
+                  </div>
+                  <span className="text-[11px] text-[#6f6a60] block mt-0.5">Monthly turnout</span>
+                </div>
+
+                <div className="bg-white border border-[#e7e1d6] rounded-2xl p-4 shadow-xs">
+                  <span className="text-xs font-bold text-[#6f6a60] block">Late Check-Ins</span>
+                  <div className="text-2xl font-black text-amber-700 mt-1">
+                    {myMonthlyStats.lateCount} <span className="text-xs font-semibold text-[#6f6a60]">Days</span>
+                  </div>
+                  <span className="text-[11px] text-[#6f6a60] block mt-0.5">Delayed arrivals</span>
+                </div>
+
+                <div className="bg-white border border-[#e7e1d6] rounded-2xl p-4 shadow-xs">
+                  <span className="text-xs font-bold text-[#6f6a60] block">Leaves &amp; Half-Days</span>
+                  <div className="text-2xl font-black text-purple-700 mt-1">
+                    {myMonthlyStats.leaveCount + myMonthlyStats.halfDayCount} <span className="text-xs font-semibold text-[#6f6a60]">Days</span>
+                  </div>
+                  <span className="text-[11px] text-[#6f6a60] block mt-0.5">{myMonthlyStats.leaveCount} leave, {myMonthlyStats.halfDayCount} half day</span>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          /* Monthly Personal History Log for Staff */
+          <div className="space-y-4">
+            <div className="bg-white border border-[#e7e1d6] rounded-2xl p-4 shadow-xs flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <label className="text-xs font-bold text-[#20262e] flex items-center gap-1.5">
+                  <Calendar size={14} className="text-[#1f5c5a]" />
+                  <span>Select Month:</span>
+                </label>
+                <select
+                  value={selectedMonth}
+                  onChange={(e) => setSelectedMonth(e.target.value)}
+                  className="bg-[#faf8f4] border border-[#e7e1d6] rounded-xl px-3 py-1.5 text-xs font-bold text-[#20262e] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#1f5c5a] cursor-pointer"
+                >
+                  {getAvailableMonthOptions().filter(o => o.value !== 'current' && o.value !== 'all').map(opt => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="text-xs font-semibold text-[#6f6a60]">
+                Personal attendance history for <strong className="text-[#20262e]">{currentUser?.full_name || currentUser?.username}</strong>
+              </div>
+            </div>
+
+            {/* Monthly Table for Staff */}
+            <div className="bg-white border border-[#e7e1d6] rounded-2xl overflow-hidden shadow-xs">
+              <div className="p-4 border-b border-[#e7e1d6]">
+                <h3 className="text-sm font-bold text-[#20262e] flex items-center gap-2">
+                  <FileText size={16} className="text-[#1f5c5a]" />
+                  <span>My Monthly Attendance Log &bull; {formatMonthLabel(selectedMonth)}</span>
+                </h3>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="bg-[#faf8f4] border-b border-[#e7e1d6] text-[#6f6a60] font-bold text-left">
+                      <th className="p-3">Date</th>
+                      <th className="p-3">Duty Roster</th>
+                      <th className="p-3">Attendance Status</th>
+                      <th className="p-3">Arrival / Check-in Time</th>
+                      <th className="p-3">HR Remarks / Notes</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#e7e1d6]">
+                    {myMonthlyStats?.days.map(d => {
+                      const rec = myMonthlyStats.dayMap[d.dateStr];
+                      const isRostered = workRosters.some(
+                        r => r.date === d.dateStr && Array.isArray(r.assigned_member_ids) && r.assigned_member_ids.includes(currentMemberId)
+                      );
+                      const cfg = rec?.status ? STATUS_CONFIG[rec.status] : null;
+
+                      return (
+                        <tr key={d.dateStr} className={`hover:bg-[#faf8f4] transition-colors ${d.isWeekend ? 'bg-[#faf8f4]/40' : ''}`}>
+                          <td className="p-3 font-semibold text-[#20262e]">
+                            <div className="flex items-center gap-2">
+                              <span>{d.dateStr}</span>
+                              <span className="text-[10px] text-[#6f6a60] font-normal">({d.dayName})</span>
+                              {d.dateStr === todayStr && (
+                                <span className="text-[9px] font-black px-1.5 py-0.2 bg-[#1f5c5a] text-white rounded">
+                                  TODAY
+                                </span>
+                              )}
+                            </div>
+                          </td>
+
+                          <td className="p-3">
+                            {isRostered ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#e8f0ef] text-[#1f5c5a] font-bold text-[11px] border border-[#a3c7c4]">
+                                <CalendarDays size={11} />
+                                <span>On Shift</span>
+                              </span>
+                            ) : (
+                              <span className="text-[#8c827a] text-[11px]">Off Roster</span>
+                            )}
+                          </td>
+
+                          <td className="p-3">
+                            {cfg ? (
+                              <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-bold text-[11px] border ${cfg.badgeBg}`}>
+                                <span>{cfg.label}</span>
+                              </span>
+                            ) : (
+                              <span className="text-[#8c827a] text-[11px] italic">Not Recorded</span>
+                            )}
+                          </td>
+
+                          <td className="p-3 font-medium text-[#20262e]">
+                            {rec?.check_in_time ? (
+                              <span className="flex items-center gap-1">
+                                <Clock size={12} className="text-[#1f5c5a]" />
+                                <span>{rec.check_in_time}</span>
+                              </span>
+                            ) : (
+                              <span className="text-[#8c827a]">-</span>
+                            )}
+                          </td>
+
+                          <td className="p-3 text-[#6f6a60]">
+                            {rec?.notes || '-'}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // HR VIEW (Full Company 6-Member Attendance Management System)
   return (
     <div className="space-y-6 max-w-7xl mx-auto">
       {/* Top Header Card */}
@@ -371,7 +791,7 @@ export default function AttendanceView() {
             </div>
             <div>
               <h1 className="text-xl font-bold text-[#20262e] tracking-tight flex items-center gap-2">
-                Team Attendance & Duty Tracking
+                Team Attendance &amp; Duty Tracking (HR Admin)
                 {isSaving && (
                   <span className="text-xs font-medium text-[#1f5c5a] animate-pulse">
                     • Saving changes...
@@ -379,7 +799,7 @@ export default function AttendanceView() {
                 )}
               </h1>
               <p className="text-xs text-[#6f6a60]">
-                Track daily attendance, verify duty roster turnouts, flag unexcused absences, and log late check-ins.
+                Track daily attendance, verify duty roster turnouts, flag unexcused absences, and log late check-ins for all 6 team members.
               </p>
             </div>
           </div>

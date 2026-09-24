@@ -124,19 +124,15 @@ export default function StaffDashboard() {
               </select>
             </div>
 
-            <button
-              onClick={() => setIsCreateModalOpen(true)}
-              disabled={!isAdmin}
-              title={!isAdmin ? "Only HR/Admin can assign tasks" : ""}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-white transition-all shadow-lg ${
-                isAdmin 
-                  ? 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-600/25 hover:scale-[1.02] active:scale-[0.98]'
-                  : 'bg-slate-700 opacity-50 cursor-not-allowed'
-              }`}
-            >
-              <Plus size={16} className="stroke-[3]" />
-              + Add Task
-            </button>
+            {isAdmin && (
+              <button
+                onClick={() => setIsCreateModalOpen(true)}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 shadow-emerald-600/25 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-lg"
+              >
+                <Plus size={16} className="stroke-[3]" />
+                + Add Task
+              </button>
+            )}
           </div>
         </div>
 

@@ -18,7 +18,8 @@ import {
   Layers, 
   Sparkles,
   ExternalLink,
-  Check
+  Check,
+  ShieldAlert
 } from 'lucide-react';
 
 export default function CreateProjectModal({ 
@@ -27,7 +28,7 @@ export default function CreateProjectModal({
   initialLead = null,
   projectToEdit = null 
 }) {
-  const { profiles, createProject, updateProject, currentUser } = useTasks();
+  const { profiles, createProject, updateProject, currentUser, isAdmin } = useTasks();
 
   const [name, setName] = useState('');
   const [clientName, setClientName] = useState('');
@@ -73,6 +74,36 @@ export default function CreateProjectModal({
 
   if (!isOpen) return null;
 
+  if (!isAdmin) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
+        <div className="w-full max-w-md rounded-3xl glass-panel border border-slate-700 shadow-2xl p-6 text-center space-y-4 relative animate-slide-up">
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+          >
+            <X size={18} />
+          </button>
+          <div className="w-12 h-12 rounded-2xl bg-rose-500/20 text-rose-400 border border-rose-500/30 mx-auto flex items-center justify-center">
+            <ShieldAlert size={24} />
+          </div>
+          <div>
+            <h3 className="text-base font-bold text-white">HR Access Required</h3>
+            <p className="text-xs text-slate-300 mt-1.5 leading-relaxed">
+              Only members of the HR department (Ashan Indusara &amp; Widura Bandara) are authorized to create and manage client projects.
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold transition-colors"
+          >
+            Understood
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const toggleSupportingMember = (memberId) => {
     if (memberId === leadId) return; // Lead is already assigned
     setSupportingMemberIds(prev => 
@@ -90,6 +121,10 @@ export default function CreateProjectModal({
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!isAdmin) {
+      setError('Unauthorized: Only HR members can manage projects.');
+      return;
+    }
     if (!name.trim()) {
       setError('Project Name is required');
       return;
