@@ -2097,6 +2097,45 @@ function sbWrite(promise){
   });
 }
 
+/* Columns this database does not have yet (the migration has not been run).
+   Remembered per device so we stop sending them and writes keep working. */
+let MISSING_COLS = (() => {
+  try{ return new Set(JSON.parse(localStorage.getItem("crm_missing_cols") || "[]")); }
+  catch(e){ return new Set(); }
+})();
+function rememberMissingCol(col){
+  MISSING_COLS.add(col);
+  try{ localStorage.setItem("crm_missing_cols", JSON.stringify([...MISSING_COLS])); }catch(e){}
+}
+
+/* Save a row, dropping any column the database rejects and retrying.
+   The record still reaches the shared database; only the newest fields are
+   left behind until supabase-business-migration.sql is run. */
+async function sbSave(table, row, id){
+  let payload = {};
+  for(const k in row) if(!MISSING_COLS.has(k)) payload[k] = row[k];
+
+  for(let attempt = 0; attempt < 12; attempt++){
+    const { error } = id
+      ? await sb.from(table).update(payload).eq('id', id)
+      : await sb.from(table).upsert(payload);
+    if(!error) return true;
+
+    const m = /Could not find the '(.+?)' column|column "(.+?)" of relation/i.exec(error.message || "");
+    const col = m && (m[1] || m[2]);
+    if(!col || !(col in payload)){
+      console.error("Supabase write error:", error);
+      SYNC_BROKEN = error.message || "Could not save to the shared database.";
+      showSyncBanner();
+      toast("⚠ Not saved to the cloud — " + SYNC_BROKEN);
+      return false;
+    }
+    rememberMissingCol(col);
+    delete payload[col];
+  }
+  return false;
+}
+
 function showSyncBanner(){
   if(!SYNC_BROKEN) return;
   let el = document.getElementById("sync-banner");
@@ -2521,15 +2560,30 @@ async function loadFromSupabase(){
    live in the local cache. Keep them instead of letting the reload erase them.
    ponytail: a row deleted on another device can reappear here; acceptable next
    to silently losing a day's work. Drop this once writes are reliable. */
+const ORPHAN_GRACE = 7 * 86400000;   // how long an unsynced record is kept
+
 function mergeCached(key, remote){
   const cached = cachedCollection(key);
   if(!cached.length) return remote;
   const seen = new Set(remote.map(r => r && r.id));
-  const extra = cached.filter(r => r && r.id && !seen.has(r.id));
+  const now = Date.now();
+
+  // Only recent rows: something saved in the last few days may simply not have
+  // reached the database yet. Anything older is stale — usually deleted by a
+  // teammate — and keeping it would make this person's totals disagree with
+  // everyone else's.
+  const extra = cached.filter(r => {
+    if(!r || !r.id || seen.has(r.id)) return false;
+    const born = Number(r.createdAt) || Number(r.issuedAt) || 0;
+    return born && (now - born) < ORPHAN_GRACE;
+  });
+
   if(extra.length){
-    console.warn(`${extra.length} ${key} are not in the database yet — kept from the local cache`);
-    SYNC_BROKEN = SYNC_BROKEN || `${extra.length} record(s) have not reached the database yet.`;
-    setTimeout(showSyncBanner, 0);
+    console.warn(`${extra.length} ${key} missing from the database — re-sending them`);
+    // Push them up so everyone ends up with the same data, instead of this
+    // device quietly holding records nobody else can see.
+    const table = key === "products" ? "catalog_product" : key === "quotations" ? "sales_quotation" : "sales_invoice";
+    extra.forEach(r => { try{ sbSave(table, objToSnake(r)); }catch(e){} });
   }
   return remote.concat(extra);
 }
@@ -4065,7 +4119,7 @@ function changeRequests(p){ return (p.workLog || []).filter(e => e.kind === "cha
 /* Shared write: persist the project fields that live on the invoice row */
 function saveProjectFields(p, extraLabel){
   cacheLocal(DB);
-  sbWrite(sb.from('sales_invoice').update({
+  sbSave('sales_invoice', {
     project_status: p.projectStatus,
     progress: p.progress,
     start_at: p.startAt,
@@ -4074,7 +4128,7 @@ function saveProjectFields(p, extraLabel){
     assigned_to: p.assignedTo || null,
     duration_days: p.durationDays || null,
     work_log: p.workLog,
-  }).eq('id', p.id));
+  }, p.id);
   if(extraLabel) logFinanceAction("Project Update", `${p.number} — ${extraLabel}`, 0);
 }
 
@@ -4337,11 +4391,11 @@ function productForm(p){
 
     if(isNew){
       DB.products.unshift(rec);
-      sbWrite(sb.from('catalog_product').insert(objToSnake(rec)));
+      sbSave('catalog_product', objToSnake(rec));
     } else {
       const i = DB.products.findIndex(x => x.id === rec.id);
       if(i > -1) DB.products[i] = rec;
-      sbWrite(sb.from('catalog_product').update(objToSnake(rec)).eq('id', rec.id));
+      sbSave('catalog_product', objToSnake(rec), rec.id);
     }
 
     cacheLocal(DB);
@@ -4867,11 +4921,11 @@ function salesDocForm(type, doc, presetItems){
     const list = isQuote ? DB.quotations : DB.invoices;
     if(isNew){
       list.unshift(rec);
-      sbWrite(sb.from(docTable(type)).insert(objToSnake(rec)));
+      sbSave(docTable(type), objToSnake(rec));
     } else {
       const i = list.findIndex(x => x.id === rec.id);
       if(i > -1) list[i] = rec; else list.unshift(rec);
-      sbWrite(sb.from(docTable(type)).update(objToSnake(rec)).eq('id', rec.id));
+      sbSave(docTable(type), objToSnake(rec), rec.id);
     }
     cacheLocal(DB);
     logFinanceAction(
@@ -6308,11 +6362,11 @@ function convertQuotationToInvoice(quoteId){
   };
 
   DB.invoices.unshift(inv);
-  sbWrite(sb.from('sales_invoice').insert(objToSnake(inv)));
+  sbSave('sales_invoice', objToSnake(inv));
 
   q.status = "converted";
   q.convertedInvoiceId = inv.id;
-  sbWrite(sb.from('sales_quotation').update({status:"converted", converted_invoice_id: inv.id}).eq('id', q.id));
+  sbSave('sales_quotation', {status:"converted", converted_invoice_id: inv.id}, q.id);
 
   logFinanceAction("Converted Quotation", `${q.number} → invoice ${inv.number} for ${docMoney(inv.total, inv.currency)}`, 0);
   cacheLocal(DB);
@@ -6464,14 +6518,14 @@ function markInvoicePaidModal(invId){
       inv.status = "sent";
     }
 
-    sbWrite(sb.from('sales_invoice').update({
+    sbSave('sales_invoice', {
       status: inv.status,
       paid_at: inv.paidAt || null,
       transaction_id: inv.transactionId || null,
       milestones: inv.milestones || [],
       amount_paid: inv.amountPaid,
       balance_due: inv.balanceDue,
-    }).eq('id', inv.id));
+    }, inv.id);
 
     cacheLocal(DB);
     closeModal();
