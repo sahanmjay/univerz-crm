@@ -137,6 +137,9 @@ alter table sales_invoice add column if not exists work_log jsonb default '[]'::
 alter table sales_invoice add column if not exists assigned_to text references app_user(id);
 alter table sales_invoice add column if not exists duration_days numeric default 0;
 
+-- Contact address, so it auto-fills onto quotations and invoices
+alter table contact add column if not exists address text default '';
+
 
 -- =================================================================
 -- PART 3 — Row level security (anon full access, same as the rest of the CRM)

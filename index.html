@@ -607,6 +607,13 @@ td .num{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
   margin-bottom:11px;padding-bottom:6px;border-bottom:1px solid var(--line);
 }
 
+#sync-banner{
+  position:fixed;left:50%;transform:translateX(-50%);bottom:14px;z-index:70;max-width:min(680px,92vw);
+  background:var(--clay);color:#fff;border-radius:9px;padding:11px 16px;font-size:12.5px;line-height:1.5;
+  box-shadow:0 8px 28px rgba(0,0,0,.25);cursor:pointer;
+}
+#sync-banner span{opacity:.75;font-size:11px}
+
 /* Collapsed "advanced" blocks in the quotation / invoice builder.
    Native <details> — no JS, and the fields stay in the DOM so saving is unchanged. */
 .biz-more{
@@ -629,6 +636,10 @@ td .num{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
 .biz-more > *:last-child{margin-bottom:15px}
 
 /* ---- Projects ---- */
+.proj-co-head{
+  font-size:11px;font-weight:750;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:8px;
+}
 .proj-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:12px}
 .ps-card{
   background:var(--surface);border:1.5px solid var(--line);border-radius:11px;padding:14px 16px;
@@ -2069,8 +2080,33 @@ function objToSnake(o){
 function objToCamel(o){ if(!o)return o; const r={}; for(const[k,v] of Object.entries(o)) r[toCamelKey(k)]=v; return r; }
 
 /* ---- Non-blocking Supabase write (fire-and-forget with logging) ---- */
+/* A failed cloud write used to be silent, so locally-created records were
+   quietly wiped the next time the page loaded. Now it is reported, and
+   loadFromSupabase keeps anything the database has not accepted yet. */
+let SYNC_BROKEN = "";
 function sbWrite(promise){
-  promise.then(({error})=>{ if(error) console.error("Supabase write error:", error); });
+  promise.then(({error})=>{
+    if(!error) return;
+    console.error("Supabase write error:", error);
+    const missingCol = /column .* does not exist|Could not find the '(.+)' column/i.exec(error.message || "");
+    SYNC_BROKEN = missingCol
+      ? "Your database is missing the newest columns — run supabase-business-migration.sql."
+      : (error.message || "Could not save to the shared database.");
+    showSyncBanner();
+    toast("⚠ Not saved to the cloud — " + SYNC_BROKEN);
+  });
+}
+
+function showSyncBanner(){
+  if(!SYNC_BROKEN) return;
+  let el = document.getElementById("sync-banner");
+  if(!el){
+    el = document.createElement("div");
+    el.id = "sync-banner";
+    document.body.appendChild(el);
+    el.onclick = () => { el.remove(); };
+  }
+  el.innerHTML = `<b>⚠ Changes are only saved on this device.</b> ${esc(SYNC_BROKEN)} <span>(click to dismiss)</span>`;
 }
 
 /* ---- Safe timestamp parser (handles ms, sec, numeric strings, ISO strings, local datetime strings) ---- */
@@ -2469,16 +2505,33 @@ async function loadFromSupabase(){
     claims: (cm.data || []).map(objToCamel),
     // The business tables only exist once the setup SQL has been run. Until then the
     // query comes back with an error, so keep the local cache rather than wiping it.
-    products: missingTable(pr) ? cachedCollection("products") : pr.data.map(objToCamel).map(p => {
+    products: missingTable(pr) ? cachedCollection("products") : mergeCached("products", pr.data.map(objToCamel).map(p => {
       p.price = Number(p.price) || 0;
       p.cost = Number(p.cost) || 0;
       return p;
-    }),
+    })),
     quotations: missingTable(qt) ? cachedCollection("quotations").map(normalizeSalesDoc)
-                                 : qt.data.map(objToCamel).map(normalizeSalesDoc),
+                                 : mergeCached("quotations", qt.data.map(objToCamel)).map(normalizeSalesDoc),
     invoices:   missingTable(iv) ? cachedCollection("invoices").map(normalizeSalesDoc)
-                                 : iv.data.map(objToCamel).map(normalizeSalesDoc),
+                                 : mergeCached("invoices", iv.data.map(objToCamel)).map(normalizeSalesDoc),
   };
+}
+
+/* Rows the database never accepted (a failed write, or an offline spell) still
+   live in the local cache. Keep them instead of letting the reload erase them.
+   ponytail: a row deleted on another device can reappear here; acceptable next
+   to silently losing a day's work. Drop this once writes are reliable. */
+function mergeCached(key, remote){
+  const cached = cachedCollection(key);
+  if(!cached.length) return remote;
+  const seen = new Set(remote.map(r => r && r.id));
+  const extra = cached.filter(r => r && r.id && !seen.has(r.id));
+  if(extra.length){
+    console.warn(`${extra.length} ${key} are not in the database yet — kept from the local cache`);
+    SYNC_BROKEN = SYNC_BROKEN || `${extra.length} record(s) have not reached the database yet.`;
+    setTimeout(showSyncBanner, 0);
+  }
+  return remote.concat(extra);
 }
 
 /* ---- True when a table is absent or unreachable, so its rows must not be trusted ---- */
@@ -2937,6 +2990,7 @@ alter table sales_invoice add column if not exists completed_at bigint;
 alter table sales_invoice add column if not exists work_log jsonb default '[]'::jsonb;
 alter table sales_invoice add column if not exists assigned_to text references app_user(id);
 alter table sales_invoice add column if not exists duration_days numeric default 0;
+alter table contact add column if not exists address text default '';
 
 -- Idempotent RLS configuration
 do $$
@@ -3766,7 +3820,9 @@ function lastWorkLog(p){
 }
 
 let PROJ_SEARCH = "";
-let PROJ_FILTER = "open";   // "open" | "all" | a status id
+/* Starts on your own projects; the summary above always covers the whole company.
+   Set once per session, the moment we know who is signed in. */
+let PROJ_FILTER = null;
 
 function renderProjects(){
   if(!DB.invoices) DB.invoices = [];
@@ -3778,6 +3834,9 @@ function renderProjects(){
   const late   = open.filter(p => projectHealth(p).state === "late");
   const soon   = open.filter(p => projectHealth(p).state === "warning");
   const mine   = open.filter(p => p.assignedTo === DB.currentUserId);
+
+  // default to your own work, but fall back to everything if nothing is assigned to you
+  if(PROJ_FILTER === null) PROJ_FILTER = mine.length ? "mine" : "open";
   const toGet  = all.reduce((s, p) => s + invoiceBalanceDue(p), 0);
   const got    = all.reduce((s, p) => s + invoicePaidAmount(p), 0);
   const value  = all.reduce((s, p) => s + (Number(p.total) || 0), 0);
@@ -3809,6 +3868,7 @@ function renderProjects(){
 
   /* ---- Money summary: the three numbers that matter ---- */
   let h = `
+  <div class="proj-co-head">Whole company &mdash; every project, everyone's work</div>
   <div class="proj-summary">
     <div class="ps-card">
       <div class="ps-lab">Total project value</div>
@@ -3846,8 +3906,8 @@ function renderProjects(){
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
       <input id="proj-search-input" placeholder="Search by client, project or invoice number&hellip;" />
     </div>
-    ${chip("open", "Running", open.length)}
-    ${chip("mine", "Mine", mine.length)}
+    ${chip("mine", "My projects", mine.length)}
+    ${chip("open", "Everyone's", open.length)}
     ${chip("soon", "Finishing soon", soon.length)}
     ${chip("late", "Late", late.length)}
     ${chip("owed", "Money owed", all.filter(p => invoiceBalanceDue(p) > 0).length)}
@@ -3943,6 +4003,7 @@ function renderProjects(){
       <div class="proj-acts">
         ${canEdit ? `<button class="btn primary sm" data-proj-update="${p.id}">+ Add today's update</button>` : ``}
         ${canEdit ? `<button class="btn sm" data-proj-change="${p.id}" title="Log a change the client asked for">&#9998; Client change</button>` : ``}
+        ${canEdit ? `<button class="btn ghost sm" data-proj-edit="${p.id}" title="Change the developer, dates or status">&#9881; Edit</button>` : ``}
         <button class="btn ghost sm" data-proj-log="${p.id}" title="Full work history">&#128220; History${(p.workLog||[]).length ? ` (${(p.workLog||[]).length})` : ``}</button>
         <button class="btn ghost sm" data-doc-preview="${p.id}" data-doc-type="invoice" title="Open the invoice">&#128196;</button>
         ${canEdit && balance > 0 ? `<button class="btn ghost sm" data-doc-pay="${p.id}" title="Record a payment">&#128176;</button>` : ``}
@@ -4053,7 +4114,10 @@ function projectUpdateForm(invId){
     <div class="biz-fieldset" style="margin-bottom:0">
       <div class="biz-legend">Timeline</div>
       <div class="grid2">
-        <div class="field"><label>Start date</label><input id="pu-start" class="num" type="date" value="${startVal}"></div>
+        <div class="field">
+          <label>Start date ${isSahan() ? "" : `<span style="font-weight:400;color:var(--muted)">(Sahan only)</span>`}</label>
+          <input id="pu-start" class="num" type="date" value="${startVal}" ${isSahan() ? "" : "disabled style=background:var(--surface-2);color:var(--muted)"}>
+        </div>
         <div class="field">
           <label>How long will it take?</label>
           <select id="pu-duration">
@@ -4104,7 +4168,10 @@ function projectUpdateForm(invId){
     p.assignedTo = $("#pu-assignee").value || "";
     p.projectStatus = status;
     p.progress = progress;
-    p.startAt  = $("#pu-start").value  ? parseTxAt($("#pu-start").value)  : null;
+    // the start date is Sahan's to set; everyone else keeps whatever is there
+    p.startAt = isSahan()
+      ? ($("#pu-start").value ? parseTxAt($("#pu-start").value) : null)
+      : (p.startAt || null);
     p.targetAt = $("#pu-target").value ? parseTxAt($("#pu-target").value) : null;
     p.durationDays = (durVal && durVal !== "custom") ? Number(durVal)
       : (p.startAt && p.targetAt ? Math.round((p.targetAt - p.startAt) / DAY) : 0);
@@ -4409,7 +4476,10 @@ function salesDocForm(type, doc, presetItems){
             ${DB.users.map(u => `<option value="${u.id}" ${u.id === (d.assignedTo||"") ? 'selected' : ''}>${esc(u.name)}${u.title ? " — " + esc(u.title) : ""}</option>`).join("")}
           </select>
         </div>
-        <div class="field"><label>Work starts on</label><input id="df-start" class="num" type="date" value="${d.startAt ? toDateInput(d.startAt) : toDateInput(Date.now())}"></div>
+        <div class="field">
+          <label>Work starts on ${isSahan() ? "" : `<span style="font-weight:400;color:var(--muted)">(Sahan only)</span>`}</label>
+          <input id="df-start" class="num" type="date" value="${d.startAt ? toDateInput(d.startAt) : toDateInput(Date.now())}" ${isSahan() ? "" : "disabled style=background:var(--surface-2);color:var(--muted)"}>
+        </div>
       </div>
       <div class="grid2" style="margin-bottom:0">
         <div class="field" style="margin-bottom:0">
@@ -4763,7 +4833,9 @@ function salesDocForm(type, doc, presetItems){
       // Delivery plan — this is what the Projects page tracks
       const durVal = $("#df-duration").value;
       rec.assignedTo = $("#df-assignee").value || "";
-      rec.startAt  = $("#df-start").value  ? parseTxAt($("#df-start").value)  : null;
+      rec.startAt = (isSahan() || !d.startAt)
+        ? ($("#df-start").value ? parseTxAt($("#df-start").value) : null)
+        : d.startAt;
       rec.targetAt = $("#df-target").value ? parseTxAt($("#df-target").value) : null;
       rec.durationDays = (durVal && durVal !== "custom") ? Number(durVal)
         : (rec.startAt && rec.targetAt ? Math.round((rec.targetAt - rec.startAt) / DAY) : 0);
@@ -9955,7 +10027,7 @@ function contactForm(c){
     toast("Work Section: Only Subodha Kalhara can add new contacts. You have viewing access.");
     return;
   }
-  c = c || {name:"",company:"",phone:"",email:"",service:"web",stage:"new",owner:DB.currentUserId,source:"",notes:"",nextCallAt:null,doNotCall:false};
+  c = c || {name:"",company:"",phone:"",email:"",address:"",service:"web",stage:"new",owner:DB.currentUserId,source:"",notes:"",nextCallAt:null,doNotCall:false};
   const dt = c.nextCallAt? new Date(c.nextCallAt - new Date().getTimezoneOffset()*60000).toISOString().slice(0,16) : "";
   openModal(`<div class="modal"><header>
     <h3>${isNew ? "New contact" : (canEdit ? "Edit contact — " + esc(c.name) : "Contact Details — " + esc(c.name))}</h3>
@@ -9982,6 +10054,7 @@ function contactForm(c){
       <div class="field"><label>Owner</label><select id="f-owner" ${!canEdit?'disabled':''}>${DB.users.map(u=>`<option value="${u.id}" ${u.id===c.owner?'selected':''}>${u.name}</option>`).join("")}</select></div>
       <div class="field"><label>Source</label><input id="f-source" value="${esc(c.source)}" placeholder="Referral, Facebook, expo…" ${!canEdit?'disabled':''}></div>
     </div>
+    <div class="field"><label>Address <span style="color:var(--muted);font-weight:400">(used on quotations &amp; invoices)</span></label><textarea id="f-address" style="min-height:46px" placeholder="No. 25, Galle Road,&#10;Colombo 03" ${!canEdit?'disabled':''}>${esc(c.address||"")}</textarea></div>
     <div class="field"><label>Next call</label><input id="f-next" class="num" type="datetime-local" value="${dt}" ${!canEdit?'disabled':''}></div>
     <div class="field"><label>Notes</label><textarea id="f-notes" placeholder="Context, what they want, budget hints…" ${!canEdit?'disabled':''}>${esc(c.notes)}</textarea></div>
     <label class="toggle"><input type="checkbox" id="f-dnc" ${c.doNotCall?'checked':''} ${!canEdit?'disabled':''}> Do not call</label>
@@ -10000,7 +10073,8 @@ function contactForm(c){
     const next = $("#f-next").value? new Date($("#f-next").value).getTime() : null;
     const data = {
       name, company:$("#f-company").value.trim(), phone:$("#f-phone").value.trim(),
-      email:$("#f-email").value.trim(), service:$("#f-service").value, stage:$("#f-stage").value,
+      email:$("#f-email").value.trim(), address:$("#f-address").value.trim(),
+      service:$("#f-service").value, stage:$("#f-stage").value,
       owner:$("#f-owner").value, source:$("#f-source").value.trim(), notes:$("#f-notes").value.trim(),
       nextCallAt:next, doNotCall:$("#f-dnc").checked,
     };
@@ -13598,6 +13672,7 @@ $("#content").addEventListener("click", e => {
   const projLog    = e.target.closest("[data-proj-log]");
   const projFilter = e.target.closest("[data-proj-filter]");
   const projChange = e.target.closest("[data-proj-change]");
+  const projEdit   = e.target.closest("[data-proj-edit]");
   const projNew    = e.target.closest("#btn-proj-new") || e.target.closest("#btn-proj-new-empty");
 
   if(bizView){
@@ -13624,6 +13699,7 @@ $("#content").addEventListener("click", e => {
   else if(projFilter){ PROJ_FILTER = projFilter.dataset.projFilter; renderProjects(); }
   else if(projNew){ salesDocForm("invoice", null); }
   else if(projChange){ clientChangeForm(projChange.dataset.projChange); }
+  else if(projEdit){ projectUpdateForm(projEdit.dataset.projEdit); }
   else if(projUpdate){ projectUpdateForm(projUpdate.dataset.projUpdate); }
   else if(projLog){ projectLogModal(projLog.dataset.projLog); }
   else if(coProfile){ companyProfileModal(); }
