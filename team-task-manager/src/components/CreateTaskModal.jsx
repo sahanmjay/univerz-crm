@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Plus, Calendar, Sparkles, Tag } from 'lucide-react';
+import { X, Plus, Calendar, Sparkles, Tag, ShieldAlert } from 'lucide-react';
 import { useTasks } from '../context/TaskContext';
 
 export default function CreateTaskModal({ 
@@ -9,7 +9,7 @@ export default function CreateTaskModal({
   initialAssignee = null,
   initialProjectTag = ''
 }) {
-  const { profiles, currentUser, createTask } = useTasks();
+  const { profiles, currentUser, createTask, isAdmin } = useTasks();
 
   const [title, setTitle] = useState('');
   const [projectTag, setProjectTag] = useState(initialProjectTag || '');
@@ -41,9 +41,45 @@ export default function CreateTaskModal({
 
   if (!isOpen) return null;
 
+  // Strict HR Permission Guard
+  if (!isAdmin) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
+        <div className="w-full max-w-md rounded-3xl glass-panel border border-slate-700 shadow-2xl p-6 text-center space-y-4 relative animate-slide-up">
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+          >
+            <X size={18} />
+          </button>
+          <div className="w-12 h-12 rounded-2xl bg-rose-500/20 text-rose-400 border border-rose-500/30 mx-auto flex items-center justify-center">
+            <ShieldAlert size={24} />
+          </div>
+          <div>
+            <h3 className="text-base font-bold text-white">HR Access Required</h3>
+            <p className="text-xs text-slate-300 mt-1.5 leading-relaxed">
+              Only members of the HR department (Ashan Indusara &amp; Widura Bandara) have permissions to create and assign tasks.
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold transition-colors"
+          >
+            Understood
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title.trim()) return;
+
+    if (!isAdmin) {
+      setToastMessage({ type: 'error', text: 'Unauthorized: Only HR members can assign tasks' });
+      return;
+    }
 
     setIsSubmitting(true);
     setToastMessage(null);

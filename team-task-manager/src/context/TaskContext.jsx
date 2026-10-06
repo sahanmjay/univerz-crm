@@ -712,7 +712,7 @@ export const TaskProvider = ({ children }) => {
     }
   };
 
-  // Role permissions: HR / Admins (Ashan, Widura & Sahan) have full management rights
+  // Role permissions: Only HR / Admins (Ashan & Widura or HR department) have full management rights
   const isAdmin = useMemo(() => {
     if (!currentUser) return false;
     const role = (currentUser.role || '').toLowerCase();
@@ -721,17 +721,18 @@ export const TaskProvider = ({ children }) => {
     const name = (currentUser.full_name || '').toLowerCase();
     return (
       role === 'admin' ||
-      role === 'manager' ||
       role === 'hr' ||
+      role === 'manager' ||
       dept === 'hr' ||
       username === 'ashan' ||
       username === 'widura' ||
-      username === 'sahan' ||
       name.includes('ashan') ||
-      name.includes('widura') ||
-      name.includes('sahan')
+      name.includes('widura')
     );
   }, [currentUser]);
+
+  const isHR = isAdmin;
+  const isHRorAdmin = isAdmin;
 
   // Available Month Options derived from tasks
   const monthOptions = useMemo(() => {
@@ -805,6 +806,13 @@ export const TaskProvider = ({ children }) => {
   }, [tasks, isAdmin, triggerConfetti]);
 
   const createTask = useCallback(async (taskData) => {
+    // Permission Guard: Only HR / Admins can create and assign tasks
+    const isUserHR = isAdmin || (currentUser?.department || '').toLowerCase() === 'hr' || (currentUser?.role || '').toLowerCase() === 'admin';
+    if (!isUserHR) {
+      console.warn('Unauthorized task creation attempt blocked: user is not HR');
+      throw new Error('Access Denied: Only HR team members (Ashan & Widura) are authorized to create and assign tasks.');
+    }
+
     const currentMonthKey = getCurrentMonthKey();
     const payload = {
       title: taskData.title.trim(),
@@ -840,7 +848,7 @@ export const TaskProvider = ({ children }) => {
       console.error('Create task exception:', err);
       throw err;
     }
-  }, [currentUser]);
+  }, [currentUser, isAdmin]);
 
   // 9. Update Task details
   const updateTask = useCallback(async (taskId, updates) => {
@@ -1473,8 +1481,14 @@ ${JSON.stringify(payload, null, 2)}`;
     }
   }, []);
 
-  // Attendance CRUD Actions
+  // Attendance CRUD Actions (HR / Admin Only)
   const markAttendance = useCallback(async (memberId, dateStr, status, checkInTime = null, notes = '') => {
+    const isUserHR = isAdmin || (currentUser?.department || '').toLowerCase() === 'hr' || (currentUser?.role || '').toLowerCase() === 'admin';
+    if (!isUserHR) {
+      console.warn('Unauthorized attendance modification attempt blocked: user is not HR');
+      throw new Error('Access Denied: Only HR members (Ashan & Widura) can record or modify attendance.');
+    }
+
     const formattedDate = toDateStringOnly(dateStr);
     const member = profiles.find(p => p.id === memberId);
     const nowTimeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -1526,9 +1540,15 @@ ${JSON.stringify(payload, null, 2)}`;
       console.warn('Exception marking attendance in Supabase:', err);
     }
     return payload;
-  }, [profiles, currentUser, triggerConfetti]);
+  }, [profiles, currentUser, isAdmin, triggerConfetti]);
 
   const bulkMarkAttendance = useCallback(async (records) => {
+    const isUserHR = isAdmin || (currentUser?.department || '').toLowerCase() === 'hr' || (currentUser?.role || '').toLowerCase() === 'admin';
+    if (!isUserHR) {
+      console.warn('Unauthorized bulk attendance modification attempt blocked: user is not HR');
+      throw new Error('Access Denied: Only HR members can record bulk attendance.');
+    }
+
     if (!Array.isArray(records) || records.length === 0) return;
 
     const payloads = records.map(r => {
@@ -1601,6 +1621,165 @@ ${JSON.stringify(payload, null, 2)}`;
     }
   }, []);
 
+  // ---------------------------------------------------------------------------
+  // TEAM MAILBOX SYSTEM: Read, Starred & Archive States (Per User)
+  // ---------------------------------------------------------------------------
+  const [readNoticeIds, setReadNoticeIds] = useState(() => {
+    try {
+      const saved = localStorage.getItem('univerz_mailbox_read_ids');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const [starredNoticeIds, setStarredNoticeIds] = useState(() => {
+    try {
+      const saved = localStorage.getItem('univerz_mailbox_starred_ids');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const [archivedNoticeIds, setArchivedNoticeIds] = useState(() => {
+    try {
+      const saved = localStorage.getItem('univerz_mailbox_archived_ids');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  // Sync Mailbox state per user
+  useEffect(() => {
+    if (!currentUser?.id) return;
+    const uid = currentUser.id;
+    try {
+      const r = localStorage.getItem(`univerz_mailbox_${uid}_read`);
+      setReadNoticeIds(r ? JSON.parse(r) : []);
+      const s = localStorage.getItem(`univerz_mailbox_${uid}_starred`);
+      setStarredNoticeIds(s ? JSON.parse(s) : []);
+      const a = localStorage.getItem(`univerz_mailbox_${uid}_archived`);
+      setArchivedNoticeIds(a ? JSON.parse(a) : []);
+    } catch (e) {
+      console.warn('Mailbox load error:', e);
+    }
+  }, [currentUser?.id]);
+
+  const saveUserMailboxKey = (suffix, data) => {
+    if (!currentUser?.id) return;
+    try {
+      localStorage.setItem(`univerz_mailbox_${currentUser.id}_${suffix}`, JSON.stringify(data));
+    } catch (e) {
+      console.warn('Mailbox save error:', e);
+    }
+  };
+
+  const toggleStarNotice = useCallback((noticeId) => {
+    setStarredNoticeIds(prev => {
+      const next = prev.includes(noticeId) ? prev.filter(id => id !== noticeId) : [...prev, noticeId];
+      saveUserMailboxKey('starred', next);
+      return next;
+    });
+  }, [currentUser?.id]);
+
+  const archiveNotice = useCallback((noticeId) => {
+    setArchivedNoticeIds(prev => {
+      if (prev.includes(noticeId)) return prev;
+      const next = [...prev, noticeId];
+      saveUserMailboxKey('archived', next);
+      return next;
+    });
+  }, [currentUser?.id]);
+
+  const unarchiveNotice = useCallback((noticeId) => {
+    setArchivedNoticeIds(prev => {
+      const next = prev.filter(id => id !== noticeId);
+      saveUserMailboxKey('archived', next);
+      return next;
+    });
+  }, [currentUser?.id]);
+
+  const markNoticeAsRead = useCallback((noticeId) => {
+    setReadNoticeIds(prev => {
+      if (prev.includes(noticeId)) return prev;
+      const next = [...prev, noticeId];
+      saveUserMailboxKey('read', next);
+      return next;
+    });
+  }, [currentUser?.id]);
+
+  const markNoticeAsUnread = useCallback((noticeId) => {
+    setReadNoticeIds(prev => {
+      const next = prev.filter(id => id !== noticeId);
+      saveUserMailboxKey('read', next);
+      return next;
+    });
+  }, [currentUser?.id]);
+
+  const markMultipleAsRead = useCallback((ids = []) => {
+    setReadNoticeIds(prev => {
+      const set = new Set([...prev, ...ids]);
+      const next = Array.from(set);
+      saveUserMailboxKey('read', next);
+      return next;
+    });
+  }, [currentUser?.id]);
+
+  const markMultipleAsUnread = useCallback((ids = []) => {
+    setReadNoticeIds(prev => {
+      const removeSet = new Set(ids);
+      const next = prev.filter(id => !removeSet.has(id));
+      saveUserMailboxKey('read', next);
+      return next;
+    });
+  }, [currentUser?.id]);
+
+  const archiveMultipleNotices = useCallback((ids = []) => {
+    setArchivedNoticeIds(prev => {
+      const set = new Set([...prev, ...ids]);
+      const next = Array.from(set);
+      saveUserMailboxKey('archived', next);
+      return next;
+    });
+  }, [currentUser?.id]);
+
+  const unarchiveMultipleNotices = useCallback((ids = []) => {
+    setArchivedNoticeIds(prev => {
+      const removeSet = new Set(ids);
+      const next = prev.filter(id => !removeSet.has(id));
+      saveUserMailboxKey('archived', next);
+      return next;
+    });
+  }, [currentUser?.id]);
+
+  // Unread Kickoff count for current user
+  const unreadRemindersCount = useMemo(() => {
+    if (!currentUser) return 0;
+    const nowStr = toDateStringOnly(new Date());
+
+    let count = 0;
+    (calendarEvents || []).forEach(evt => {
+      if (evt.type === 'reminder' || evt.event_type === 'reminder' || evt.type === 'meeting') {
+        const uids = (Array.isArray(evt.user_ids) && evt.user_ids.length > 0)
+          ? evt.user_ids
+          : (evt.member_id ? [evt.member_id] : []);
+        const isAllTeam = evt.is_all_team || uids.length === 0;
+        const isForMe = isAllTeam || uids.includes(currentUser.id);
+
+        if (isForMe) {
+          const noticeId = `reminder-${evt.id}`;
+          if (!archivedNoticeIds.includes(noticeId) && !readNoticeIds.includes(noticeId)) {
+            count++;
+          }
+        }
+      }
+    });
+
+    return count;
+  }, [currentUser, calendarEvents, archivedNoticeIds, readNoticeIds]);
+
   const value = {
     session,
     currentUser,
@@ -1619,6 +1798,8 @@ ${JSON.stringify(payload, null, 2)}`;
     isRealtimeLive,
     lastSyncTime,
     isAdmin,
+    isHR,
+    isHRorAdmin,
     selectedStatus,
     setSelectedStatus,
     selectedPriority,
@@ -1666,7 +1847,21 @@ ${JSON.stringify(payload, null, 2)}`;
     requestLeave,
     updateLeaveStatus,
     generateAIReport,
-    logAppActivityPing
+    logAppActivityPing,
+    // Mailbox system exports
+    readNoticeIds,
+    starredNoticeIds,
+    archivedNoticeIds,
+    unreadRemindersCount,
+    toggleStarNotice,
+    archiveNotice,
+    unarchiveNotice,
+    markNoticeAsRead,
+    markNoticeAsUnread,
+    markMultipleAsRead,
+    markMultipleAsUnread,
+    archiveMultipleNotices,
+    unarchiveMultipleNotices
   };
 
   return (
