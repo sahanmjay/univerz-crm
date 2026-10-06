@@ -3838,7 +3838,7 @@ function businessDocsTab(type, canEdit){
         ${canEdit ? `<button class="btn ghost sm" data-doc-edit="${d.id}" data-doc-type="${type}" title="Edit">&#9998;</button>` : ``}
         ${canEdit && isQuote && d.status !== "converted" ? `<button class="btn ghost sm" data-doc-convert="${d.id}" title="Convert to an invoice">&#10142;&#129534;</button>` : ``}
         ${canEdit && !isQuote && d.status !== "paid" && d.status !== "cancelled" ? `<button class="btn ghost sm" data-doc-pay="${d.id}" title="Record a payment and post the income">&#128176;</button>` : ``}
-        ${canEdit ? `<button class="btn ghost sm" data-doc-del="${d.id}" data-doc-type="${type}" title="Delete">&#128465;</button>` : ``}
+        ${isSahan() ? `<button class="btn ghost sm" data-doc-del="${d.id}" data-doc-type="${type}" title="Delete">&#128465;</button>` : ``}
       </td>
     </tr>`;
   });
@@ -4066,6 +4066,7 @@ function renderProjects(){
         <button class="btn ghost sm" data-proj-log="${p.id}" title="Full work history">&#128220; History${(p.workLog||[]).length ? ` (${(p.workLog||[]).length})` : ``}</button>
         <button class="btn ghost sm" data-doc-preview="${p.id}" data-doc-type="invoice" title="Open the invoice">&#128196;</button>
         ${canEdit && balance > 0 ? `<button class="btn ghost sm" data-doc-pay="${p.id}" title="Record a payment">&#128176;</button>` : ``}
+        ${isSahan() ? `<button class="btn ghost sm" data-doc-del="${p.id}" data-doc-type="invoice" title="Delete this project and its invoice" style="color:var(--clay)">&#128465;</button>` : ``}
       </div>
     </div>`;
   });
@@ -6547,15 +6548,26 @@ function markInvoicePaidModal(invId){
   };
 }
 
+/* Deleting an invoice deletes the project it carries — its work log, payments
+   and delivery dates go with it. Sahan only, wherever it is triggered from. */
 function deleteSalesDoc(type, id){
-  if(!canManageBusiness()){ toast("Sign in to delete these documents."); return; }
+  if(!isSahan()){ toast("Only Sahan can delete quotations, invoices and projects."); return; }
   const d = findDoc(type, id);
   if(!d) return;
   const isQuote = type === "quotation";
 
   let warn = `Delete ${isQuote ? "quotation" : "invoice"} ${d.number}?`;
-  if(!isQuote && d.transactionId){
-    warn += `\n\nThe income transaction it created in Accounts & Balances is NOT removed — delete that separately if you need to.`;
+  if(!isQuote){
+    const paid = invoicePaidAmount(d);
+    const logs = (d.workLog || []).length;
+    warn = `Delete ${d.clientCompany || d.clientName || d.number}?\n\n`
+         + `Invoice ${d.number} — ${docMoney(d.total, d.currency)}\n`
+         + `This also removes the project${logs ? `, including its ${logs} work update${logs===1?'':'s'}` : ''}.`;
+    if(paid > 0) warn += `\n\n${docMoney(paid, d.currency)} has already been received against it.`;
+    if(d.transactionId || paid > 0){
+      warn += `\nIncome already recorded in Accounts & Balances is NOT removed — delete that separately if you need to.`;
+    }
+    warn += `\n\nThis cannot be undone.`;
   }
   if(!confirm(warn)) return;
 
