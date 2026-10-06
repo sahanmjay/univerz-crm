@@ -123,6 +123,22 @@ alter table sales_invoice add column if not exists acceptance_text text default 
 
 
 -- =================================================================
+-- PART 2b — Project delivery tracking
+-- An invoice IS the project: client, value, instalments and balance
+-- already live on it, so this only adds the delivery side.
+-- =================================================================
+
+alter table sales_invoice add column if not exists project_status text default 'not_started';
+alter table sales_invoice add column if not exists progress numeric default 0;
+alter table sales_invoice add column if not exists start_at bigint;
+alter table sales_invoice add column if not exists target_at bigint;
+alter table sales_invoice add column if not exists completed_at bigint;
+alter table sales_invoice add column if not exists work_log jsonb default '[]'::jsonb;
+alter table sales_invoice add column if not exists assigned_to text references app_user(id);
+alter table sales_invoice add column if not exists duration_days numeric default 0;
+
+
+-- =================================================================
 -- PART 3 — Row level security (anon full access, same as the rest of the CRM)
 -- =================================================================
 

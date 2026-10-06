@@ -607,6 +607,110 @@ td .num{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
   margin-bottom:11px;padding-bottom:6px;border-bottom:1px solid var(--line);
 }
 
+/* Collapsed "advanced" blocks in the quotation / invoice builder.
+   Native <details> — no JS, and the fields stay in the DOM so saving is unchanged. */
+.biz-more{
+  border:1px solid var(--line);border-radius:8px;margin-bottom:12px;background:var(--surface);
+}
+.biz-more > summary{
+  cursor:pointer;list-style:none;padding:11px 15px;font-size:12px;font-weight:700;
+  color:var(--ink-soft);display:flex;align-items:center;gap:7px;border-radius:8px;user-select:none;
+}
+.biz-more > summary::-webkit-details-marker{display:none}
+.biz-more > summary::before{
+  content:"▸";color:var(--teal);font-size:11px;transition:transform .15s ease;flex:none;
+}
+.biz-more[open] > summary::before{transform:rotate(90deg)}
+.biz-more[open] > summary{border-bottom:1px solid var(--line);border-radius:8px 8px 0 0}
+.biz-more > summary:hover{background:var(--surface-2)}
+.biz-more > summary span{font-weight:400;color:var(--muted)}
+.biz-more > *:not(summary){margin-left:15px;margin-right:15px}
+.biz-more > *:nth-child(2){margin-top:14px}
+.biz-more > *:last-child{margin-bottom:15px}
+
+/* ---- Projects ---- */
+.proj-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:12px}
+.ps-card{
+  background:var(--surface);border:1.5px solid var(--line);border-radius:11px;padding:14px 16px;
+  box-shadow:var(--shadow);animation:rise .3s ease both;
+}
+.ps-card .ps-lab{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.ps-card .ps-val{font-family:var(--mono);font-size:22px;font-weight:800;letter-spacing:-.6px;margin-top:5px;line-height:1.1}
+.ps-card .ps-sub{font-size:11.5px;color:var(--muted);margin-top:4px}
+.ps-card.good{border-color:var(--green)}
+.ps-card.good .ps-val{color:var(--green)}
+.ps-card.warn{border-color:var(--clay);background:linear-gradient(180deg,var(--surface) 60%,var(--clay-wash) 240%)}
+.ps-card.warn .ps-val{color:var(--clay)}
+
+.proj-moneybar{
+  position:relative;height:30px;border-radius:8px;background:var(--surface-2);
+  border:1px solid var(--line);overflow:hidden;margin-bottom:16px;display:flex;align-items:center;
+}
+.proj-moneybar-fill{position:absolute;inset:0 auto 0 0;background:var(--green-wash);border-right:2px solid var(--green)}
+.proj-moneybar .pmb-l,.proj-moneybar .pmb-r{position:relative;font-size:11.5px;font-weight:700;padding:0 12px}
+.proj-moneybar .pmb-l{color:var(--green)}
+.proj-moneybar .pmb-r{margin-left:auto;color:var(--clay)}
+
+.proj-next{
+  background:var(--amber-wash);border-radius:7px;padding:7px 11px;font-size:12px;color:var(--ink-soft);
+}
+.ps-card.amber{border-color:var(--amber)}
+.ps-card.amber .ps-val{color:var(--amber)}
+
+.proj-dev{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--ink-soft)}
+.proj-dev .avatar{width:24px;height:24px;font-size:10px;font-weight:750;flex:none}
+.proj-dev-none{color:var(--amber);font-weight:600}
+
+.proj-alert{
+  border-radius:7px;padding:8px 11px;font-size:12px;line-height:1.5;
+}
+.proj-alert.warn{background:var(--amber-wash);color:var(--amber);border:1px solid var(--amber)}
+.proj-alert.late{background:var(--clay-wash);color:var(--clay);border:1px solid var(--clay)}
+.proj-card.warn{border-color:var(--amber)}
+
+.proj-changes{
+  background:#f3eefa;border-left:3px solid #5a466a;border-radius:6px;
+  padding:7px 11px;font-size:12px;color:#4a3a5a;
+}
+.log-tag{font-size:9.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:10px}
+.log-tag.change{background:var(--amber-wash);color:var(--amber)}
+.proj-log-dot.change{background:var(--amber)}
+.proj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:13px}
+.proj-card{
+  background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+  box-shadow:var(--shadow);animation:rise .3s ease both;display:flex;flex-direction:column;gap:11px;
+}
+.proj-card.late{border-color:var(--clay);background:linear-gradient(180deg,var(--surface) 70%,var(--clay-wash) 220%)}
+.proj-top{display:flex;justify-content:space-between;align-items:flex-start;gap:9px}
+.proj-name{font-weight:700;font-size:14.5px;line-height:1.25}
+.proj-sub{font-size:11.5px;color:var(--muted);margin-top:2px}
+.proj-sub .num{font-family:var(--mono)}
+.proj-bar-lab{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:4px}
+.proj-bar-lab .num{font-family:var(--mono);color:var(--ink)}
+.proj-bar{height:7px;border-radius:5px;background:var(--surface-2);overflow:hidden}
+.proj-bar-fill{height:100%;background:var(--teal);border-radius:5px;transition:width .25s ease}
+.proj-bar-fill.pay{background:var(--green)}
+.proj-money{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:9px 0;
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+}
+.proj-money > div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.proj-money span{font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:650}
+.proj-money b{font-family:var(--mono);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.proj-dates{display:flex;gap:12px;flex-wrap:wrap;font-size:11.5px;color:var(--muted)}
+.proj-last{background:var(--surface-2);border-radius:7px;padding:8px 11px;font-size:12.5px;line-height:1.5}
+.proj-last.empty-log{color:var(--muted);font-style:italic}
+.proj-last-h{font-size:10.5px;color:var(--muted);font-weight:650;margin-bottom:3px}
+.proj-acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto}
+
+.proj-log{display:flex;flex-direction:column;gap:14px}
+.proj-log-row{display:flex;gap:11px;position:relative}
+.proj-log-row:not(:last-child)::before{
+  content:"";position:absolute;left:4px;top:13px;bottom:-14px;width:1.5px;background:var(--line);
+}
+.proj-log-dot{width:9px;height:9px;border-radius:50%;background:var(--teal);flex:none;margin-top:4px;z-index:1}
+.proj-log-h{display:flex;gap:9px;align-items:baseline;flex-wrap:wrap;font-size:11.5px;color:var(--muted);margin-bottom:2px}
+
 /* ----------------------------------------------------------------
    The printable / PDF document sheet.
    Mirrors the Univerzlk Word templates: A4, Calibri, navy banding.
@@ -1747,6 +1851,7 @@ body.auth-locked #auth-overlay {
       <button data-view="appointments"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Appointments<span class="badge zero" id="badge-appt">0</span></button>
       <button data-view="pipeline"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg>Pipeline</button>
       <div class="group-label">Business</div>
+      <button data-view="projects"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Projects<span class="badge zero" id="badge-projects" title="Projects running late">0</span></button>
       <button data-view="business"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 7h-3V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M9 7V5h6v2M2 12h20"/></svg>Products &amp; Billing<span class="badge zero" id="badge-invoices" title="Unpaid invoices">0</span></button>
       <div class="group-label">Finance</div>
       <button data-view="account"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>Accounts &amp; Balances<span class="badge zero" id="badge-debt-reminders" title="Loan &amp; Bill Reminders">0</span></button>
@@ -1921,6 +2026,7 @@ body.auth-locked #auth-overlay {
 <nav class="bottom-nav" id="bottom-nav">
   <button data-view="today" class="on"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span>Today</span><span class="badge" id="badge-today-mobile">0</span></button>
   <button data-view="contacts"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Contacts</span></button>
+  <button data-view="projects"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span>Projects</span><span class="badge zero" id="badge-projects-mobile">0</span></button>
   <button data-view="business"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 7h-3V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M9 7V5h6v2M2 12h20"/></svg><span>Business</span><span class="badge zero" id="badge-invoices-mobile">0</span></button>
   <button data-view="account"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg><span>Accounts</span><span class="badge zero" id="badge-debt-reminders-mobile">0</span></button>
   <button data-view="appointments"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>Appts</span><span class="badge zero" id="badge-appt-mobile">0</span></button>
@@ -2429,6 +2535,22 @@ function normalizeSalesDoc(d){
   d.exclusions = jsonbArray(d.exclusions).map(String);
   d.amountPaid = Number(d.amountPaid) || 0;
   d.balanceDue = Number(d.balanceDue) || 0;
+
+  // Project delivery tracking (invoices only; harmless on quotations)
+  d.progress = Math.max(0, Math.min(100, Number(d.progress) || 0));
+  d.assignedTo = d.assignedTo || "";
+  d.durationDays = Number(d.durationDays) || 0;
+  d.workLog = jsonbArray(d.workLog).map(e => ({
+    at: e.at != null ? parseTxAt(e.at) : Date.now(),
+    userId: e.userId || "",
+    note: e.note || "",
+    progress: e.progress == null ? null : Number(e.progress),
+    kind: e.kind === "change" ? "change" : "work",
+    done: !!e.done,
+  })).sort((a, b) => b.at - a.at);
+  if(d.startAt     != null) d.startAt     = parseTxAt(d.startAt);
+  if(d.targetAt    != null) d.targetAt    = parseTxAt(d.targetAt);
+  if(d.completedAt != null) d.completedAt = parseTxAt(d.completedAt);
   d.taxRate      = Number(d.taxRate) || 0;
   d.discountVal  = Number(d.discountVal) || 0;
   d.discountType = d.discountType === "percent" ? "percent" : "amount";
@@ -2806,6 +2928,16 @@ alter table sales_invoice add column if not exists balance_due numeric default 0
 alter table sales_invoice add column if not exists payment_note text default '';
 alter table sales_invoice add column if not exists acceptance_text text default '';
 
+-- Project delivery tracking (an invoice is the project)
+alter table sales_invoice add column if not exists project_status text default 'not_started';
+alter table sales_invoice add column if not exists progress numeric default 0;
+alter table sales_invoice add column if not exists start_at bigint;
+alter table sales_invoice add column if not exists target_at bigint;
+alter table sales_invoice add column if not exists completed_at bigint;
+alter table sales_invoice add column if not exists work_log jsonb default '[]'::jsonb;
+alter table sales_invoice add column if not exists assigned_to text references app_user(id);
+alter table sales_invoice add column if not exists duration_days numeric default 0;
+
 -- Idempotent RLS configuration
 do $$
 declare
@@ -2908,6 +3040,7 @@ const PAGES = {
   account:{title:"Accounts & Balances", crumb:"Cashflow, agency balances, expenses and audit logs", render:renderAccount},
   appointments:{title:"Appointments", crumb:"Meetings, shoots and site visits", render:renderAppointments},
   accounts:{title:"Accounts & Balances", crumb:"Cashflow, agency balances, expenses and audit logs", render:renderAccount},
+  projects:{title:"Projects", crumb:"Work in progress, payments and delivery dates", render:renderProjects},
   business:{title:"Products & Billing", crumb:"Product catalogue, quotations and invoices", render:renderBusiness},
   pipeline:{title:"Pipeline", crumb:"Drag a card to move its stage", render:renderPipeline},
   team:{title:"People & activity", crumb:"Who is doing what", render:renderTeam},
@@ -2940,6 +3073,12 @@ function go(v){
         topBtn.style.color = "#fff";
         topBtn.style.border = "none";
       }
+    } else if(v === "projects"){
+      topBtn.textContent = "+ New project";
+      topBtn.title = "A project starts from an invoice — this opens the invoice form";
+      topBtn.style.background = "var(--teal)";
+      topBtn.style.color = "#fff";
+      topBtn.style.border = "none";
     } else if(v === "business"){
       topBtn.textContent = BUSINESS_TAB === "products" ? "+ New product"
                          : BUSINESS_TAB === "quotations" ? "+ New quotation"
@@ -3317,11 +3456,17 @@ function renderBusiness(){
   const openInvoices   = DB.invoices.filter(i => i.status !== "paid" && i.status !== "cancelled" && i.status !== "draft");
   const overdueInv     = DB.invoices.filter(isInvoiceOverdue);
   const paidInvoices   = DB.invoices.filter(i => i.status === "paid");
-  const outstanding    = openInvoices.reduce((s, i) => s + (Number(i.total)||0), 0);
-  const overdueAmt     = overdueInv.reduce((s, i) => s + (Number(i.total)||0), 0);
-  const collected      = paidInvoices.reduce((s, i) => s + (Number(i.total)||0), 0);
+  // Outstanding is what is still owed, not the invoice face value — an invoice
+  // with 1 of 3 instalments settled only has the remaining 2 left to collect.
+  const outstanding    = openInvoices.reduce((s, i) => s + invoiceBalanceDue(i), 0);
+  const overdueAmt     = overdueInv.reduce((s, i) => s + invoiceBalanceDue(i), 0);
+  const collected      = DB.invoices.reduce((s, i) => s + (i.status === "cancelled" ? 0 : invoicePaidAmount(i)), 0);
   const liveQuotes     = DB.quotations.filter(q => q.status === "sent");
   const quotePipeline  = liveQuotes.reduce((s, q) => s + (Number(q.total)||0), 0);
+
+  const projects       = projectList();
+  const openProjects   = projects.filter(isProjectOpen);
+  const lateProjects   = openProjects.filter(p => { const d = projectDaysLeft(p); return d != null && d < 0; });
 
   const TABS = [
     {id:"products",   icon:"📦", name:"Products &amp; Services", count:DB.products.length},
@@ -3336,6 +3481,7 @@ function renderBusiness(){
   TABS.forEach(t => {
     let badgeStyle = "";
     if(t.id === "invoices" && overdueInv.length) badgeStyle = "background:var(--clay);color:#fff";
+    else if(t.id === "projects" && lateProjects.length) badgeStyle = "background:var(--clay);color:#fff";
     else if(t.id === "quotations" && liveQuotes.length) badgeStyle = "background:var(--amber);color:#fff";
     h += `
       <button class="acc-tab-item ${BUSINESS_TAB===t.id?'active':''}" data-biz-view="${t.id}">
@@ -3354,25 +3500,25 @@ function renderBusiness(){
 
   h += `
   <div class="biz-kpis">
-    <div class="biz-kpi accent">
-      <div class="k-lab">Catalogue</div>
-      <div class="k-val">${DB.products.length}</div>
-      <div class="k-sub">${activeProducts.length} active &middot; ${DB.products.length - activeProducts.length} archived</div>
+    <div class="biz-kpi ${overdueAmt ? 'warn' : 'accent'}">
+      <div class="k-lab">Still to receive</div>
+      <div class="k-val">${fmtMoney(outstanding, bizCurrency())}</div>
+      <div class="k-sub">${openInvoices.length} unpaid invoice${openInvoices.length===1?'':'s'}${overdueInv.length ? ` &middot; <b style="color:var(--clay)">${fmtMoney(overdueAmt, bizCurrency())} overdue</b>` : ''}</div>
+    </div>
+    <div class="biz-kpi good">
+      <div class="k-lab">Received to date</div>
+      <div class="k-val">${fmtMoney(collected, bizCurrency())}</div>
+      <div class="k-sub">${paidInvoices.length} invoice${paidInvoices.length===1?'':'s'} fully settled</div>
+    </div>
+    <div class="biz-kpi ${lateProjects.length ? 'warn' : ''}">
+      <div class="k-lab">Active projects</div>
+      <div class="k-val">${openProjects.length}</div>
+      <div class="k-sub">${lateProjects.length ? `<b style="color:var(--clay)">${lateProjects.length} past the target date</b>` : (openProjects.length ? "all on schedule" : "nothing in flight")}</div>
     </div>
     <div class="biz-kpi">
       <div class="k-lab">Quotation pipeline</div>
       <div class="k-val">${fmtMoney(quotePipeline, bizCurrency())}</div>
-      <div class="k-sub">${liveQuotes.length} quotation${liveQuotes.length===1?'':'s'} awaiting a reply</div>
-    </div>
-    <div class="biz-kpi ${overdueAmt ? 'warn' : ''}">
-      <div class="k-lab">Outstanding invoices</div>
-      <div class="k-val">${fmtMoney(outstanding, bizCurrency())}</div>
-      <div class="k-sub">${openInvoices.length} unpaid${overdueInv.length ? ` &middot; <b style="color:var(--clay)">${overdueInv.length} overdue</b>` : ''}</div>
-    </div>
-    <div class="biz-kpi good">
-      <div class="k-lab">Collected</div>
-      <div class="k-val">${fmtMoney(collected, bizCurrency())}</div>
-      <div class="k-sub">${paidInvoices.length} invoice${paidInvoices.length===1?'':'s'} settled</div>
+      <div class="k-sub">${liveQuotes.length} quotation${liveQuotes.length===1?'':'s'} awaiting a reply &middot; ${activeProducts.length} products</div>
     </div>
   </div>`;
 
@@ -3589,6 +3735,474 @@ function businessDocsTab(type, canEdit){
 }
 
 /* =================================================================
+   PROJECTS — delivery tracking layered on top of invoices.
+   A project IS an invoice: the client, value, instalments, amount
+   paid and balance due already live there, so this only adds the
+   delivery side (status, progress, dates, work log).
+   ================================================================= */
+const PROJECT_STATUSES = [
+  {id:"not_started", label:"Not started", color:"var(--muted)"},
+  {id:"active",      label:"In progress", color:"var(--teal-deep)"},
+  {id:"review",      label:"Client review", color:"var(--amber)"},
+  {id:"on_hold",     label:"On hold",     color:"var(--clay)"},
+  {id:"done",        label:"Delivered",   color:"var(--green)"},
+];
+function projStatus(id){ return PROJECT_STATUSES.find(s => s.id === id) || PROJECT_STATUSES[0]; }
+
+/* Invoices that represent real won work */
+function projectList(){
+  return (DB.invoices || []).filter(i => i.status !== "cancelled");
+}
+function isProjectOpen(p){ return (p.projectStatus || "not_started") !== "done"; }
+
+/* Days left against the target date; negative means overdue */
+function projectDaysLeft(p){
+  if(!p.targetAt) return null;
+  return Math.ceil((p.targetAt - Date.now()) / DAY);
+}
+function lastWorkLog(p){
+  const log = p.workLog || [];
+  return log.length ? log[0] : null;
+}
+
+let PROJ_SEARCH = "";
+let PROJ_FILTER = "open";   // "open" | "all" | a status id
+
+function renderProjects(){
+  if(!DB.invoices) DB.invoices = [];
+  const canEdit = canManageBusiness();
+  const cur = bizCurrency();
+
+  const all    = projectList();
+  const open   = all.filter(isProjectOpen);
+  const late   = open.filter(p => projectHealth(p).state === "late");
+  const soon   = open.filter(p => projectHealth(p).state === "warning");
+  const mine   = open.filter(p => p.assignedTo === DB.currentUserId);
+  const toGet  = all.reduce((s, p) => s + invoiceBalanceDue(p), 0);
+  const got    = all.reduce((s, p) => s + invoicePaidAmount(p), 0);
+  const value  = all.reduce((s, p) => s + (Number(p.total) || 0), 0);
+  const gotPct = value ? Math.round(got / value * 100) : 0;
+
+  let list = [...all];
+  const q = PROJ_SEARCH.toLowerCase();
+  if(q){
+    list = list.filter(p =>
+      (p.number||"").toLowerCase().includes(q) ||
+      (p.clientCompany||"").toLowerCase().includes(q) ||
+      (p.clientName||"").toLowerCase().includes(q) ||
+      (p.title||"").toLowerCase().includes(q) ||
+      (p.projectType||"").toLowerCase().includes(q)
+    );
+  }
+  if(PROJ_FILTER === "open")      list = list.filter(isProjectOpen);
+  else if(PROJ_FILTER === "mine") list = list.filter(p => p.assignedTo === DB.currentUserId);
+  else if(PROJ_FILTER === "late") list = list.filter(p => isProjectOpen(p) && projectHealth(p).state === "late");
+  else if(PROJ_FILTER === "soon") list = list.filter(p => isProjectOpen(p) && projectHealth(p).state === "warning");
+  else if(PROJ_FILTER === "owed") list = list.filter(p => invoiceBalanceDue(p) > 0);
+  else if(PROJ_FILTER !== "all")  list = list.filter(p => (p.projectStatus || "not_started") === PROJ_FILTER);
+
+  list.sort((a, b) => {
+    const ao = isProjectOpen(a) ? 0 : 1, bo = isProjectOpen(b) ? 0 : 1;
+    if(ao !== bo) return ao - bo;
+    return (a.targetAt || Infinity) - (b.targetAt || Infinity);
+  });
+
+  /* ---- Money summary: the three numbers that matter ---- */
+  let h = `
+  <div class="proj-summary">
+    <div class="ps-card">
+      <div class="ps-lab">Total project value</div>
+      <div class="ps-val">${docMoney(value, cur)}</div>
+      <div class="ps-sub">${all.length} project${all.length===1?'':'s'} &middot; ${open.length} still running</div>
+    </div>
+    <div class="ps-card good">
+      <div class="ps-lab">Money received</div>
+      <div class="ps-val">${docMoney(got, cur)}</div>
+      <div class="ps-sub">${gotPct}% of the total value</div>
+    </div>
+    <div class="ps-card ${toGet ? 'warn' : 'good'}">
+      <div class="ps-lab">Still to come</div>
+      <div class="ps-val">${docMoney(toGet, cur)}</div>
+      <div class="ps-sub">${toGet ? "waiting to be collected" : "everything collected"}</div>
+    </div>
+    <div class="ps-card ${late.length ? 'warn' : soon.length ? 'amber' : ''}">
+      <div class="ps-lab">Deadline trouble</div>
+      <div class="ps-val">${late.length + soon.length}</div>
+      <div class="ps-sub">${late.length ? `<b style="color:var(--clay)">${late.length} late</b>` : ""}${late.length && soon.length ? " &middot; " : ""}${soon.length ? `${soon.length} finishing soon` : ""}${!late.length && !soon.length ? "all on schedule" : ""}</div>
+    </div>
+  </div>
+
+  <div class="proj-moneybar">
+    <div class="proj-moneybar-fill" style="width:${gotPct}%"></div>
+    <span class="pmb-l">Received ${docMoney(got, cur)}</span>
+    <span class="pmb-r">Remaining ${docMoney(toGet, cur)}</span>
+  </div>`;
+
+  /* ---- Filters ---- */
+  const chip = (id, label, n) => `<button class="btn sm ${PROJ_FILTER===id?'primary':''}" data-proj-filter="${id}">${label}${n != null ? ` (${n})` : ''}</button>`;
+  h += `
+  <div class="biz-toolbar">
+    <div class="biz-search">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="proj-search-input" placeholder="Search by client, project or invoice number&hellip;" />
+    </div>
+    ${chip("open", "Running", open.length)}
+    ${chip("mine", "Mine", mine.length)}
+    ${chip("soon", "Finishing soon", soon.length)}
+    ${chip("late", "Late", late.length)}
+    ${chip("owed", "Money owed", all.filter(p => invoiceBalanceDue(p) > 0).length)}
+    ${chip("all", "All", all.length)}
+    ${canEdit ? `<button class="btn primary sm" id="btn-proj-new">+ New project</button>` : ``}
+  </div>`;
+
+  if(!list.length){
+    h += `<div class="empty">
+      <b>${all.length ? "Nothing matches that filter" : "No projects yet"}</b>
+      ${all.length
+        ? "Try another filter or clear the search."
+        : "A project starts when you raise an invoice for work you have won. Create one, record the advance, then log what you do each day."}
+      ${canEdit && !all.length ? `<div style="margin-top:14px"><button class="btn primary" id="btn-proj-new-empty">+ Create the first project</button></div>` : ``}
+    </div>`;
+    $("#content").innerHTML = h;
+    wireProjectsView();
+    return;
+  }
+
+  h += `<div class="proj-grid">`;
+  list.forEach((p, i) => {
+    const st = projStatus(p.projectStatus);
+    const pct = Math.max(0, Math.min(100, Number(p.progress) || 0));
+    const total = Number(p.total) || 0;
+    const paid = invoicePaidAmount(p);
+    const balance = Math.max(0, total - paid);
+    const payPct = total ? Math.round(paid / total * 100) : 0;
+    const days = projectDaysLeft(p);
+    const health = projectHealth(p);
+    const isLate = health.state === "late";
+    const last = lastWorkLog(p);
+    const ms = p.milestones || [];
+    const nextDue = ms.find(m => !m.paid);
+    const dev = projectAssignee(p);
+    const changes = changeRequests(p);
+    const openChanges = changes.filter(c => !c.done);
+
+    h += `
+    <div class="proj-card ${isLate ? 'late' : health.state === 'warning' ? 'warn' : ''}" style="--d:${Math.min(i,10)*.03}s">
+      <div class="proj-top">
+        <div style="min-width:0;flex:1">
+          <div class="proj-name">${esc(p.clientCompany || p.clientName || "—")}</div>
+          <div class="proj-sub">${esc(p.projectType || p.title || "Project")} &middot; <span class="num">${esc(p.number)}</span></div>
+        </div>
+        <span class="doc-status" style="background:var(--surface-2);color:${st.color};border:1px solid currentColor">${st.label}</span>
+      </div>
+
+      <div class="proj-dev">
+        ${dev
+          ? `<span class="avatar" style="background:${dev.color||'var(--teal)'}">${esc(dev.initials || makeInitials(dev.name))}</span>
+             <span>Developer: <b>${esc(dev.name)}</b></span>`
+          : `<span class="proj-dev-none">⚠ No developer assigned yet</span>`}
+      </div>
+
+      ${isLate ? `
+        <div class="proj-alert late">⏰ <b>Deadline passed</b> — ${Math.abs(days)} day${Math.abs(days)===1?'':'s'} over. Deliver or move the date.</div>`
+      : health.state === "warning" ? `
+        <div class="proj-alert warn">⚠ <b>${health.elapsed != null && health.elapsed > pct ? "Behind schedule" : "Deadline is close"}</b> — ${days} day${days===1?'':'s'} left${health.elapsed != null ? `, ${health.elapsed}% of the time used but only ${pct}% of the work done` : ''}.</div>`
+      : ``}
+
+      <div>
+        <div class="proj-bar-lab"><span>Work done</span><span class="num"><b>${pct}%</b></span></div>
+        <div class="proj-bar"><div class="proj-bar-fill" style="width:${pct}%"></div></div>
+      </div>
+      <div>
+        <div class="proj-bar-lab"><span>Money received</span><span class="num"><b>${payPct}%</b>${ms.length ? ` &middot; ${ms.filter(m=>m.paid).length}/${ms.length} paid` : ``}</span></div>
+        <div class="proj-bar"><div class="proj-bar-fill pay" style="width:${payPct}%"></div></div>
+      </div>
+
+      <div class="proj-money">
+        <div><span>Total</span><b class="num">${docMoney(total, p.currency)}</b></div>
+        <div><span>Received</span><b class="num" style="color:var(--green)">${docMoney(paid, p.currency)}</b></div>
+        <div><span>Still to come</span><b class="num" style="color:${balance ? 'var(--clay)' : 'var(--green)'}">${docMoney(balance, p.currency)}</b></div>
+      </div>
+
+      ${nextDue ? `<div class="proj-next">Next payment: <b>${esc(nextDue.label || "instalment")}</b> &mdash; ${docMoney(nextDue.amount, p.currency)}${nextDue.whenDue ? ` <span style="color:var(--muted)">(${esc(nextDue.whenDue)})</span>` : ``}</div>` : ``}
+
+      <div class="proj-dates">
+        ${p.startAt  ? `<span>Started ${fmtDocDate(p.startAt)}</span>` : ``}
+        ${p.targetAt ? `<span style="${isLate?'color:var(--clay);font-weight:700':''}">Deliver by ${fmtDocDate(p.targetAt)}${days != null ? (isLate ? ` &middot; ${Math.abs(days)} days late` : ` &middot; ${days} days left`) : ''}</span>` : `<span style="color:var(--amber)">No delivery date set</span>`}
+        ${p.completedAt ? `<span style="color:var(--green)">Delivered ${fmtDocDate(p.completedAt)}</span>` : ``}
+      </div>
+
+      ${openChanges.length ? `<div class="proj-changes">&#9998; ${openChanges.length} client change${openChanges.length===1?'':'s'} waiting: <b>${esc(openChanges[0].note)}</b></div>` : ``}
+
+      ${last ? `
+        <div class="proj-last">
+          <div class="proj-last-h">${esc(user(last.userId).name)} &middot; ${fmtWhen(last.at)}${last.kind === "change" ? ` &middot; <span style="color:var(--amber);font-weight:700">client change</span>` : ``}</div>
+          <div>${esc(last.note)}</div>
+        </div>` : `<div class="proj-last empty-log">No work updates yet.</div>`}
+
+      <div class="proj-acts">
+        ${canEdit ? `<button class="btn primary sm" data-proj-update="${p.id}">+ Add today's update</button>` : ``}
+        ${canEdit ? `<button class="btn sm" data-proj-change="${p.id}" title="Log a change the client asked for">&#9998; Client change</button>` : ``}
+        <button class="btn ghost sm" data-proj-log="${p.id}" title="Full work history">&#128220; History${(p.workLog||[]).length ? ` (${(p.workLog||[]).length})` : ``}</button>
+        <button class="btn ghost sm" data-doc-preview="${p.id}" data-doc-type="invoice" title="Open the invoice">&#128196;</button>
+        ${canEdit && balance > 0 ? `<button class="btn ghost sm" data-doc-pay="${p.id}" title="Record a payment">&#128176;</button>` : ``}
+      </div>
+    </div>`;
+  });
+  h += `</div>`;
+
+  $("#content").innerHTML = h;
+  wireProjectsView();
+}
+
+function wireProjectsView(){
+  const s = $("#proj-search-input");
+  if(s){
+    s.value = PROJ_SEARCH;
+    s.oninput = e => {
+      PROJ_SEARCH = e.target.value.trim();
+      const pos = e.target.selectionStart;
+      renderProjects();
+      const again = $("#proj-search-input");
+      if(again){ again.focus(); try{ again.setSelectionRange(pos, pos); }catch(err){} }
+    };
+  }
+}
+
+/* ---- Log an update / edit the delivery plan ---- */
+/* How a project is tracking against its delivery date.
+   "warning" is the 3rd week of a one-month project: 75% of the time gone. */
+const PROJECT_DURATIONS = [
+  {days:7,   label:"1 week"},
+  {days:14,  label:"2 weeks"},
+  {days:21,  label:"3 weeks"},
+  {days:30,  label:"1 month"},
+  {days:45,  label:"6 weeks"},
+  {days:60,  label:"2 months"},
+  {days:90,  label:"3 months"},
+];
+
+function projectHealth(p){
+  if(!isProjectOpen(p)) return {state:"done", elapsed:100, daysLeft:null};
+  const d = projectDaysLeft(p);
+  if(d == null) return {state:"nodate", elapsed:null, daysLeft:null};
+  if(d < 0) return {state:"late", elapsed:100, daysLeft:d};
+
+  let elapsed = null;
+  if(p.startAt && p.targetAt && p.targetAt > p.startAt){
+    elapsed = Math.round((Date.now() - p.startAt) / (p.targetAt - p.startAt) * 100);
+    elapsed = Math.max(0, Math.min(100, elapsed));
+  }
+  // Half the time gone is the 3rd week of a one-month project — warn from there.
+  if((elapsed != null && elapsed >= 50) || d <= 7) return {state:"warning", elapsed, daysLeft:d};
+  return {state:"ok", elapsed, daysLeft:d};
+}
+
+function projectAssignee(p){ return p && p.assignedTo ? user(p.assignedTo) : null; }
+function changeRequests(p){ return (p.workLog || []).filter(e => e.kind === "change"); }
+
+/* Shared write: persist the project fields that live on the invoice row */
+function saveProjectFields(p, extraLabel){
+  cacheLocal(DB);
+  sbWrite(sb.from('sales_invoice').update({
+    project_status: p.projectStatus,
+    progress: p.progress,
+    start_at: p.startAt,
+    target_at: p.targetAt,
+    completed_at: p.completedAt,
+    assigned_to: p.assignedTo || null,
+    duration_days: p.durationDays || null,
+    work_log: p.workLog,
+  }).eq('id', p.id));
+  if(extraLabel) logFinanceAction("Project Update", `${p.number} — ${extraLabel}`, 0);
+}
+
+function projectUpdateForm(invId){
+  if(!canManageBusiness()){ toast("Sign in to update projects."); return; }
+  const p = findDoc("invoice", invId);
+  if(!p) return;
+  const st = p.projectStatus || "not_started";
+  const startVal = p.startAt ? toDateInput(p.startAt) : toDateInput(Date.now());
+  const dur = Number(p.durationDays) || 0;
+  const isPreset = PROJECT_DURATIONS.some(d => d.days === dur);
+
+  openModal(`<div class="modal" style="max-width:620px"><header>
+    <h3>Update — ${esc(p.clientCompany || p.clientName)}</h3><button class="x" data-close>&times;</button>
+  </header>
+  <div class="pad" style="max-height:72vh;overflow:auto">
+    <div style="font-size:12px;color:var(--muted);margin-bottom:13px">${esc(p.projectType || p.title || "Project")} &middot; <span class="num">${esc(p.number)}</span></div>
+
+    <div class="field">
+      <label>What did you do?</label>
+      <textarea id="pu-note" style="min-height:76px" placeholder="e.g. Finished the homepage layout and wired up the contact form." autofocus></textarea>
+    </div>
+
+    <div class="grid2">
+      <div class="field">
+        <label>Assigned developer</label>
+        <select id="pu-assignee">
+          <option value="">&mdash; Nobody assigned yet &mdash;</option>
+          ${DB.users.map(u => `<option value="${u.id}" ${u.id === (p.assignedTo||"") ? 'selected' : ''}>${esc(u.name)}${u.title ? " — " + esc(u.title) : ""}</option>`).join("")}
+        </select>
+      </div>
+      <div class="field"><label>Status</label><select id="pu-status">${PROJECT_STATUSES.map(s=>`<option value="${s.id}" ${s.id===st?'selected':''}>${s.label}</option>`).join("")}</select></div>
+    </div>
+
+    <div class="field"><label>Work completed (%)</label><input id="pu-progress" class="num" type="number" min="0" max="100" value="${Number(p.progress)||0}"></div>
+
+    <div class="biz-fieldset" style="margin-bottom:0">
+      <div class="biz-legend">Timeline</div>
+      <div class="grid2">
+        <div class="field"><label>Start date</label><input id="pu-start" class="num" type="date" value="${startVal}"></div>
+        <div class="field">
+          <label>How long will it take?</label>
+          <select id="pu-duration">
+            ${PROJECT_DURATIONS.map(d => `<option value="${d.days}" ${d.days===dur?'selected':''}>${d.label}</option>`).join("")}
+            <option value="custom" ${dur && !isPreset ? 'selected' : ''}>Custom — pick the date</option>
+            <option value="" ${!dur ? 'selected' : ''}>Not decided yet</option>
+          </select>
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label>Delivery date</label>
+        <input id="pu-target" class="num" type="date" value="${p.targetAt?toDateInput(p.targetAt):''}">
+        <div id="pu-dur-hint" style="font-size:11.5px;color:var(--muted);margin-top:5px"></div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <button class="btn" data-close>Cancel</button>
+    <button class="btn primary" id="pu-save">Save update</button>
+  </footer></div>`);
+
+  const recalc = () => {
+    const v = $("#pu-duration").value;
+    const start = $("#pu-start").value ? parseTxAt($("#pu-start").value) : null;
+    const hint = $("#pu-dur-hint");
+    if(v && v !== "custom" && start){
+      const target = start + Number(v) * DAY;
+      $("#pu-target").value = toDateInput(target);
+      $("#pu-target").readOnly = true;
+      $("#pu-target").style.background = "var(--surface-2)";
+      hint.textContent = `Set automatically from the start date. Choose “Custom” to pick a different date.`;
+    } else {
+      $("#pu-target").readOnly = false;
+      $("#pu-target").style.background = "";
+      hint.textContent = v === "custom" ? "Pick the delivery date yourself." : "No delivery date means no deadline warnings.";
+    }
+  };
+  $("#pu-duration").onchange = recalc;
+  $("#pu-start").onchange = recalc;
+  recalc();
+
+  $("#pu-save").onclick = () => {
+    const note = $("#pu-note").value.trim();
+    const status = $("#pu-status").value;
+    const progress = Math.max(0, Math.min(100, Number($("#pu-progress").value) || 0));
+    const durVal = $("#pu-duration").value;
+
+    p.assignedTo = $("#pu-assignee").value || "";
+    p.projectStatus = status;
+    p.progress = progress;
+    p.startAt  = $("#pu-start").value  ? parseTxAt($("#pu-start").value)  : null;
+    p.targetAt = $("#pu-target").value ? parseTxAt($("#pu-target").value) : null;
+    p.durationDays = (durVal && durVal !== "custom") ? Number(durVal)
+      : (p.startAt && p.targetAt ? Math.round((p.targetAt - p.startAt) / DAY) : 0);
+    p.completedAt = status === "done" ? (p.completedAt || Date.now()) : null;
+
+    if(!p.workLog) p.workLog = [];
+    if(note) p.workLog.unshift({ at: Date.now(), userId: DB.currentUserId, note, progress, kind: "work" });
+
+    saveProjectFields(p, `${projStatus(status).label}, ${progress}%${note ? " — " + note : ""}`);
+    closeModal();
+    toast(note ? "Update logged" : "Project updated");
+    draw();
+  };
+}
+
+/* ---- Client asked for a change: one small step ---- */
+function clientChangeForm(invId){
+  if(!canManageBusiness()){ toast("Sign in to log client changes."); return; }
+  const p = findDoc("invoice", invId);
+  if(!p) return;
+
+  openModal(`<div class="modal" style="max-width:520px"><header>
+    <h3>Client change — ${esc(p.clientCompany || p.clientName)}</h3><button class="x" data-close>&times;</button>
+  </header>
+  <div class="pad">
+    <div style="font-size:12px;color:var(--muted);margin-bottom:12px">What did the client ask you to change?</div>
+    <div class="field" style="margin-bottom:11px">
+      <textarea id="cc-note" style="min-height:74px" placeholder="e.g. Change the hero image and make the phone number bigger." autofocus></textarea>
+    </div>
+    <label style="display:flex;align-items:center;gap:8px;font-size:12.5px;cursor:pointer">
+      <input type="checkbox" id="cc-done" style="width:auto;margin:0">
+      <span>Already done</span>
+    </label>
+  </div>
+  <footer>
+    <button class="btn" data-close>Cancel</button>
+    <button class="btn primary" id="cc-save">Add change</button>
+  </footer></div>`);
+
+  $("#cc-save").onclick = () => {
+    const note = $("#cc-note").value.trim();
+    if(!note){ $("#cc-note").focus(); $("#cc-note").style.borderColor = "var(--clay)"; return; }
+    if(!p.workLog) p.workLog = [];
+    p.workLog.unshift({
+      at: Date.now(), userId: DB.currentUserId, note,
+      progress: Number(p.progress) || 0, kind: "change", done: $("#cc-done").checked,
+    });
+    saveProjectFields(p, `Client change — ${note}`);
+    closeModal();
+    toast("Client change logged");
+    draw();
+  };
+}
+
+/* ---- Full work history ---- */
+function projectLogModal(invId){
+  const p = findDoc("invoice", invId);
+  if(!p) return;
+  const log = p.workLog || [];
+  const changes = changeRequests(p);
+
+  openModal(`<div class="modal" style="max-width:640px"><header>
+    <h3>History — ${esc(p.clientCompany || p.clientName)}</h3><button class="x" data-close>&times;</button>
+  </header>
+  <div class="pad" style="max-height:66vh;overflow:auto">
+    <div style="font-size:12px;color:var(--muted);margin-bottom:14px">
+      ${log.length} entr${log.length===1?'y':'ies'}${changes.length ? ` &middot; ${changes.length} client change${changes.length===1?'':'s'}` : ''}
+    </div>
+    ${log.length ? `<div class="proj-log">${log.map(e => {
+      const isChange = e.kind === "change";
+      return `
+      <div class="proj-log-row">
+        <div class="proj-log-dot ${isChange ? 'change' : ''}"></div>
+        <div style="min-width:0">
+          <div class="proj-log-h">
+            <b>${esc(user(e.userId).name)}</b>
+            <span>${fmtWhen(e.at)}</span>
+            ${isChange ? `<span class="log-tag change">Client change${e.done ? " · done" : ""}</span>` : ``}
+            ${!isChange && e.progress != null ? `<span class="num" style="color:var(--teal-deep);font-weight:700">${e.progress}%</span>` : ``}
+          </div>
+          <div style="font-size:13px;line-height:1.55">${esc(e.note)}</div>
+        </div>
+      </div>`;
+    }).join("")}</div>`
+      : `<div class="empty"><b>Nothing logged yet</b>Use “Add update” or “Client change”.</div>`}
+  </div>
+  <footer>
+    ${canManageBusiness() ? `
+      <button class="btn" id="pl-change" style="margin-right:auto">+ Client change</button>
+      <button class="btn primary" id="pl-add">+ Add update</button>` : ``}
+    <button class="btn" data-close>Close</button>
+  </footer></div>`);
+
+  const add = $("#pl-add");    if(add) add.onclick = () => projectUpdateForm(invId);
+  const chg = $("#pl-change"); if(chg) chg.onclick = () => clientChangeForm(invId);
+}
+
+/* =================================================================
    PRODUCT FORM
    ================================================================= */
 function productForm(p){
@@ -3752,42 +4366,16 @@ function salesDocForm(type, doc, presetItems){
     ? (isNew ? "New quotation" : "Edit quotation " + d.number)
     : (isNew ? "New invoice" : "Edit invoice " + d.number);
 
-  openModal(`<div class="modal" style="max-width:940px;width:96vw"><header>
+  openModal(`<div class="modal" style="max-width:860px;width:96vw"><header>
     <h3>${esc(heading)}</h3><button class="x" data-close>&times;</button>
   </header>
-  <div class="pad" style="max-height:72vh;overflow:auto">
+  <div class="pad" style="max-height:74vh;overflow:auto">
 
     <div class="biz-fieldset">
-      <div class="biz-legend">${isQuote ? "Quotation" : "Invoice"} details</div>
-      <div class="grid2">
-        <div class="field"><label>${isQuote ? "Quotation" : "Invoice"} No.</label><input id="df-number" class="num" value="${esc(d.number)}"></div>
-        <div class="field"><label>Document heading (printed in the blue band)</label><input id="df-doctitle" value="${esc(d.docTitle || (isQuote ? cfg.quoteTitle : cfg.invoiceTitle))}"></div>
-      </div>
-      <div class="grid2">
-        <div class="field"><label>Date issued</label><input id="df-issued" class="num" type="date" value="${toDateInput(d.issuedAt)}"></div>
-        <div class="field"><label>${isQuote ? "Valid until (date)" : "Payment due by"}</label><input id="df-until" class="num" type="date" value="${toDateInput(isQuote ? d.validUntil : d.dueAt)}"></div>
-      </div>
-      <div class="grid2">
-        ${isQuote
-          ? `<div class="field"><label>Valid until (printed text)</label><input id="df-validtext" value="${esc(d.validUntilText || "")}" placeholder="30 DAYS FROM DATE ISSUED"></div>`
-          : `<div class="field"><label>Payment terms</label><input id="df-payterms" value="${esc(d.paymentTerms || "")}" placeholder="3 Instalments"></div>`}
-        <div class="field"><label>Status</label><select id="df-status">${statuses.map(s=>`<option value="${s.id}" ${s.id===(d.status||'draft')?'selected':''}>${s.label}</option>`).join("")}</select></div>
-      </div>
-      <div class="grid2">
-        <div class="field"><label>Project type / service</label><input id="df-projtype" value="${esc(d.projectType || "")}" placeholder="Professional Website Design &amp; Development"></div>
-        ${isQuote
-          ? `<div class="field"><label>Prepared by</label><input id="df-preparedby" value="${esc(d.preparedBy || cfg.name)}"></div>`
-          : `<div class="field"><label>Quotation ref.</label><input id="df-quoteref" class="num" value="${esc(d.quotationRef || (d.quotationId ? ((findDoc("quotation", d.quotationId)||{}).number || "") : ""))}" placeholder="QT-UNIVZLK-14"></div>`}
-      </div>
-      <div class="field" style="margin-bottom:0"><label>Internal subject <span style="font-weight:400;color:var(--muted)">(shown in your lists, not printed)</span></label><input id="df-title" value="${esc(d.title)}" placeholder="e.g. Perera Holdings corporate site"></div>
-    </div>
-
-    <div class="biz-fieldset">
-      <div class="biz-legend">Client information</div>
+      <div class="biz-legend">Who is it for?</div>
       <div class="field">
-        <label>Pick an existing contact to auto-fill, or type the details below</label>
         <select id="df-contact">
-          <option value="">&mdash; Enter client details manually &mdash;</option>
+          <option value="">&mdash; Type the client details below &mdash;</option>
           ${DB.contacts.map(ct=>`<option value="${ct.id}" ${ct.id===d.contactId?'selected':''}>${esc(ct.name)}${ct.company?" ("+esc(ct.company)+")":""}</option>`).join("")}
         </select>
       </div>
@@ -3795,16 +4383,54 @@ function salesDocForm(type, doc, presetItems){
         <div class="field"><label>Client / business name</label><input id="df-ccompany" value="${esc(d.clientCompany)}" placeholder="Perera Holdings (Pvt) Ltd"></div>
         <div class="field"><label>Contact person</label><input id="df-cname" value="${esc(d.clientName)}" placeholder="Nimal Perera"></div>
       </div>
-      <div class="grid2">
-        <div class="field"><label>Phone / WhatsApp</label><input id="df-cphone" class="num" value="${esc(d.clientPhone)}" placeholder="+94 77 123 4567"></div>
-        <div class="field"><label>Email address</label><input id="df-cemail" value="${esc(d.clientEmail)}" placeholder="nimal@company.lk"></div>
+      <div class="grid2" style="margin-bottom:0">
+        <div class="field" style="margin-bottom:0"><label>Phone / WhatsApp</label><input id="df-cphone" class="num" value="${esc(d.clientPhone)}" placeholder="+94 77 123 4567"></div>
+        <div class="field" style="margin-bottom:0"><label>Email</label><input id="df-cemail" value="${esc(d.clientEmail)}" placeholder="nimal@company.lk"></div>
       </div>
-      <div class="field" style="margin-bottom:0"><label>Business address</label><textarea id="df-caddress" style="min-height:48px" placeholder="No. 25, Galle Road,&#10;Colombo 03">${esc(d.clientAddress)}</textarea></div>
     </div>
 
     <div class="biz-fieldset">
+      <div class="biz-legend">What is the job?</div>
+      <div class="field"><label>Project / service</label><input id="df-projtype" value="${esc(d.projectType || "")}" placeholder="Professional Website Design &amp; Development"></div>
+      <div class="grid2" style="margin-bottom:0">
+        <div class="field" style="margin-bottom:0"><label>Date issued</label><input id="df-issued" class="num" type="date" value="${toDateInput(d.issuedAt)}"></div>
+        <div class="field" style="margin-bottom:0"><label>${isQuote ? "Valid until" : "Payment due by"}</label><input id="df-until" class="num" type="date" value="${toDateInput(isQuote ? d.validUntil : d.dueAt)}"></div>
+      </div>
+    </div>
+
+    ${isQuote ? `` : `
+    <div class="biz-fieldset">
+      <div class="biz-legend">Who will build it, and by when?</div>
+      <div class="grid2">
+        <div class="field">
+          <label>Assigned developer</label>
+          <select id="df-assignee">
+            <option value="">&mdash; Decide later &mdash;</option>
+            ${DB.users.map(u => `<option value="${u.id}" ${u.id === (d.assignedTo||"") ? 'selected' : ''}>${esc(u.name)}${u.title ? " — " + esc(u.title) : ""}</option>`).join("")}
+          </select>
+        </div>
+        <div class="field"><label>Work starts on</label><input id="df-start" class="num" type="date" value="${d.startAt ? toDateInput(d.startAt) : toDateInput(Date.now())}"></div>
+      </div>
+      <div class="grid2" style="margin-bottom:0">
+        <div class="field" style="margin-bottom:0">
+          <label>How long will it take?</label>
+          <select id="df-duration">
+            ${PROJECT_DURATIONS.map(x => `<option value="${x.days}" ${x.days===(Number(d.durationDays)||30)?'selected':''}>${x.label}</option>`).join("")}
+            <option value="custom">Custom &mdash; pick the date</option>
+            <option value="">Not decided yet</option>
+          </select>
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <label>Deliver by</label>
+          <input id="df-target" class="num" type="date" value="${d.targetAt ? toDateInput(d.targetAt) : ''}">
+        </div>
+      </div>
+      <div id="df-dur-hint" style="font-size:11.5px;color:var(--muted);margin-top:7px"></div>
+    </div>`}
+
+    <div class="biz-fieldset">
       <div class="biz-legend" style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-        <span>${isQuote ? "Pricing breakdown" : "Invoice items"}</span>
+        <span>What are you charging for?</span>
         <span style="display:flex;gap:7px;align-items:center;flex-wrap:wrap">
           <select id="df-add-product" style="padding:5px 8px;border:1px solid var(--line-strong);border-radius:6px;font-size:11.5px;font-family:inherit;max-width:240px;background:var(--surface);color:var(--ink);font-weight:500">
             <option value="">+ Add from catalogue&hellip;</option>
@@ -3817,40 +4443,26 @@ function salesDocForm(type, doc, presetItems){
         <table class="li-table">
           <thead><tr>
             <th style="min-width:200px">Item &amp; description</th>
-            <th style="width:76px;text-align:right">Qty</th>
-            <th style="width:112px;text-align:right">Rate</th>
-            <th style="width:108px">Or print</th>
-            <th style="width:118px;text-align:right">Amount</th>
+            <th style="width:72px;text-align:right">Qty</th>
+            <th style="width:108px;text-align:right">Rate</th>
+            <th style="width:100px">Or print</th>
+            <th style="width:112px;text-align:right">Amount</th>
             <th style="width:34px"></th>
           </tr></thead>
           <tbody id="df-items-body"></tbody>
         </table>
       </div>
       <div style="font-size:11px;color:var(--muted);margin-top:5px">
-        Put <b>Included</b>, <b>FREE</b> or similar in <b>Or print</b> to show that word instead of a figure. Those lines add nothing to the total.
+        Put <b>Included</b> or <b>FREE</b> in <b>Or print</b> to show that word instead of a figure.
       </div>
-
-      <div class="grid2" style="margin-top:12px;align-items:start">
-        <div class="grid2">
-          <div class="field">
-            <label>Discount</label>
-            <div style="display:flex;gap:6px">
-              <input id="df-disc-val" class="num" type="number" step="0.01" value="${Number(d.discountVal)||0}" style="flex:1">
-              <select id="df-disc-type" style="width:84px;flex:none">
-                <option value="amount"  ${d.discountType!=='percent'?'selected':''}>${esc(DOC_CURRENCY)}</option>
-                <option value="percent" ${d.discountType==='percent'?'selected':''}>%</option>
-              </select>
-            </div>
-          </div>
-          <div class="field"><label>${esc(cfg.taxLabel||"VAT")} rate (%)</label><input id="df-tax-rate" class="num" type="number" step="0.01" value="${Number(d.taxRate)||0}"></div>
-        </div>
-        <div class="totals-box" id="df-totals"></div>
+      <div style="display:flex;justify-content:flex-end;margin-top:12px">
+        <div class="totals-box" id="df-totals" style="margin:0"></div>
       </div>
     </div>
 
     <div class="biz-fieldset">
       <div class="biz-legend" style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-        <span>${isQuote ? "Payment schedule" : "Instalment schedule"}</span>
+        <span>How will they pay?</span>
         <span style="display:flex;gap:6px;flex-wrap:wrap">
           <button class="btn sm" id="df-ms-25" type="button" title="25% down payment, 75% on delivery">25 / 75</button>
           <button class="btn sm" id="df-ms-3" type="button" title="Split into three equal instalments">3 equal</button>
@@ -3861,10 +4473,10 @@ function salesDocForm(type, doc, presetItems){
       <div style="overflow-x:auto">
         <table class="li-table">
           <thead><tr>
-            <th style="min-width:150px">${isQuote ? "Milestone" : "Instalment"}</th>
-            <th style="min-width:150px">When due</th>
-            <th style="width:124px;text-align:right">Amount</th>
-            ${isQuote ? `` : `<th style="width:68px;text-align:center">Paid</th>`}
+            <th style="min-width:140px">${isQuote ? "Milestone" : "Instalment"}</th>
+            <th style="min-width:140px">When due</th>
+            <th style="width:118px;text-align:right">Amount</th>
+            ${isQuote ? `` : `<th style="width:62px;text-align:center">Paid</th>`}
             <th style="width:34px"></th>
           </tr></thead>
           <tbody id="df-ms-body"></tbody>
@@ -3873,10 +4485,53 @@ function salesDocForm(type, doc, presetItems){
       <div id="df-ms-warn" style="font-size:11px;margin-top:5px"></div>
     </div>
 
+    <details class="biz-more">
+      <summary>Numbering, status &amp; discounts <span>&mdash; filled in for you</span></summary>
+      <div class="grid2">
+        <div class="field"><label>${isQuote ? "Quotation" : "Invoice"} No.</label><input id="df-number" class="num" value="${esc(d.number)}"></div>
+        <div class="field"><label>Status</label><select id="df-status">${statuses.map(s=>`<option value="${s.id}" ${s.id===(d.status||'draft')?'selected':''}>${s.label}</option>`).join("")}</select></div>
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <label>Discount</label>
+          <div style="display:flex;gap:6px">
+            <input id="df-disc-val" class="num" type="number" step="0.01" value="${Number(d.discountVal)||0}" style="flex:1">
+            <select id="df-disc-type" style="width:84px;flex:none">
+              <option value="amount"  ${d.discountType!=='percent'?'selected':''}>${esc(DOC_CURRENCY)}</option>
+              <option value="percent" ${d.discountType==='percent'?'selected':''}>%</option>
+            </select>
+          </div>
+        </div>
+        <div class="field"><label>${esc(cfg.taxLabel||"VAT")} rate (%)</label><input id="df-tax-rate" class="num" type="number" step="0.01" value="${Number(d.taxRate)||0}"></div>
+      </div>
+      <div class="grid2">
+        <div class="field"><label>Heading printed in the blue band</label><input id="df-doctitle" value="${esc(d.docTitle || (isQuote ? cfg.quoteTitle : cfg.invoiceTitle))}"></div>
+        ${isQuote
+          ? `<div class="field"><label>&ldquo;Valid until&rdquo; printed text</label><input id="df-validtext" value="${esc(d.validUntilText || "")}" placeholder="30 DAYS FROM DATE ISSUED"></div>`
+          : `<div class="field"><label>Payment terms</label><input id="df-payterms" value="${esc(d.paymentTerms || "")}" placeholder="3 Instalments"></div>`}
+      </div>
+      <div class="grid2">
+        ${isQuote
+          ? `<div class="field"><label>Prepared by</label><input id="df-preparedby" value="${esc(d.preparedBy || cfg.name)}"></div>`
+          : `<div class="field"><label>Quotation ref.</label><input id="df-quoteref" class="num" value="${esc(d.quotationRef || (d.quotationId ? ((findDoc("quotation", d.quotationId)||{}).number || "") : ""))}" placeholder="QT-UNIVZLK-14"></div>`}
+        <div class="field"><label>Internal subject <span style="font-weight:400;color:var(--muted)">(not printed)</span></label><input id="df-title" value="${esc(d.title)}" placeholder="e.g. Perera Holdings corporate site"></div>
+      </div>
+      <div class="field" style="margin-bottom:0"><label>Billing address</label><textarea id="df-caddress" style="min-height:46px" placeholder="No. 25, Galle Road,&#10;Colombo 03">${esc(d.clientAddress)}</textarea></div>
+    </details>
+
+    <details class="biz-more">
+      <summary>Terms &amp; notes <span>&mdash; your standard wording</span></summary>
+      <div class="field"><label>Terms &amp; notes <span style="font-weight:400;color:var(--muted)">(one clause per line)</span></label><textarea id="df-terms" style="min-height:110px">${esc(d.terms || (isQuote ? cfg.quoteTerms : cfg.invoiceTerms))}</textarea></div>
+      <div class="field"><label>&ldquo;When you pay&rdquo; instructions</label><textarea id="df-paynote" style="min-height:56px">${esc(d.paymentNote || cfg.paymentNote || "")}</textarea></div>
+      ${isQuote ? `<div class="field"><label>Acceptance wording</label><textarea id="df-acceptance" style="min-height:52px">${esc(d.acceptanceText || cfg.quoteAcceptance || "")}</textarea></div>` : ``}
+      <div class="field" style="margin-bottom:0"><label>Extra note to the client <span style="font-weight:400;color:var(--muted)">(optional)</span></label><textarea id="df-notes" style="min-height:44px">${esc(d.notes)}</textarea></div>
+    </details>
+
     ${isQuote ? `
-    <div class="biz-fieldset">
-      <div class="biz-legend" style="display:flex;justify-content:space-between;align-items:center;gap:10px">
-        <span>Project timeline</span>
+    <details class="biz-more">
+      <summary>Timeline &amp; package contents <span>&mdash; printed on the quotation</span></summary>
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap">
+        <b style="font-size:12px">Project timeline</b>
         <span style="display:flex;gap:6px">
           <button class="btn sm" id="df-tl-add" type="button">+ Row</button>
           <button class="btn sm ghost" id="df-tl-reset" type="button" style="border:1px solid var(--line-strong)">Load default</button>
@@ -3885,28 +4540,16 @@ function salesDocForm(type, doc, presetItems){
       </div>
       <div style="overflow-x:auto">
         <table class="li-table">
-          <thead><tr><th style="width:150px">Phase</th><th style="min-width:200px">Activity</th><th style="width:130px">Duration</th><th style="width:34px"></th></tr></thead>
+          <thead><tr><th style="width:130px">Phase</th><th style="min-width:180px">Activity</th><th style="width:120px">Duration</th><th style="width:34px"></th></tr></thead>
           <tbody id="df-tl-body"></tbody>
         </table>
       </div>
-    </div>
-
-    <div class="biz-fieldset">
-      <div class="biz-legend">Package inclusions</div>
-      <div class="grid2">
-        <div class="field"><label>Included in this package <span style="font-weight:400;color:var(--muted)">(one per line)</span></label><textarea id="df-inclusions" style="min-height:120px">${esc(DOC_INCLUSIONS.join("\n"))}</textarea></div>
-        <div class="field"><label>Not included / add-ons <span style="font-weight:400;color:var(--muted)">(one per line)</span></label><textarea id="df-exclusions" style="min-height:120px">${esc(DOC_EXCLUSIONS.join("\n"))}</textarea></div>
+      <div class="grid2" style="margin-top:13px">
+        <div class="field"><label>Included in this package <span style="font-weight:400;color:var(--muted)">(one per line)</span></label><textarea id="df-inclusions" style="min-height:110px">${esc(DOC_INCLUSIONS.join("\n"))}</textarea></div>
+        <div class="field"><label>Not included / add-ons <span style="font-weight:400;color:var(--muted)">(one per line)</span></label><textarea id="df-exclusions" style="min-height:110px">${esc(DOC_EXCLUSIONS.join("\n"))}</textarea></div>
       </div>
-      <div class="field" style="margin-bottom:0"><label>Year 2 onwards note</label><textarea id="df-year2" style="min-height:46px">${esc(d.year2Note || "")}</textarea></div>
-    </div>` : ``}
-
-    <div class="biz-fieldset">
-      <div class="biz-legend">Terms, notes &amp; payment</div>
-      <div class="field"><label>Terms &amp; notes <span style="font-weight:400;color:var(--muted)">(one clause per line &mdash; they print as a numbered list)</span></label><textarea id="df-terms" style="min-height:120px">${esc(d.terms || (isQuote ? cfg.quoteTerms : cfg.invoiceTerms))}</textarea></div>
-      <div class="field"><label>&ldquo;When you pay&rdquo; instructions</label><textarea id="df-paynote" style="min-height:62px">${esc(d.paymentNote || cfg.paymentNote || "")}</textarea></div>
-      ${isQuote ? `<div class="field"><label>Acceptance wording</label><textarea id="df-acceptance" style="min-height:56px">${esc(d.acceptanceText || cfg.quoteAcceptance || "")}</textarea></div>` : ``}
-      <div class="field" style="margin-bottom:0"><label>Extra note to the client <span style="font-weight:400;color:var(--muted)">(optional)</span></label><textarea id="df-notes" style="min-height:44px">${esc(d.notes)}</textarea></div>
-    </div>
+      <div class="field" style="margin-bottom:0"><label>Year 2 onwards note</label><textarea id="df-year2" style="min-height:44px">${esc(d.year2Note || "")}</textarea></div>
+    </details>` : ``}
 
   </div>
   <footer>
@@ -3918,6 +4561,33 @@ function salesDocForm(type, doc, presetItems){
   renderDocItemRows();
   renderMilestoneRows(isQuote);
   if(isQuote) renderTimelineRows();
+
+  /* ---- delivery date follows the duration picker ---- */
+  if(!isQuote){
+    const syncTarget = () => {
+      const v = $("#df-duration").value;
+      const start = $("#df-start").value ? parseTxAt($("#df-start").value) : null;
+      const hint = $("#df-dur-hint");
+      if(v && v !== "custom" && start){
+        $("#df-target").value = toDateInput(start + Number(v) * DAY);
+        $("#df-target").readOnly = true;
+        $("#df-target").style.background = "var(--surface-2)";
+        hint.textContent = "Worked out from the start date. You get a warning once half the time is gone.";
+      } else {
+        $("#df-target").readOnly = false;
+        $("#df-target").style.background = "";
+        hint.textContent = v === "custom" ? "Pick the delivery date yourself." : "Without a delivery date there are no deadline warnings.";
+      }
+    };
+    $("#df-duration").onchange = syncTarget;
+    $("#df-start").onchange = syncTarget;
+    if(!d.targetAt || !Number(d.durationDays)) syncTarget();
+    else {
+      const isPreset = PROJECT_DURATIONS.some(x => x.days === Number(d.durationDays));
+      if(!isPreset) $("#df-duration").value = "custom";
+      syncTarget();
+    }
+  }
 
   $("#df-contact").onchange = e => {
     const ct = contact(e.target.value);
@@ -4089,6 +4759,18 @@ function salesDocForm(type, doc, presetItems){
       rec.paymentTerms = $("#df-payterms").value.trim();
       rec.quotationRef = $("#df-quoteref").value.trim();
       rec.quotationId = d.quotationId || null;
+
+      // Delivery plan — this is what the Projects page tracks
+      const durVal = $("#df-duration").value;
+      rec.assignedTo = $("#df-assignee").value || "";
+      rec.startAt  = $("#df-start").value  ? parseTxAt($("#df-start").value)  : null;
+      rec.targetAt = $("#df-target").value ? parseTxAt($("#df-target").value) : null;
+      rec.durationDays = (durVal && durVal !== "custom") ? Number(durVal)
+        : (rec.startAt && rec.targetAt ? Math.round((rec.targetAt - rec.startAt) / DAY) : 0);
+      rec.projectStatus = d.projectStatus || (rec.assignedTo ? "active" : "not_started");
+      rec.progress = Number(d.progress) || 0;
+      rec.completedAt = d.completedAt || null;
+      rec.workLog = d.workLog || [];
       rec.amountPaid = milestones.length
         ? milestones.reduce((s, m) => s + (m.paid ? m.amount : 0), 0)
         : (rec.status === "paid" ? t.total : (Number(d.amountPaid) || 0));
@@ -12912,6 +13594,11 @@ $("#content").addEventListener("click", e => {
   const docDel     = e.target.closest("[data-doc-del]");
   const coProfile  = e.target.closest("#btn-company-profile");
   const bizRefresh = e.target.closest("#btn-biz-refresh");
+  const projUpdate = e.target.closest("[data-proj-update]");
+  const projLog    = e.target.closest("[data-proj-log]");
+  const projFilter = e.target.closest("[data-proj-filter]");
+  const projChange = e.target.closest("[data-proj-change]");
+  const projNew    = e.target.closest("#btn-proj-new") || e.target.closest("#btn-proj-new-empty");
 
   if(bizView){
     BUSINESS_TAB = bizView.dataset.bizView;
@@ -12934,6 +13621,11 @@ $("#content").addEventListener("click", e => {
   else if(docConvert){ convertQuotationToInvoice(docConvert.dataset.docConvert); }
   else if(docPay){ markInvoicePaidModal(docPay.dataset.docPay); }
   else if(docDel){ deleteSalesDoc(docDel.dataset.docType, docDel.dataset.docDel); }
+  else if(projFilter){ PROJ_FILTER = projFilter.dataset.projFilter; renderProjects(); }
+  else if(projNew){ salesDocForm("invoice", null); }
+  else if(projChange){ clientChangeForm(projChange.dataset.projChange); }
+  else if(projUpdate){ projectUpdateForm(projUpdate.dataset.projUpdate); }
+  else if(projLog){ projectLogModal(projLog.dataset.projLog); }
   else if(coProfile){ companyProfileModal(); }
   else if(bizRefresh){ refreshBusinessData(); }
 });
@@ -12950,10 +13642,12 @@ $("#add-contact").onclick = ()=>{
     } else {
       expenseForm(null);
     }
+  } else if(VIEW === "projects"){
+    salesDocForm("invoice", null);   // a project starts life as an invoice
   } else if(VIEW === "business"){
     if(BUSINESS_TAB === "products") productForm(null);
     else if(BUSINESS_TAB === "quotations") salesDocForm("quotation", null);
-    else salesDocForm("invoice", null);
+    else salesDocForm("invoice", null);   // projects start life as an invoice
   } else if(VIEW === "team"){
     userProfileModal(DB.currentUserId);
   } else if(VIEW === "humanresource"){
@@ -13141,6 +13835,22 @@ function refreshBadges(){
   const ap = DB.appointments.filter(a=>a.status==="scheduled" && a.at>=now).length;
   const ba=$("#badge-appt"); if(ba) { ba.textContent=ap; ba.classList.toggle("zero",ap===0); }
   const bam=$("#badge-appt-mobile"); if(bam) { bam.textContent=ap; bam.classList.toggle("zero",ap===0); }
+
+  // Projects that are late or close to their delivery date
+  const openProj = projectList().filter(isProjectOpen);
+  const lateProj = openProj.filter(p => projectHealth(p).state === "late");
+  const soonProj = openProj.filter(p => projectHealth(p).state === "warning");
+  const alertProj = lateProj.length + soonProj.length;
+  [$("#badge-projects"), $("#badge-projects-mobile")].forEach(b => {
+    if(!b) return;
+    b.textContent = alertProj;
+    b.classList.toggle("zero", alertProj === 0);
+    b.style.background = lateProj.length ? "var(--clay)" : soonProj.length ? "var(--amber)" : "";
+    b.style.color = alertProj ? "#fff" : "";
+    b.title = alertProj
+      ? `${lateProj.length} late, ${soonProj.length} close to the deadline`
+      : "All projects on schedule";
+  });
 
   // Unpaid (sent or overdue) invoices
   const openInv = (DB.invoices || []).filter(i => i.status === "sent" || i.status === "overdue");
