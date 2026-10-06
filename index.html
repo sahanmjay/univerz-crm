@@ -688,7 +688,9 @@ td .num{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
 .proj-log-dot.change{background:var(--amber)}
 .proj-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:13px}
 .proj-card{
-  background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+  /* keep cards compact — a single project should not stretch across a wide screen */
+  max-width:440px;
+  background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:13px 15px;
   box-shadow:var(--shadow);animation:rise .3s ease both;display:flex;flex-direction:column;gap:11px;
 }
 .proj-card.late{border-color:var(--clay);background:linear-gradient(180deg,var(--surface) 70%,var(--clay-wash) 220%)}
@@ -2069,7 +2071,10 @@ function objToSnake(o){
   const r={};
   for(const[k,v] of Object.entries(o)){
     const sk = toSnakeKey(k);
-    if((sk.endsWith('_id') || sk === 'user_id' || sk === 'contact_id') && (v === '' || v === undefined)){
+    // Columns that point at another table must be null when blank — an empty
+    // string breaks the foreign key and the whole row is rejected.
+    if((sk.endsWith('_id') || sk === 'user_id' || sk === 'contact_id' || sk === 'assigned_to' || sk === 'created_by')
+       && (v === '' || v === undefined)){
       r[sk] = null;
     } else {
       r[sk] = v;
@@ -4138,6 +4143,8 @@ function projectUpdateForm(invId){
   if(!p) return;
   const st = p.projectStatus || "not_started";
   const startVal = p.startAt ? toDateInput(p.startAt) : toDateInput(Date.now());
+  // once a start date exists it is Sahan's to move; before that anyone can set it
+  const puStartLocked = !isSahan() && !!p.startAt;
   const dur = Number(p.durationDays) || 0;
   const isPreset = PROJECT_DURATIONS.some(d => d.days === dur);
 
@@ -4169,8 +4176,8 @@ function projectUpdateForm(invId){
       <div class="biz-legend">Timeline</div>
       <div class="grid2">
         <div class="field">
-          <label>Start date ${isSahan() ? "" : `<span style="font-weight:400;color:var(--muted)">(Sahan only)</span>`}</label>
-          <input id="pu-start" class="num" type="date" value="${startVal}" ${isSahan() ? "" : "disabled style=background:var(--surface-2);color:var(--muted)"}>
+          <label>Start date ${puStartLocked ? `<span style="font-weight:400;color:var(--muted)">(only Sahan can change this)</span>` : ``}</label>
+          <input id="pu-start" class="num" type="date" value="${startVal}" ${puStartLocked ? "disabled style=background:var(--surface-2);color:var(--muted)" : ""}>
         </div>
         <div class="field">
           <label>How long will it take?</label>
@@ -4222,10 +4229,9 @@ function projectUpdateForm(invId){
     p.assignedTo = $("#pu-assignee").value || "";
     p.projectStatus = status;
     p.progress = progress;
-    // the start date is Sahan's to set; everyone else keeps whatever is there
-    p.startAt = isSahan()
-      ? ($("#pu-start").value ? parseTxAt($("#pu-start").value) : null)
-      : (p.startAt || null);
+    p.startAt = puStartLocked
+      ? (p.startAt || null)
+      : ($("#pu-start").value ? parseTxAt($("#pu-start").value) : null);
     p.targetAt = $("#pu-target").value ? parseTxAt($("#pu-target").value) : null;
     p.durationDays = (durVal && durVal !== "custom") ? Number(durVal)
       : (p.startAt && p.targetAt ? Math.round((p.targetAt - p.startAt) / DAY) : 0);
@@ -4481,6 +4487,10 @@ function salesDocForm(type, doc, presetItems){
   DOC_INCLUSIONS = (d.inclusions || []).slice();
   DOC_EXCLUSIONS = (d.exclusions || []).slice();
 
+  // Anyone can set the start date while creating the project; once it is set,
+  // only Sahan may move it afterwards.
+  const startLocked = !isSahan() && !!d.startAt;
+
   const statuses = isQuote ? QUOTE_STATUSES : INVOICE_STATUSES;
   const activeProducts = DB.products.filter(p => p.active !== false).sort((a,b)=>(a.name||"").localeCompare(b.name||""));
   const heading = isQuote
@@ -4531,8 +4541,8 @@ function salesDocForm(type, doc, presetItems){
           </select>
         </div>
         <div class="field">
-          <label>Work starts on ${isSahan() ? "" : `<span style="font-weight:400;color:var(--muted)">(Sahan only)</span>`}</label>
-          <input id="df-start" class="num" type="date" value="${d.startAt ? toDateInput(d.startAt) : toDateInput(Date.now())}" ${isSahan() ? "" : "disabled style=background:var(--surface-2);color:var(--muted)"}>
+          <label>Work starts on ${startLocked ? `<span style="font-weight:400;color:var(--muted)">(only Sahan can change this now)</span>` : ``}</label>
+          <input id="df-start" class="num" type="date" value="${d.startAt ? toDateInput(d.startAt) : toDateInput(Date.now())}" ${startLocked ? "disabled style=background:var(--surface-2);color:var(--muted)" : ""}>
         </div>
       </div>
       <div class="grid2" style="margin-bottom:0">
@@ -4887,9 +4897,9 @@ function salesDocForm(type, doc, presetItems){
       // Delivery plan — this is what the Projects page tracks
       const durVal = $("#df-duration").value;
       rec.assignedTo = $("#df-assignee").value || "";
-      rec.startAt = (isSahan() || !d.startAt)
-        ? ($("#df-start").value ? parseTxAt($("#df-start").value) : null)
-        : d.startAt;
+      rec.startAt = startLocked
+        ? d.startAt
+        : ($("#df-start").value ? parseTxAt($("#df-start").value) : null);
       rec.targetAt = $("#df-target").value ? parseTxAt($("#df-target").value) : null;
       rec.durationDays = (durVal && durVal !== "custom") ? Number(durVal)
         : (rec.startAt && rec.targetAt ? Math.round((rec.targetAt - rec.startAt) / DAY) : 0);
