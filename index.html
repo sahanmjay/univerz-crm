@@ -1835,6 +1835,274 @@ body.auth-locked #auth-overlay {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* =================================================================
+   FINANCIAL MANAGEMENT MODULE STYLES
+   ================================================================= */
+.fin-top-tabs-wrapper {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--paper);
+  padding: 4px 0 10px;
+  margin-bottom: 16px;
+  border-bottom: 1.5px solid var(--line);
+}
+.fin-top-tabs {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  overflow-x: auto;
+  padding: 2px 0;
+}
+.fin-tab-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 13px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+.fin-tab-item:hover {
+  background: var(--surface-2);
+  color: var(--ink);
+  border-color: var(--line-strong);
+}
+.fin-tab-item.active {
+  background: var(--teal);
+  color: #fff;
+  border-color: var(--teal);
+  box-shadow: 0 2px 6px rgba(31,92,90,0.25);
+}
+.fin-tab-item .tab-cnt {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+  background: rgba(0,0,0,0.08);
+  color: inherit;
+}
+.fin-tab-item.active .tab-cnt {
+  background: rgba(255,255,255,0.25);
+  color: #fff;
+}
+
+/* KPI Cards */
+.fin-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.fin-kpi-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.fin-kpi-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+}
+.fin-kpi-card .k-lab {
+  font-size: 11.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+}
+.fin-kpi-card .k-val {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--ink);
+  font-feature-settings: "tnum";
+}
+.fin-kpi-card .k-sub {
+  font-size: 11.5px;
+  color: var(--ink-soft);
+  margin-top: 2px;
+}
+.fin-kpi-card.accent { border-left: 4px solid var(--teal); }
+.fin-kpi-card.good { border-left: 4px solid #16a34a; }
+.fin-kpi-card.good .k-val { color: #15803d; }
+.fin-kpi-card.warn { border-left: 4px solid var(--amber); }
+.fin-kpi-card.warn .k-val { color: #b45309; }
+.fin-kpi-card.danger { border-left: 4px solid var(--clay); }
+.fin-kpi-card.danger .k-val { color: var(--clay); }
+
+/* Reminders Section Banner */
+.fin-reminders-box {
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin-bottom: 22px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+.fin-reminders-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+.fin-reminders-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.fin-filter-pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.fin-pill-btn {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 600;
+  background: var(--surface-2);
+  color: var(--ink-soft);
+  border: 1px solid var(--line);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.fin-pill-btn:hover {
+  background: var(--line);
+  color: var(--ink);
+}
+.fin-pill-btn.active {
+  background: var(--teal);
+  color: #fff;
+  border-color: var(--teal);
+}
+
+/* Status Badges */
+.fin-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.badge-green { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+.badge-yellow { background: #fef9c3; color: #854d0e; border: 1px solid #fef08a; }
+.badge-orange { background: #ffedd5; color: #c2410c; border: 1px solid #fed7aa; }
+.badge-red { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+.badge-gray { background: var(--surface-2); color: var(--muted); border: 1px solid var(--line); }
+.badge-blue { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+
+/* Financial Tables */
+.fin-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+}
+.fin-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 12.5px;
+}
+.fin-table th {
+  background: var(--paper);
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+}
+.fin-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
+  vertical-align: middle;
+}
+.fin-table tr:last-child td { border-bottom: none; }
+.fin-table tr:hover td { background: rgba(0,0,0,0.015); }
+
+/* Client Profile Sections */
+.fin-profile-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 18px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .fin-profile-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.fin-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.02);
+}
+.fin-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+.fin-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Service Tags */
+.fin-tag {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--teal-wash);
+  color: var(--teal-deep);
+  border: 1px solid rgba(31,92,90,0.18);
+  margin: 2px 3px 2px 0;
+}
+.fin-tag.purple { background: #f3e8ff; color: #7e22ce; border-color: #e9d5ff; }
+.fin-tag.amber { background: var(--amber-wash); color: var(--amber); border-color: rgba(187,71,43,0.18); }
+.fin-tag.blue { background: #e0f2fe; color: #0284c7; border-color: #bae6fd; }
+
 </style>
 </head>
 <body class="auth-locked">
@@ -1867,6 +2135,7 @@ body.auth-locked #auth-overlay {
       <button data-view="projects"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Projects<span class="badge zero" id="badge-projects" title="Projects running late">0</span></button>
       <button data-view="business"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 7h-3V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M9 7V5h6v2M2 12h20"/></svg>Products &amp; Billing<span class="badge zero" id="badge-invoices" title="Unpaid invoices">0</span></button>
       <div class="group-label">Finance</div>
+      <button data-view="financial"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>💰 Financial Management<span class="badge zero" id="badge-financial" title="Upcoming &amp; Overdue Invoices">0</span></button>
       <button data-view="account"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg>Accounts &amp; Balances<span class="badge zero" id="badge-debt-reminders" title="Loan &amp; Bill Reminders">0</span></button>
       <div class="group-label">Team &amp; HR</div>
       <button data-view="team"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>People &amp; activity</button>
@@ -2041,6 +2310,7 @@ body.auth-locked #auth-overlay {
   <button data-view="contacts"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Contacts</span></button>
   <button data-view="projects"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span>Projects</span><span class="badge zero" id="badge-projects-mobile">0</span></button>
   <button data-view="business"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 7h-3V5a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v2H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M9 7V5h6v2M2 12h20"/></svg><span>Business</span><span class="badge zero" id="badge-invoices-mobile">0</span></button>
+  <button data-view="financial"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg><span>Financial</span><span class="badge zero" id="badge-financial-mobile">0</span></button>
   <button data-view="account"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/></svg><span>Accounts</span><span class="badge zero" id="badge-debt-reminders-mobile">0</span></button>
   <button data-view="appointments"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg><span>Appts</span><span class="badge zero" id="badge-appt-mobile">0</span></button>
   <button data-view="pipeline"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg><span>Pipeline</span></button>
@@ -2284,6 +2554,12 @@ function seed(){
     products:[],
     quotations:[],
     invoices:[],
+    finClients:[],
+    finCharges:[],
+    finInvoices:[],
+    finPayments:[],
+    finReminders:[],
+    finSettings:null,
     currentUserId:"u3",
   };
 }
@@ -2516,7 +2792,7 @@ function loadLocal(){
 
 /* ---- Supabase data functions ---- */
 async function loadFromSupabase(){
-  const [u,c,cl,a,acc,tx,fl,ln,bl,cm,pr,qt,iv] = await Promise.all([
+  const [u,c,cl,a,acc,tx,fl,ln,bl,cm,pr,qt,iv,fCl,fCh,fIv,fPy,fRm,fSt] = await Promise.all([
     sb.from('app_user').select('*'),
     sb.from('contact').select('*'),
     sb.from('call').select('*'),
@@ -2530,6 +2806,12 @@ async function loadFromSupabase(){
     sb.from('catalog_product').select('*').then(r=>r).catch(()=>({data:[]})),
     sb.from('sales_quotation').select('*').then(r=>r).catch(()=>({data:[]})),
     sb.from('sales_invoice').select('*').then(r=>r).catch(()=>({data:[]})),
+    sb.from('fin_business_client').select('*').then(r=>r).catch(()=>({data:[]})),
+    sb.from('fin_client_charge').select('*').then(r=>r).catch(()=>({data:[]})),
+    sb.from('fin_client_invoice').select('*').then(r=>r).catch(()=>({data:[]})),
+    sb.from('fin_client_payment').select('*').then(r=>r).catch(()=>({data:[]})),
+    sb.from('fin_payment_reminder').select('*').then(r=>r).catch(()=>({data:[]})),
+    sb.from('fin_settings').select('*').then(r=>r).catch(()=>({data:[]})),
   ]);
   if(u.error) throw u.error;
   return {
@@ -2558,6 +2840,12 @@ async function loadFromSupabase(){
                                  : mergeCached("quotations", qt.data.map(objToCamel)).map(normalizeSalesDoc),
     invoices:   missingTable(iv) ? cachedCollection("invoices").map(normalizeSalesDoc)
                                  : mergeCached("invoices", iv.data.map(objToCamel)).map(normalizeSalesDoc),
+    finClients: missingTable(fCl) ? cachedCollection("finClients") : mergeCached("finClients", fCl.data.map(objToCamel)),
+    finCharges: missingTable(fCh) ? cachedCollection("finCharges") : mergeCached("finCharges", fCh.data.map(objToCamel)),
+    finInvoices: missingTable(fIv) ? cachedCollection("finInvoices") : mergeCached("finInvoices", fIv.data.map(objToCamel)),
+    finPayments: missingTable(fPy) ? cachedCollection("finPayments") : mergeCached("finPayments", fPy.data.map(objToCamel)),
+    finReminders: missingTable(fRm) ? cachedCollection("finReminders") : mergeCached("finReminders", fRm.data.map(objToCamel)),
+    finSettings: (!missingTable(fSt) && fSt.data && fSt.data[0]) ? objToCamel(fSt.data[0]) : (cachedCollection("finSettings")[0] || null),
   };
 }
 
@@ -2587,8 +2875,12 @@ function mergeCached(key, remote){
     console.warn(`${extra.length} ${key} missing from the database — re-sending them`);
     // Push them up so everyone ends up with the same data, instead of this
     // device quietly holding records nobody else can see.
-    const table = key === "products" ? "catalog_product" : key === "quotations" ? "sales_quotation" : "sales_invoice";
-    extra.forEach(r => { try{ sbSave(table, objToSnake(r)); }catch(e){} });
+    const table = {
+      products: "catalog_product", quotations: "sales_quotation", invoices: "sales_invoice",
+      finClients: "fin_business_client", finCharges: "fin_client_charge", finInvoices: "fin_client_invoice",
+      finPayments: "fin_client_payment", finReminders: "fin_payment_reminder",
+    }[key];
+    if(table) extra.forEach(r => { try{ sbSave(table, objToSnake(r)); }catch(e){} });
   }
   return remote.concat(extra);
 }
@@ -2722,7 +3014,7 @@ async function seedToSupabase(data){
 }
 
 /* ---- The in-memory database ---- */
-let DB = {users:[],contacts:[],calls:[],appointments:[],accounts:[],transactions:[],financeLogs:[],loans:[],bills:[],claims:[],products:[],quotations:[],invoices:[],currentUserId:"u3"};
+let DB = {users:[],contacts:[],calls:[],appointments:[],accounts:[],transactions:[],financeLogs:[],loans:[],bills:[],claims:[],products:[],quotations:[],invoices:[],finClients:[],finCharges:[],finInvoices:[],finPayments:[],finReminders:[],finSettings:null,currentUserId:"u3"};
 let ONLINE = false;
 
 /* ---- Role & Sahan Access Checks ---- */
@@ -3150,6 +3442,7 @@ let SEARCH = "";
 const PAGES = {
   today:{title:"Today's calls", crumb:"Calls due and overdue, oldest first", render:renderToday},
   contacts:{title:"Contacts", crumb:"Everyone in the pipeline", render:renderContacts},
+  financial:{title:"Financial Management", crumb:"Business clients, recurring charges, invoices, payments and deadline reminders", render:renderFinancial},
   account:{title:"Accounts & Balances", crumb:"Cashflow, agency balances, expenses and audit logs", render:renderAccount},
   appointments:{title:"Appointments", crumb:"Meetings, shoots and site visits", render:renderAppointments},
   accounts:{title:"Accounts & Balances", crumb:"Cashflow, agency balances, expenses and audit logs", render:renderAccount},
@@ -3172,7 +3465,24 @@ function go(v){
 
   const topBtn = $("#add-contact");
   if(topBtn){
-    if(v === "account"){
+    if(v === "financial"){
+      if(canManageFinancial()){
+        topBtn.textContent = FINANCIAL_TAB === "clients" ? "+ New Business Client"
+                           : FINANCIAL_TAB === "invoices" ? "+ New Invoice"
+                           : FINANCIAL_TAB === "payments" ? "+ Record Payment"
+                           : "+ Register Client";
+        topBtn.title = "Manage business clients, charges, and invoices";
+        topBtn.style.background = "var(--teal)";
+        topBtn.style.color = "#fff";
+        topBtn.style.border = "none";
+      } else {
+        topBtn.textContent = "👁️ View Only";
+        topBtn.title = "Financial Management is in viewing mode for your account";
+        topBtn.style.background = "var(--surface-2)";
+        topBtn.style.color = "var(--muted)";
+        topBtn.style.border = "1px solid var(--line-strong)";
+      }
+    } else if(v === "account"){
       if(isSahan()){
         topBtn.textContent = "+ Log expense";
         topBtn.title = "Log an expense (Sahan Admin)";
@@ -8252,6 +8562,2837 @@ function customizeAccTabsModal(){
     renderAccount();
   };
 }
+
+
+/* =================================================================
+   FINANCIAL MANAGEMENT MODULE
+   Business Clients, Service Charges, Invoices, Payments, Due Date Reminders
+   ================================================================= */
+
+// Permissions
+function canAccessFinancialTab(){ return true; } // All team members can view
+function canManageFinancial(){
+  return isSahan() || isSubodha() || canManageHR();
+}
+function canDeleteFinancial(){
+  return isSahan(); // Only Sahan (Admin) can delete records
+}
+
+// State
+let FINANCIAL_TAB = "dashboard"; // dashboard | clients | profile | invoices | payments | reports | settings
+let FINANCIAL_SELECTED_CLIENT_ID = null;
+let FINANCIAL_SEARCH = "";
+let FINANCIAL_SERVICE_FILTER = "all";
+let FINANCIAL_STATUS_FILTER = "all";
+let FINANCIAL_MANAGER_FILTER = "all";
+let FINANCIAL_REMINDER_FILTER = "all"; // all | today | tomorrow | 3days | 7days | month | overdue
+let FINANCIAL_REPORT_TYPE = "outstanding";
+
+// Constants
+const FIN_SERVICE_CATEGORIES = [
+  {id: "website", label: "Website Design & Dev", icon: "🌐"},
+  {id: "social_media", label: "Social Media Management", icon: "📱"},
+  {id: "ad_budget", label: "Advertising Budget", icon: "🎯"},
+  {id: "ad_management", label: "Ad Management Fees", icon: "⚡"},
+  {id: "graphic_design", label: "Graphic Design", icon: "🎨"},
+  {id: "video_production", label: "Video Production", icon: "🎬"},
+  {id: "onetime_project", label: "One-Time Project", icon: "📦"},
+  {id: "other", label: "Other Services", icon: "💼"},
+];
+
+const FIN_CLIENT_CATEGORIES = [
+  "General", "Corporate", "E-commerce", "Real Estate", "Retail", 
+  "Hospitality & Tourism", "Healthcare", "Education", "Tech & Startup", "Entertainment", "Other"
+];
+
+const FIN_PAYMENT_METHODS = [
+  {id: "bank_transfer", label: "Bank Transfer"},
+  {id: "cash", label: "Cash in Hand"},
+  {id: "cheque", label: "Cheque"},
+  {id: "online", label: "Online Gateway"},
+  {id: "card", label: "Credit/Debit Card"},
+  {id: "other", label: "Other"}
+];
+
+function finSvcCat(id){
+  return FIN_SERVICE_CATEGORIES.find(c => c.id === id) || {id: id||"other", label: id||"Other", icon: "💼"};
+}
+
+function finClient(id){
+  return (DB.finClients || []).find(c => c.id === id) || null;
+}
+
+function getFinSettings(){
+  if(DB.finSettings && typeof DB.finSettings === 'object') return DB.finSettings;
+  try{
+    const raw = localStorage.getItem("crm_fin_settings");
+    if(raw) return JSON.parse(raw);
+  }catch(e){}
+  return {
+    id: "default",
+    reminderIntervals: [7, 3, 1, 0, -1],
+    autoReminders: true,
+    currency: "Rs.",
+    defaultPaymentTerms: "Net 14"
+  };
+}
+
+function saveFinSettings(cfg){
+  DB.finSettings = cfg;
+  try{ localStorage.setItem("crm_fin_settings", JSON.stringify(cfg)); }catch(e){}
+  sbSave("fin_settings", objToSnake(cfg), "default");
+}
+
+/* ---- Dynamic Financial Calculations ---- */
+function calcClientFinancials(clientId){
+  const clientInvoices = (DB.finInvoices || []).filter(i => i.clientId === clientId && i.status !== "void" && i.status !== "draft");
+  const totalInvoiced = clientInvoices.reduce((s, i) => s + (Number(i.amount) || 0), 0);
+  const totalPaid = clientInvoices.reduce((s, i) => s + (Number(i.amountPaid) || 0), 0);
+  const outstanding = Math.max(0, totalInvoiced - totalPaid);
+
+  const clientCharges = (DB.finCharges || []).filter(c => c.clientId === clientId && c.active !== false);
+  const monthlyRecurring = clientCharges
+    .filter(c => c.isRecurring && c.billingPeriod === "monthly" && c.chargeType !== "ad_budget")
+    .reduce((s, c) => s + (Number(c.amount) || 0), 0);
+  const adBudget = clientCharges
+    .filter(c => c.active !== false && c.chargeType === "ad_budget")
+    .reduce((s, c) => s + (Number(c.amount) || 0), 0);
+  const adFees = clientCharges
+    .filter(c => c.active !== false && c.chargeType === "ad_management")
+    .reduce((s, c) => s + (Number(c.amount) || 0), 0);
+  const additionalCharges = clientCharges
+    .filter(c => c.active !== false && !c.isRecurring)
+    .reduce((s, c) => s + (Number(c.amount) || 0), 0);
+
+  const unpaidInvoices = clientInvoices
+    .filter(i => (Number(i.balanceDue) || 0) > 0 && i.dueAt)
+    .sort((a, b) => a.dueAt - b.dueAt);
+  const nextDueAt = unpaidInvoices.length > 0 ? unpaidInvoices[0].dueAt : null;
+
+  const now = Date.now();
+  const hasOverdue = unpaidInvoices.some(i => i.dueAt < now);
+  const paymentStatus = hasOverdue ? "overdue" : (outstanding > 0 ? "pending" : "settled");
+
+  return {
+    totalInvoiced,
+    totalPaid,
+    outstanding,
+    monthlyRecurring,
+    adBudget,
+    adFees,
+    additionalCharges,
+    nextDueAt,
+    paymentStatus,
+    unpaidCount: unpaidInvoices.length
+  };
+}
+
+/* ---- Invoice Due Date Reminder Status & Precedence ---- */
+function getInvoiceReminderStatus(inv){
+  if(!inv || !inv.dueAt || (Number(inv.balanceDue) || 0) <= 0 || inv.status === "paid" || inv.status === "void") {
+    return { status: "settled", color: "good", label: "Paid in Full", daysLeft: 999, badgeClass: "badge-green" };
+  }
+  const now = Date.now();
+  const oneDay = 86400000;
+  const todayStart = new Date(); todayStart.setHours(0,0,0,0);
+  const dueStart = new Date(inv.dueAt); dueStart.setHours(0,0,0,0);
+  const diffDays = Math.round((dueStart.getTime() - todayStart.getTime()) / oneDay);
+
+  if(diffDays < 0){
+    return { status: "overdue", color: "red", label: `${Math.abs(diffDays)}d overdue`, daysLeft: diffDays, badgeClass: "badge-red" };
+  } else if(diffDays === 0){
+    return { status: "due_today", color: "red", label: "Due Today", daysLeft: 0, badgeClass: "badge-red" };
+  } else if(diffDays === 1){
+    return { status: "due_tomorrow", color: "orange", label: "Due Tomorrow", daysLeft: 1, badgeClass: "badge-orange" };
+  } else if(diffDays <= 3){
+    return { status: "due_soon_3", color: "orange", label: `${diffDays} days left`, daysLeft: diffDays, badgeClass: "badge-orange" };
+  } else if(diffDays <= 7){
+    return { status: "due_soon_7", color: "yellow", label: `${diffDays} days left`, daysLeft: diffDays, badgeClass: "badge-yellow" };
+  } else {
+    return { status: "upcoming", color: "green", label: `${diffDays} days left`, daysLeft: diffDays, badgeClass: "badge-green" };
+  }
+}
+
+/* ---- Automatic Payment Reminder Processing Engine ---- */
+function checkFinancialReminders(){
+  if(!DB.finInvoices) return;
+  const cfg = getFinSettings();
+  if(!cfg.autoReminders) return;
+
+  const now = Date.now();
+  let newRemindersCount = 0;
+
+  const openInvoices = DB.finInvoices.filter(i => 
+    i.status !== "paid" && i.status !== "void" && i.status !== "draft" && (Number(i.balanceDue) || 0) > 0 && i.dueAt
+  );
+
+  if(!DB.finReminders) DB.finReminders = [];
+
+  openInvoices.forEach(inv => {
+    const remInfo = getInvoiceReminderStatus(inv);
+    let remType = null;
+    if(remInfo.daysLeft < 0) remType = "overdue";
+    else if(remInfo.daysLeft === 0) remType = "due_date";
+    else if(remInfo.daysLeft === 1) remType = "1_day";
+    else if(remInfo.daysLeft <= 3) remType = "3_days";
+    else if(remInfo.daysLeft <= 7) remType = "7_days";
+
+    if(remType){
+      const exists = DB.finReminders.some(r => r.invoiceId === inv.id && r.reminderType === remType && r.status !== "dismissed");
+      if(!exists){
+        const client = finClient(inv.clientId);
+        const rem = {
+          id: "rem_" + uid(),
+          invoiceId: inv.id,
+          clientId: inv.clientId,
+          reminderType: remType,
+          dueAt: inv.dueAt,
+          triggeredAt: now,
+          channel: "in_app",
+          status: "sent",
+          notes: `Upcoming payment reminder for invoice #${inv.invoiceNumber} (${client?.businessName || 'Client'}: ${fmtMoney(inv.balanceDue, inv.currency)})`,
+          followupDate: null,
+          userId: DB.currentUserId,
+          createdAt: now
+        };
+        DB.finReminders.unshift(rem);
+        sbSave("fin_payment_reminder", objToSnake(rem));
+        newRemindersCount++;
+      }
+    }
+
+    if(remInfo.daysLeft < 0 && inv.status !== "overdue"){
+      inv.status = "overdue";
+      sbSave("fin_client_invoice", objToSnake(inv), inv.id);
+    }
+  });
+
+  // Clean up or resolve reminders for fully paid invoices
+  const paidInvoiceIds = new Set(
+    DB.finInvoices.filter(i => i.status === "paid" || (Number(i.balanceDue) || 0) <= 0).map(i => i.id)
+  );
+  let resolvedCount = 0;
+  DB.finReminders.forEach(r => {
+    if(paidInvoiceIds.has(r.invoiceId) && (r.status === "pending" || r.status === "sent")){
+      r.status = "dismissed";
+      r.notes = (r.notes || "") + " [Resolved: Invoice fully paid]";
+      sbSave("fin_payment_reminder", objToSnake(r), r.id);
+      resolvedCount++;
+    }
+  });
+
+  if(newRemindersCount > 0 || resolvedCount > 0){
+    cacheLocal(DB);
+    refreshBadges();
+  }
+}
+
+/* =================================================================
+   RENDER FINANCIAL MANAGEMENT VIEW
+   ================================================================= */
+function renderFinancial(){
+  if(!DB.finClients)   DB.finClients = [];
+  if(!DB.finCharges)   DB.finCharges = [];
+  if(!DB.finInvoices)  DB.finInvoices = [];
+  if(!DB.finPayments)  DB.finPayments = [];
+  if(!DB.finReminders) DB.finReminders = [];
+
+  const canEdit = canManageFinancial();
+  const c = $("#content");
+  if(!c) return;
+  const searchHadFocus = document.activeElement?.id === "fin-search-input";
+
+  // Run a quick check for payment deadlines
+  checkFinancialReminders();
+
+  // Navigation tab counters
+  const openInvoices = DB.finInvoices.filter(i => i.status !== "paid" && i.status !== "void" && i.status !== "draft" && (Number(i.balanceDue) || 0) > 0);
+  const overdueInvoices = openInvoices.filter(i => getInvoiceReminderStatus(i).daysLeft < 0);
+  const dueSoonInvoices = openInvoices.filter(i => {
+    const d = getInvoiceReminderStatus(i).daysLeft;
+    return d >= 0 && d <= 7;
+  });
+
+  const TABS = [
+    {id: "dashboard", icon: "📊", name: "Dashboard", count: dueSoonInvoices.length + overdueInvoices.length},
+    {id: "clients",   icon: "🏢", name: "Business Clients", count: DB.finClients.length},
+    ...(FINANCIAL_SELECTED_CLIENT_ID ? [{id: "profile", icon: "👤", name: "Client Profile", count: 1}] : []),
+    {id: "invoices",  icon: "🧾", name: "Invoices", count: DB.finInvoices.length},
+    {id: "payments",  icon: "💳", name: "Payments", count: DB.finPayments.length},
+    {id: "reports",   icon: "📑", name: "Reports", count: ""},
+    {id: "settings",  icon: "⚙️", name: "Settings", count: ""}
+  ];
+
+  let h = `
+  <div class="fin-top-tabs-wrapper">
+    <div class="fin-top-tabs">`;
+
+  TABS.forEach(t => {
+    let badgeStyle = "";
+    if(t.id === "dashboard" && overdueInvoices.length) badgeStyle = "background:var(--clay);color:#fff";
+    else if(t.id === "dashboard" && dueSoonInvoices.length) badgeStyle = "background:var(--amber);color:#fff";
+    else if(t.id === "invoices" && overdueInvoices.length) badgeStyle = "background:var(--clay);color:#fff";
+
+    h += `
+      <button class="fin-tab-item ${FINANCIAL_TAB === t.id ? 'active' : ''}" data-fin-view="${t.id}">
+        <span class="tab-ico">${t.icon}</span><span>${t.name}</span>
+        ${t.count !== "" ? `<span class="tab-cnt" style="${badgeStyle}">${t.count}</span>` : ''}
+      </button>`;
+  });
+
+  h += `
+      <div style="margin-left:auto;display:flex;gap:6px;align-items:center;flex:none">
+        ${canEdit ? `
+          <button class="btn primary sm" id="btn-fin-add-client" title="Register a new business client" style="font-size:11.5px;padding:6px 12px;font-weight:700">
+            + New Client
+          </button>
+          <button class="btn sm" id="btn-fin-add-invoice" title="Create a direct invoice" style="background:var(--surface);border:1.5px solid var(--teal);color:var(--teal-deep);font-size:11.5px;padding:6px 10px;font-weight:700">
+            + New Invoice
+          </button>
+        ` : `
+          <span style="font-size:11.5px;color:var(--muted);background:var(--surface-2);padding:5px 9px;border-radius:6px;border:1px solid var(--line)">
+            👁️ Viewing Mode
+          </span>
+        `}
+        <button class="btn ghost sm" id="btn-fin-refresh" title="Refresh financial data" style="border:1px solid var(--line-strong);font-size:11.5px;padding:6px 9px">
+          ↺ Refresh
+        </button>
+      </div>
+    </div>
+  </div>`;
+
+  // Render Sub-tab Content
+  if(FINANCIAL_TAB === "dashboard")           h += financialDashboardTab(canEdit);
+  else if(FINANCIAL_TAB === "clients")        h += financialClientsTab(canEdit);
+  else if(FINANCIAL_TAB === "profile")        h += financialClientProfileTab(canEdit);
+  else if(FINANCIAL_TAB === "invoices")       h += financialInvoicesTab(canEdit);
+  else if(FINANCIAL_TAB === "payments")       h += financialPaymentsTab(canEdit);
+  else if(FINANCIAL_TAB === "reports")        h += financialReportsTab(canEdit);
+  else if(FINANCIAL_TAB === "settings")       h += financialSettingsTab(canEdit);
+  else                                        h += financialDashboardTab(canEdit);
+
+  c.innerHTML = h;
+
+  // Search input preservation if present
+  const sIn = $("#fin-search-input");
+  if(sIn){
+    sIn.value = FINANCIAL_SEARCH;
+    // innerHTML replaced the input, so put the cursor back where the user was typing
+    if(searchHadFocus){ sIn.focus(); sIn.setSelectionRange(sIn.value.length, sIn.value.length); }
+    sIn.oninput = e => {
+      FINANCIAL_SEARCH = e.target.value;   // not trimmed, or the space key would be swallowed
+      renderFinancial();
+    };
+  }
+}
+
+
+// scratch/financial_tabs.js
+
+/* =================================================================
+   1. DASHBOARD SUB-TAB
+   ================================================================= */
+function financialDashboardTab(canEdit){
+  const now = Date.now();
+  const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).getTime();
+  const endOfMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0, 23, 59, 59, 999).getTime();
+
+  // Metrics from DB
+  const allInvoices = (DB.finInvoices || []).filter(i => i.status !== "void");
+  const openInvoices = allInvoices.filter(i => i.status !== "paid" && i.status !== "draft" && (Number(i.balanceDue) || 0) > 0);
+  
+  const totalOutstanding = openInvoices.reduce((s, i) => s + (Number(i.balanceDue) || 0), 0);
+  
+  const overdueInvoices = openInvoices.filter(i => getInvoiceReminderStatus(i).daysLeft < 0);
+  const overdueAmount = overdueInvoices.reduce((s, i) => s + (Number(i.balanceDue) || 0), 0);
+
+  const dueTodayInvoices = openInvoices.filter(i => getInvoiceReminderStatus(i).daysLeft === 0);
+  const dueTodayAmount = dueTodayInvoices.reduce((s, i) => s + (Number(i.balanceDue) || 0), 0);
+
+  const due7DaysInvoices = openInvoices.filter(i => {
+    const d = getInvoiceReminderStatus(i).daysLeft;
+    return d >= 0 && d <= 7;
+  });
+  const due7DaysAmount = due7DaysInvoices.reduce((s, i) => s + (Number(i.balanceDue) || 0), 0);
+
+  // Payments received this month
+  const thisMonthPayments = (DB.finPayments || []).filter(p => p.paidAt >= startOfMonth && p.paidAt <= endOfMonth);
+  const receivedThisMonth = thisMonthPayments.reduce((s, p) => s + (Number(p.amount) || 0), 0);
+
+  // Invoices issued this month
+  const thisMonthInvoices = allInvoices.filter(i => i.issuedAt >= startOfMonth && i.issuedAt <= endOfMonth && i.status !== "draft");
+  const invoicedThisMonth = thisMonthInvoices.reduce((s, i) => s + (Number(i.amount) || 0), 0);
+
+  // Active business clients
+  const activeClients = (DB.finClients || []).filter(c => c.status !== "cancelled");
+
+  // Monthly recurring charges across all active clients
+  const activeCharges = (DB.finCharges || []).filter(c => c.active !== false && c.isRecurring && c.billingPeriod === "monthly" && c.chargeType !== "ad_budget");
+  const totalMonthlyRecurring = activeCharges.reduce((s, c) => s + (Number(c.amount) || 0), 0);
+
+  // Filtered upcoming reminders list
+  let reminderList = openInvoices.map(inv => {
+    const client = finClient(inv.clientId);
+    const remInfo = getInvoiceReminderStatus(inv);
+    const mgr = user(client?.accountManagerId || inv.userId);
+    return {
+      inv,
+      client,
+      remInfo,
+      mgr
+    };
+  });
+
+  // Sort by days left ascending (most urgent first)
+  reminderList.sort((a, b) => a.remInfo.daysLeft - b.remInfo.daysLeft);
+
+  // Filter pills
+  if(FINANCIAL_REMINDER_FILTER === "today") reminderList = reminderList.filter(r => r.remInfo.daysLeft === 0);
+  else if(FINANCIAL_REMINDER_FILTER === "tomorrow") reminderList = reminderList.filter(r => r.remInfo.daysLeft === 1);
+  else if(FINANCIAL_REMINDER_FILTER === "3days") reminderList = reminderList.filter(r => r.remInfo.daysLeft >= 0 && r.remInfo.daysLeft <= 3);
+  else if(FINANCIAL_REMINDER_FILTER === "7days") reminderList = reminderList.filter(r => r.remInfo.daysLeft >= 0 && r.remInfo.daysLeft <= 7);
+  else if(FINANCIAL_REMINDER_FILTER === "month") reminderList = reminderList.filter(r => r.inv.dueAt <= endOfMonth);
+  else if(FINANCIAL_REMINDER_FILTER === "overdue") reminderList = reminderList.filter(r => r.remInfo.daysLeft < 0);
+
+  let html = '';
+
+  // 1. UPCOMING PAYMENT REMINDERS DASHBOARD (Section 6)
+  html += `
+  <div class="fin-reminders-box">
+    <div class="fin-reminders-header">
+      <div class="fin-reminders-title">
+        <span>⏰ Upcoming Payment Deadlines &amp; Reminders</span>
+        ${overdueInvoices.length > 0 ? `<span class="fin-badge badge-red">${overdueInvoices.length} Overdue</span>` : ''}
+        ${due7DaysInvoices.length > 0 ? `<span class="fin-badge badge-yellow">${due7DaysInvoices.length} Due within 7d</span>` : ''}
+      </div>
+      <div class="fin-filter-pills">
+        <button class="fin-pill-btn ${FINANCIAL_REMINDER_FILTER==='all'?'active':''}" data-fin-rem-filter="all">All Outstanding (${openInvoices.length})</button>
+        <button class="fin-pill-btn ${FINANCIAL_REMINDER_FILTER==='overdue'?'active':''}" data-fin-rem-filter="overdue">🚨 Overdue (${overdueInvoices.length})</button>
+        <button class="fin-pill-btn ${FINANCIAL_REMINDER_FILTER==='today'?'active':''}" data-fin-rem-filter="today">Today (${dueTodayInvoices.length})</button>
+        <button class="fin-pill-btn ${FINANCIAL_REMINDER_FILTER==='tomorrow'?'active':''}" data-fin-rem-filter="tomorrow">Tomorrow (${openInvoices.filter(i=>getInvoiceReminderStatus(i).daysLeft===1).length})</button>
+        <button class="fin-pill-btn ${FINANCIAL_REMINDER_FILTER==='3days'?'active':''}" data-fin-rem-filter="3days">Within 3 Days (${openInvoices.filter(i=>{const d=getInvoiceReminderStatus(i).daysLeft; return d>=0 && d<=3;}).length})</button>
+        <button class="fin-pill-btn ${FINANCIAL_REMINDER_FILTER==='7days'?'active':''}" data-fin-rem-filter="7days">Within 7 Days (${due7DaysInvoices.length})</button>
+        <button class="fin-pill-btn ${FINANCIAL_REMINDER_FILTER==='month'?'active':''}" data-fin-rem-filter="month">This Month</button>
+      </div>
+    </div>
+
+    ${reminderList.length === 0 ? `
+      <div style="padding:24px;text-align:center;color:var(--muted);font-size:13px">
+        🎉 No outstanding payments matching this filter. All invoices settled!
+      </div>
+    ` : `
+      <div class="fin-table-wrap">
+        <table class="fin-table">
+          <thead>
+            <tr>
+              <th>Business Client</th>
+              <th>Invoice #</th>
+              <th>Remaining Balance</th>
+              <th>Due Date</th>
+              <th>Deadline Status</th>
+              <th>Account Manager</th>
+              <th style="text-align:right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${reminderList.slice(0, 15).map(item => `
+              <tr>
+                <td>
+                  <a href="javascript:void(0)" data-fin-client-view="${item.client?.id || ''}" style="font-weight:700;color:var(--teal);text-decoration:none">
+                    ${esc(item.client?.businessName || 'Direct Client')}
+                  </a>
+                  <div style="font-size:11px;color:var(--muted)">${esc(item.client?.contactPerson || item.inv.clientName || '—')}</div>
+                </td>
+                <td>
+                  <span style="font-family:monospace;font-weight:600">#${esc(item.inv.invoiceNumber)}</span>
+                  <div style="font-size:11px;color:var(--ink-soft)">${esc(item.inv.title)}</div>
+                </td>
+                <td>
+                  <b style="color:${item.remInfo.daysLeft < 0 ? 'var(--clay)' : 'var(--ink)'};font-size:13px">
+                    ${fmtMoney(item.inv.balanceDue, item.inv.currency)}
+                  </b>
+                  <div style="font-size:10.5px;color:var(--muted)">Total: ${fmtMoney(item.inv.amount, item.inv.currency)}</div>
+                </td>
+                <td>
+                  <span style="font-size:12px;font-weight:500">${fmtWhen(item.inv.dueAt)}</span>
+                </td>
+                <td>
+                  <span class="fin-badge ${item.remInfo.badgeClass}">
+                    ${item.remInfo.label}
+                  </span>
+                </td>
+                <td>
+                  <span class="user-tag">
+                    <span class="dot" style="background:${item.mgr.color}"></span>
+                    ${esc(item.mgr.name)}
+                  </span>
+                </td>
+                <td style="text-align:right">
+                  <div style="display:inline-flex;gap:4px">
+                    ${canEdit ? `
+                      <button class="btn sm primary" data-fin-inv-pay="${item.inv.id}" style="font-size:11px;padding:3px 8px">
+                        💰 Pay
+                      </button>
+                      <button class="btn sm ghost" data-fin-rem-followup="${item.inv.id}" title="Log client follow-up" style="font-size:11px;padding:3px 7px;border:1px solid var(--line-strong)">
+                        📞 Follow-up
+                      </button>
+                    ` : `
+                      <button class="btn sm ghost" data-fin-client-view="${item.client?.id || ''}" style="font-size:11px;padding:3px 7px">
+                        View Profile
+                      </button>
+                    `}
+                  </div>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+      ${reminderList.length > 15 ? `<div style="text-align:center;padding:8px;font-size:12px;color:var(--muted)">Showing top 15 of ${reminderList.length} reminders</div>` : ''}
+    `}
+  </div>`;
+
+  // 2. FINANCIAL DASHBOARD CARDS (Section 8)
+  html += `
+  <div class="fin-kpi-grid">
+    <div class="fin-kpi-card ${totalOutstanding ? 'accent' : ''}">
+      <div class="k-lab">Total Outstanding</div>
+      <div class="k-val">${fmtMoney(totalOutstanding)}</div>
+      <div class="k-sub">${openInvoices.length} unpaid invoice${openInvoices.length===1?'':'s'} pending</div>
+    </div>
+    <div class="fin-kpi-card ${overdueAmount ? 'danger' : ''}">
+      <div class="k-lab">Overdue Amount</div>
+      <div class="k-val">${fmtMoney(overdueAmount)}</div>
+      <div class="k-sub">${overdueInvoices.length} invoice${overdueInvoices.length===1?'':'s'} past deadline</div>
+    </div>
+    <div class="fin-kpi-card ${dueTodayAmount ? 'warn' : ''}">
+      <div class="k-lab">Due Today</div>
+      <div class="k-val">${fmtMoney(dueTodayAmount)}</div>
+      <div class="k-sub">${dueTodayInvoices.length} invoice${dueTodayInvoices.length===1?'':'s'} due today</div>
+    </div>
+    <div class="fin-kpi-card warn">
+      <div class="k-lab">Due Within 7 Days</div>
+      <div class="k-val">${fmtMoney(due7DaysAmount)}</div>
+      <div class="k-sub">${due7DaysInvoices.length} invoice${due7DaysInvoices.length===1?'':'s'} due soon</div>
+    </div>
+    <div class="fin-kpi-card good">
+      <div class="k-lab">Received This Month</div>
+      <div class="k-val">${fmtMoney(receivedThisMonth)}</div>
+      <div class="k-sub">${thisMonthPayments.length} payment${thisMonthPayments.length===1?'':'s'} collected</div>
+    </div>
+    <div class="fin-kpi-card">
+      <div class="k-lab">Invoiced This Month</div>
+      <div class="k-val">${fmtMoney(invoicedThisMonth)}</div>
+      <div class="k-sub">${thisMonthInvoices.length} invoice${thisMonthInvoices.length===1?'':'s'} generated</div>
+    </div>
+    <div class="fin-kpi-card">
+      <div class="k-lab">Active Business Clients</div>
+      <div class="k-val">${activeClients.length}</div>
+      <div class="k-sub">${(DB.finClients || []).length} registered total</div>
+    </div>
+    <div class="fin-kpi-card accent">
+      <div class="k-lab">Monthly Recurring Retainers</div>
+      <div class="k-val">${fmtMoney(totalMonthlyRecurring)}</div>
+      <div class="k-sub">${activeCharges.length} active service contract${activeCharges.length===1?'':'s'}</div>
+    </div>
+  </div>`;
+
+  // 3. OVERVIEW CHARTS & BREAKDOWN
+  // Balances by business client
+  const clientBalances = (DB.finClients || []).map(cl => {
+    const fin = calcClientFinancials(cl.id);
+    return { client: cl, fin };
+  }).filter(c => c.fin.outstanding > 0).sort((a, b) => b.fin.outstanding - a.fin.outstanding);
+
+  // Balances by service category
+  const serviceBalances = {};
+  openInvoices.forEach(inv => {
+    const cat = inv.serviceCategory || "other";
+    serviceBalances[cat] = (serviceBalances[cat] || 0) + (Number(inv.balanceDue) || 0);
+  });
+
+  // Recent payments
+  const recentPayments = [...(DB.finPayments || [])].sort((a, b) => (b.paidAt || 0) - (a.paidAt || 0)).slice(0, 6);
+
+  html += `
+  <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(min(360px, 100%), 1fr));gap:16px;margin-bottom:24px">
+    <!-- Balances by Business Client -->
+    <div class="fin-card">
+      <div class="fin-card-header">
+        <div class="fin-card-title">🏢 Outstanding Balances by Business</div>
+        <span style="font-size:11.5px;color:var(--muted)">${clientBalances.length} clients with dues</span>
+      </div>
+      ${clientBalances.length === 0 ? `
+        <div style="padding:16px;text-align:center;color:var(--muted);font-size:12px">All client accounts settled!</div>
+      ` : `
+        <div style="display:flex;flex-direction:column;gap:8px">
+          ${clientBalances.slice(0, 6).map(item => `
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 10px;background:var(--surface-2);border-radius:8px">
+              <div>
+                <a href="javascript:void(0)" data-fin-client-view="${item.client.id}" style="font-weight:700;color:var(--teal);text-decoration:none;font-size:12.5px">
+                  ${esc(item.client.businessName)}
+                </a>
+                <div style="font-size:11px;color:var(--muted)">${esc(item.client.category || 'General')} &middot; ${item.fin.unpaidCount} unpaid inv</div>
+              </div>
+              <div style="text-align:right">
+                <b style="color:${item.fin.paymentStatus==='overdue'?'var(--clay)':'var(--ink)'};font-size:13px">
+                  ${fmtMoney(item.fin.outstanding)}
+                </b>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `}
+    </div>
+
+    <!-- Balances by Service Category -->
+    <div class="fin-card">
+      <div class="fin-card-header">
+        <div class="fin-card-title">💼 Receivables by Service Category</div>
+        <span style="font-size:11.5px;color:var(--muted)">Active charges</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        ${Object.keys(serviceBalances).length === 0 ? `
+          <div style="padding:16px;text-align:center;color:var(--muted);font-size:12px">No outstanding service balances.</div>
+        ` : Object.entries(serviceBalances).sort((a,b)=>b[1]-a[1]).map(([catId, amt]) => {
+          const cat = finSvcCat(catId);
+          const pct = totalOutstanding > 0 ? Math.round((amt / totalOutstanding) * 100) : 0;
+          return `
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px">
+                <span>${cat.icon} <b>${esc(cat.label)}</b></span>
+                <b>${fmtMoney(amt)} <span style="font-size:10.5px;color:var(--muted)">(${pct}%)</span></b>
+              </div>
+              <div style="height:6px;background:var(--line);border-radius:3px;overflow:hidden">
+                <div style="height:100%;width:${pct}%;background:var(--teal);border-radius:3px"></div>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Payments List -->
+  <div class="fin-card">
+    <div class="fin-card-header">
+      <div class="fin-card-title">💳 Recent Payments Received</div>
+      <a href="javascript:void(0)" data-fin-view="payments" style="font-size:12px;color:var(--teal);text-decoration:none;font-weight:600">View All Payments &rarr;</a>
+    </div>
+    ${recentPayments.length === 0 ? `
+      <div style="padding:20px;text-align:center;color:var(--muted);font-size:12.5px">No recorded payments yet.</div>
+    ` : `
+      <div class="fin-table-wrap">
+        <table class="fin-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Client</th>
+              <th>Invoice</th>
+              <th>Amount</th>
+              <th>Payment Method</th>
+              <th>Reference</th>
+              <th>Recorded By</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${recentPayments.map(p => {
+              const client = finClient(p.clientId);
+              const inv = (DB.finInvoices || []).find(i => i.id === p.invoiceId);
+              const u = user(p.createdBy);
+              const method = FIN_PAYMENT_METHODS.find(m => m.id === p.paymentMethod)?.label || p.paymentMethod;
+              return `
+                <tr>
+                  <td>${fmtWhen(p.paidAt)}</td>
+                  <td><b>${esc(client?.businessName || inv?.clientName || 'Client')}</b></td>
+                  <td>${inv ? `<span style="font-family:monospace">#${esc(inv.invoiceNumber)}</span>` : '—'}</td>
+                  <td><b style="color:#15803d;font-size:13px">${fmtMoney(p.amount, p.currency)}</b></td>
+                  <td><span class="fin-badge badge-blue">${esc(method)}</span></td>
+                  <td><span style="font-family:monospace;font-size:11px">${esc(p.reference || '—')}</span></td>
+                  <td><span class="user-tag"><span class="dot" style="background:${u.color}"></span>${esc(u.name)}</span></td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    `}
+  </div>`;
+
+  return html;
+}
+
+
+// scratch/financial_clients.js
+
+/* =================================================================
+   2. BUSINESS CLIENTS TAB (Section 3)
+   ================================================================= */
+function financialClientsTab(canEdit){
+  const clients = DB.finClients || [];
+  const search = (FINANCIAL_SEARCH || "").trim().toLowerCase();
+
+  // Filters
+  let filtered = clients.filter(c => {
+    if(search){
+      const match = (c.businessName || "").toLowerCase().includes(search) ||
+                    (c.contactPerson || "").toLowerCase().includes(search) ||
+                    (c.phone || "").toLowerCase().includes(search) ||
+                    (c.email || "").toLowerCase().includes(search) ||
+                    (c.category || "").toLowerCase().includes(search);
+      if(!match) return false;
+    }
+    if(FINANCIAL_SERVICE_FILTER !== "all"){
+      const services = Array.isArray(c.services) ? c.services : jsonbArray(c.services);
+      if(!services.includes(FINANCIAL_SERVICE_FILTER)) return false;
+    }
+    if(FINANCIAL_STATUS_FILTER !== "all"){
+      const fin = calcClientFinancials(c.id);
+      if(FINANCIAL_STATUS_FILTER === "overdue" && fin.paymentStatus !== "overdue") return false;
+      if(FINANCIAL_STATUS_FILTER === "pending" && fin.paymentStatus !== "pending") return false;
+      if(FINANCIAL_STATUS_FILTER === "settled" && fin.paymentStatus !== "settled") return false;
+    }
+    if(FINANCIAL_MANAGER_FILTER !== "all"){
+      if(c.accountManagerId !== FINANCIAL_MANAGER_FILTER) return false;
+    }
+    return true;
+  });
+
+  let html = `
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px;background:var(--surface);padding:12px 14px;border-radius:10px;border:1px solid var(--line)">
+    <div style="flex:1;min-width:200px">
+      <input type="text" id="fin-search-input" placeholder="🔍 Search business name, contact, phone, email, category..." value="${esc(FINANCIAL_SEARCH)}" style="width:100%;padding:8px 12px;border:1px solid var(--line-strong);border-radius:6px;background:var(--paper);font-size:12.5px" />
+    </div>
+    <div>
+      <select id="fin-filter-service" style="padding:7px 10px;border:1px solid var(--line-strong);border-radius:6px;background:var(--paper);font-size:12px">
+        <option value="all">All Services</option>
+        ${FIN_SERVICE_CATEGORIES.map(s => `<option value="${s.id}" ${FINANCIAL_SERVICE_FILTER===s.id?'selected':''}>${s.label}</option>`).join('')}
+      </select>
+    </div>
+    <div>
+      <select id="fin-filter-status" style="padding:7px 10px;border:1px solid var(--line-strong);border-radius:6px;background:var(--paper);font-size:12px">
+        <option value="all">All Payment Status</option>
+        <option value="overdue" ${FINANCIAL_STATUS_FILTER==='overdue'?'selected':''}>🚨 Overdue</option>
+        <option value="pending" ${FINANCIAL_STATUS_FILTER==='pending'?'selected':''}>⏳ Pending</option>
+        <option value="settled" ${FINANCIAL_STATUS_FILTER==='settled'?'selected':''}>✓ Settled</option>
+      </select>
+    </div>
+    <div>
+      <select id="fin-filter-manager" style="padding:7px 10px;border:1px solid var(--line-strong);border-radius:6px;background:var(--paper);font-size:12px">
+        <option value="all">All Account Managers</option>
+        ${(DB.users || []).map(u => `<option value="${u.id}" ${FINANCIAL_MANAGER_FILTER===u.id?'selected':''}>${esc(u.name)}</option>`).join('')}
+      </select>
+    </div>
+    ${canEdit ? `
+      <button class="btn primary" id="btn-fin-card-add-client" style="font-size:12px;padding:8px 14px;font-weight:700">
+        + Add Business Client
+      </button>
+    ` : ''}
+  </div>`;
+
+  if(filtered.length === 0){
+    html += `
+    <div style="padding:48px 20px;text-align:center;background:var(--surface);border-radius:12px;border:1px dashed var(--line-strong)">
+      <div style="font-size:32px;margin-bottom:8px">🏢</div>
+      <div style="font-weight:700;font-size:15px;margin-bottom:6px">No business clients found</div>
+      <div style="font-size:12.5px;color:var(--muted);margin-bottom:14px">
+        ${clients.length === 0 ? 'Register your business clients to start tracking charges, invoices, and payments.' : 'No clients match your filter criteria.'}
+      </div>
+      ${canEdit ? `<button class="btn primary" id="btn-fin-empty-add-client">+ Register First Business Client</button>` : ''}
+    </div>`;
+    return html;
+  }
+
+  html += `
+  <div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(min(350px, 100%), 1fr));gap:14px">
+    ${filtered.map(cl => {
+      const fin = calcClientFinancials(cl.id);
+      const mgr = user(cl.accountManagerId);
+      const services = Array.isArray(cl.services) ? cl.services : jsonbArray(cl.services);
+
+      return `
+      <div class="fin-card" style="display:flex;flex-direction:column;justify-content:space-between;margin-bottom:0">
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+            <div>
+              <div style="font-size:15px;font-weight:800;color:var(--ink)">
+                <a href="javascript:void(0)" data-fin-client-view="${cl.id}" style="color:var(--ink);text-decoration:none">
+                  ${esc(cl.businessName)}
+                </a>
+              </div>
+              <div style="font-size:11.5px;color:var(--muted);display:flex;align-items:center;gap:6px;margin-top:2px">
+                <span class="fin-tag blue" style="margin:0">${esc(cl.category || 'General')}</span>
+                <span>Cycle: <b>${esc(cl.billingCycle || 'monthly')}</b></span>
+              </div>
+            </div>
+            <span class="fin-badge ${fin.paymentStatus==='overdue'?'badge-red':(fin.paymentStatus==='pending'?'badge-yellow':'badge-green')}">
+              ${fin.paymentStatus.toUpperCase()}
+            </span>
+          </div>
+
+          <div style="font-size:12px;color:var(--ink-soft);margin-bottom:10px">
+            <div>👤 <b>${esc(cl.contactPerson || '—')}</b> ${cl.phone ? `&middot; 📞 ${esc(cl.phone)}` : ''}</div>
+            ${cl.email ? `<div>✉️ ${esc(cl.email)}</div>` : ''}
+          </div>
+
+          <!-- Services Tags -->
+          <div style="margin-bottom:12px">
+            ${services.length === 0 ? `<span style="font-size:11px;color:var(--muted)">No services assigned</span>` : 
+              services.map(s => {
+                const info = finSvcCat(s);
+                return `<span class="fin-tag">${info.icon} ${esc(info.label)}</span>`;
+              }).join('')
+            }
+          </div>
+
+          <!-- Financial Figures Box -->
+          <div style="background:var(--surface-2);border-radius:8px;padding:10px;display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:11.5px;margin-bottom:12px">
+            <div>
+              <span style="color:var(--muted)">Monthly Retainer:</span><br/>
+              <b>${fmtMoney(fin.monthlyRecurring)}</b>
+            </div>
+            <div>
+              <span style="color:var(--muted)">Ad Budget:</span><br/>
+              <b>${fmtMoney(fin.adBudget)}</b> <span style="font-size:9.5px;color:var(--muted)">(Fee: ${fmtMoney(fin.adFees)})</span>
+            </div>
+            <div>
+              <span style="color:var(--muted)">Total Invoiced:</span><br/>
+              <b>${fmtMoney(fin.totalInvoiced)}</b>
+            </div>
+            <div>
+              <span style="color:var(--muted)">Outstanding:</span><br/>
+              <b style="color:${fin.outstanding>0?'var(--clay)':'#15803d'};font-size:12.5px">${fmtMoney(fin.outstanding)}</b>
+            </div>
+          </div>
+
+          <div style="font-size:11.5px;color:var(--muted);display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <div>
+              Next Due: <b>${fin.nextDueAt ? fmtWhen(fin.nextDueAt) : 'None'}</b>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px">
+              <span style="font-size:11px">Mgr:</span>
+              <span class="user-tag" style="font-size:11px"><span class="dot" style="background:${mgr.color}"></span>${esc(mgr.name)}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Row -->
+        <div style="display:flex;gap:6px;align-items:center;border-top:1px solid var(--line);padding-top:10px">
+          <button class="btn primary sm" data-fin-client-view="${cl.id}" style="flex:1;font-size:11.5px;font-weight:700">
+            Open Financial Profile ➔
+          </button>
+          ${canEdit ? `
+            <button class="btn ghost sm" data-fin-client-invoice="${cl.id}" title="Generate invoice" style="border:1px solid var(--line-strong);font-size:11px;padding:4px 8px">
+              + Invoice
+            </button>
+            <button class="btn ghost sm" data-fin-client-edit="${cl.id}" title="Edit client details" style="border:1px solid var(--line-strong);font-size:11px;padding:4px 8px">
+              ✏️
+            </button>
+          ` : ''}
+          ${canDeleteFinancial() ? `
+            <button class="btn ghost sm" data-fin-client-del="${cl.id}" title="Delete client (Admin)" style="border:1px solid var(--line-strong);color:var(--clay);font-size:11px;padding:4px 8px">
+              🗑️
+            </button>
+          ` : ''}
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+
+  return html;
+}
+
+/* =================================================================
+   3. INDIVIDUAL FINANCIAL PROFILE SUB-TAB (Section 4)
+   ================================================================= */
+function financialClientProfileTab(canEdit){
+  const cl = finClient(FINANCIAL_SELECTED_CLIENT_ID);
+  if(!cl){
+    return `
+      <div style="padding:30px;text-align:center">
+        <p>Client not found.</p>
+        <button class="btn" data-fin-view="clients">&larr; Back to Business Clients</button>
+      </div>`;
+  }
+
+  const fin = calcClientFinancials(cl.id);
+  const mgr = user(cl.accountManagerId);
+  const services = Array.isArray(cl.services) ? cl.services : jsonbArray(cl.services);
+
+  // Client's specific records
+  const charges = (DB.finCharges || []).filter(c => c.clientId === cl.id);
+  const invoices = (DB.finInvoices || []).filter(i => i.clientId === cl.id && i.status !== "void");
+  const payments = (DB.finPayments || []).filter(p => p.clientId === cl.id);
+  const reminders = (DB.finReminders || []).filter(r => r.clientId === cl.id);
+
+  let html = `
+  <div style="margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="btn ghost sm" data-fin-view="clients" style="border:1px solid var(--line-strong);font-size:12px;padding:6px 10px">
+        &larr; All Clients
+      </button>
+      <div style="font-size:20px;font-weight:800;color:var(--ink)">
+        ${esc(cl.businessName)}
+      </div>
+      <span class="fin-badge ${fin.paymentStatus==='overdue'?'badge-red':(fin.paymentStatus==='pending'?'badge-yellow':'badge-green')}">
+        ${fin.paymentStatus.toUpperCase()}
+      </span>
+    </div>
+    <div style="display:flex;gap:6px">
+      ${canEdit ? `
+        <button class="btn primary sm" data-fin-gen-invoice="${cl.id}" style="font-size:12px;font-weight:700">
+          ⚡ Generate Invoice from Charges
+        </button>
+        <button class="btn sm" data-fin-charge-add="${cl.id}" style="background:var(--surface);border:1px solid var(--teal);color:var(--teal-deep);font-size:12px;font-weight:600">
+          + Add Service Charge
+        </button>
+        <button class="btn ghost sm" data-fin-client-edit="${cl.id}" style="border:1px solid var(--line-strong);font-size:12px">
+          ✏️ Edit Details
+        </button>
+      ` : ''}
+    </div>
+  </div>
+
+  <div class="fin-profile-grid">
+    <!-- LEFT COLUMN: SECTION A - Client Overview -->
+    <div>
+      <div class="fin-card">
+        <div class="fin-card-header">
+          <div class="fin-card-title">🏢 Client Overview</div>
+          <span class="fin-tag blue" style="margin:0">${esc(cl.category || 'General')}</span>
+        </div>
+        
+        <div style="font-size:12.5px;display:flex;flex-direction:column;gap:10px">
+          <div>
+            <span style="color:var(--muted);font-size:11px;text-transform:uppercase">Contact Person</span>
+            <div style="font-weight:700">${esc(cl.contactPerson || '—')}</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+            <div>
+              <span style="color:var(--muted);font-size:11px;text-transform:uppercase">Phone</span>
+              <div>${esc(cl.phone || '—')}</div>
+            </div>
+            <div>
+              <span style="color:var(--muted);font-size:11px;text-transform:uppercase">Billing Cycle</span>
+              <div style="text-transform:capitalize"><b>${esc(cl.billingCycle || 'monthly')}</b></div>
+            </div>
+          </div>
+          <div>
+            <span style="color:var(--muted);font-size:11px;text-transform:uppercase">Email Address</span>
+            <div>${esc(cl.email || '—')}</div>
+          </div>
+          <div>
+            <span style="color:var(--muted);font-size:11px;text-transform:uppercase">Account Manager</span>
+            <div style="margin-top:2px">
+              <span class="user-tag"><span class="dot" style="background:${mgr.color}"></span>${esc(mgr.name)}</span>
+            </div>
+          </div>
+          ${cl.contactId ? `
+            <div style="background:var(--teal-wash);padding:8px 10px;border-radius:6px;font-size:11.5px;color:var(--teal-deep)">
+              🔗 Linked to CRM Contact: <b>${esc(contact(cl.contactId)?.name || 'Contact')}</b>
+            </div>
+          ` : ''}
+          ${cl.notes ? `
+            <div>
+              <span style="color:var(--muted);font-size:11px;text-transform:uppercase">Notes</span>
+              <div style="background:var(--surface-2);padding:8px;border-radius:6px;font-size:11.5px;color:var(--ink-soft);white-space:pre-wrap">${esc(cl.notes)}</div>
+            </div>
+          ` : ''}
+        </div>
+      </div>
+
+      <!-- Financial Snapshot Box -->
+      <div class="fin-card" style="background:var(--paper);border:1.5px solid var(--teal)">
+        <div class="fin-card-header">
+          <div class="fin-card-title">💰 Account Balances</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;font-size:12.5px">
+          <div style="display:flex;justify-content:space-between">
+            <span style="color:var(--muted)">Monthly Recurring:</span>
+            <b>${fmtMoney(fin.monthlyRecurring)}</b>
+          </div>
+          <div style="display:flex;justify-content:space-between">
+            <span style="color:var(--muted)">Ad Budget:</span>
+            <b>${fmtMoney(fin.adBudget)}</b>
+          </div>
+          <div style="display:flex;justify-content:space-between">
+            <span style="color:var(--muted)">Ad Management Fee:</span>
+            <b>${fmtMoney(fin.adFees)}</b>
+          </div>
+          <div style="display:flex;justify-content:space-between">
+            <span style="color:var(--muted)">One-time / Addl Work:</span>
+            <b>${fmtMoney(fin.additionalCharges)}</b>
+          </div>
+          <div style="height:1px;background:var(--line);margin:4px 0"></div>
+          <div style="display:flex;justify-content:space-between">
+            <span style="color:var(--muted)">Total Invoiced:</span>
+            <b>${fmtMoney(fin.totalInvoiced)}</b>
+          </div>
+          <div style="display:flex;justify-content:space-between">
+            <span style="color:var(--muted)">Total Paid:</span>
+            <b style="color:#15803d">${fmtMoney(fin.totalPaid)}</b>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:14px;padding-top:4px">
+            <span style="font-weight:700">Outstanding Balance:</span>
+            <b style="color:${fin.outstanding>0?'var(--clay)':'#15803d'}">${fmtMoney(fin.outstanding)}</b>
+          </div>
+          <div style="font-size:11.5px;color:var(--muted);margin-top:4px">
+            Next Payment Deadline: <b>${fin.nextDueAt ? fmtWhen(fin.nextDueAt) : 'None pending'}</b>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: SECTIONS B, C, D, E -->
+    <div>
+      <!-- SECTION B: Charges (Website, Social Media, Ad Budget, Ad Fees, Graphic, Video, Other) -->
+      <div class="fin-card">
+        <div class="fin-card-header">
+          <div class="fin-card-title">📋 Recurring &amp; One-Time Charges</div>
+          ${canEdit ? `<button class="btn sm" data-fin-charge-add="${cl.id}" style="font-size:11.5px;background:var(--surface-2);border:1px solid var(--line-strong)">+ Add Charge</button>` : ''}
+        </div>
+        ${charges.length === 0 ? `
+          <div style="padding:16px;text-align:center;color:var(--muted);font-size:12px">No service charges configured for this business client.</div>
+        ` : `
+          <div class="fin-table-wrap">
+            <table class="fin-table">
+              <thead>
+                <tr>
+                  <th>Service Category</th>
+                  <th>Description / Title</th>
+                  <th>Frequency</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  ${canEdit ? `<th style="text-align:right">Actions</th>` : ''}
+                </tr>
+              </thead>
+              <tbody>
+                ${charges.map(ch => {
+                  const sInfo = finSvcCat(ch.chargeType);
+                  return `
+                    <tr>
+                      <td><b>${sInfo.icon} ${esc(sInfo.label)}</b></td>
+                      <td>${esc(ch.title)}</td>
+                      <td><span class="fin-tag ${ch.isRecurring?'':'amber'}">${ch.isRecurring ? esc(ch.billingPeriod || 'Monthly') : 'One-Time'}</span></td>
+                      <td><b>${fmtMoney(ch.amount, ch.currency)}</b></td>
+                      <td>
+                        <span class="fin-badge ${ch.active!==false?'badge-green':'badge-gray'}">
+                          ${ch.active!==false?'ACTIVE':'INACTIVE'}
+                        </span>
+                      </td>
+                      ${canEdit ? `
+                        <td style="text-align:right">
+                          <button class="btn ghost sm" data-fin-charge-toggle="${ch.id}" title="Toggle active" style="font-size:11px;padding:3px 6px">
+                            ${ch.active!==false ? 'Pause' : 'Activate'}
+                          </button>
+                          <button class="btn ghost sm" data-fin-charge-edit="${ch.id}" title="Edit charge" style="font-size:11px;padding:3px 6px">
+                            ✏️
+                          </button>
+                          ${canDeleteFinancial() ? `<button class="btn ghost sm" data-fin-charge-del="${ch.id}" title="Delete charge" style="color:var(--clay);font-size:11px;padding:3px 6px">
+                            🗑️
+                          </button>` : ''}
+                        </td>
+                      ` : ''}
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+        `}
+      </div>
+
+      <!-- SECTION C: Invoices -->
+      <div class="fin-card">
+        <div class="fin-card-header">
+          <div class="fin-card-title">🧾 Client Invoices</div>
+          ${canEdit ? `<button class="btn primary sm" data-fin-client-invoice="${cl.id}" style="font-size:11.5px">+ Create Invoice</button>` : ''}
+        </div>
+        ${invoices.length === 0 ? `
+          <div style="padding:16px;text-align:center;color:var(--muted);font-size:12px">No invoices generated for this client yet.</div>
+        ` : `
+          <div class="fin-table-wrap">
+            <table class="fin-table">
+              <thead>
+                <tr>
+                  <th>Invoice #</th>
+                  <th>Issued</th>
+                  <th>Due Date</th>
+                  <th>Amount</th>
+                  <th>Paid</th>
+                  <th>Balance Due</th>
+                  <th>Status</th>
+                  <th style="text-align:right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${invoices.map(inv => {
+                  const rem = getInvoiceReminderStatus(inv);
+                  return `
+                    <tr>
+                      <td>
+                        <span style="font-family:monospace;font-weight:700">#${esc(inv.invoiceNumber)}</span>
+                        <div style="font-size:10.5px;color:var(--muted)">${esc(inv.title)}</div>
+                      </td>
+                      <td>${fmtWhen(inv.issuedAt)}</td>
+                      <td>
+                        <span>${fmtWhen(inv.dueAt)}</span>
+                        ${(Number(inv.balanceDue)||0) > 0 ? `<div class="fin-badge ${rem.badgeClass}" style="margin-top:2px;font-size:10px">${rem.label}</div>` : ''}
+                      </td>
+                      <td><b>${fmtMoney(inv.amount, inv.currency)}</b></td>
+                      <td style="color:#15803d">${fmtMoney(inv.amountPaid, inv.currency)}</td>
+                      <td><b style="color:${inv.balanceDue>0?'var(--clay)':'inherit'}">${fmtMoney(inv.balanceDue, inv.currency)}</b></td>
+                      <td>
+                        <span class="fin-badge ${inv.status==='paid'?'badge-green':(inv.status==='overdue'?'badge-red':'badge-yellow')}">
+                          ${inv.status.toUpperCase()}
+                        </span>
+                      </td>
+                      <td style="text-align:right">
+                        <div style="display:inline-flex;gap:4px">
+                          ${canEdit && inv.balanceDue > 0 ? `
+                            <button class="btn sm primary" data-fin-inv-pay="${inv.id}" style="font-size:11px;padding:3px 7px">💰 Pay</button>
+                          ` : ''}
+                          <button class="btn sm ghost" data-fin-inv-print="${inv.id}" title="Print or view invoice PDF" style="font-size:11px;padding:3px 6px;border:1px solid var(--line-strong)">📄</button>
+                          ${canEdit ? `<button class="btn sm ghost" data-fin-inv-edit="${inv.id}" title="Edit invoice" style="font-size:11px;padding:3px 6px">✏️</button>` : ''}
+                          ${canDeleteFinancial() ? `<button class="btn sm ghost" data-fin-inv-del="${inv.id}" title="Delete invoice" style="color:var(--clay);font-size:11px;padding:3px 6px">🗑️</button>` : ''}
+                        </div>
+                      </td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+        `}
+      </div>
+
+      <!-- SECTION D: Payment History -->
+      <div class="fin-card">
+        <div class="fin-card-header">
+          <div class="fin-card-title">💳 Payment History</div>
+          <span style="font-size:11.5px;color:#15803d;font-weight:700">Total Settled: ${fmtMoney(fin.totalPaid)}</span>
+        </div>
+        ${payments.length === 0 ? `
+          <div style="padding:16px;text-align:center;color:var(--muted);font-size:12px">No payments recorded for this client yet.</div>
+        ` : `
+          <div class="fin-table-wrap">
+            <table class="fin-table">
+              <thead>
+                <tr>
+                  <th>Payment Date</th>
+                  <th>Amount</th>
+                  <th>Payment Method</th>
+                  <th>Reference</th>
+                  <th>Related Invoice</th>
+                  <th>Recorded By</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${payments.map(p => {
+                  const inv = invoices.find(i => i.id === p.invoiceId);
+                  const u = user(p.createdBy);
+                  const method = FIN_PAYMENT_METHODS.find(m => m.id === p.paymentMethod)?.label || p.paymentMethod;
+                  return `
+                    <tr>
+                      <td>${fmtWhen(p.paidAt)}</td>
+                      <td><b style="color:#15803d">${fmtMoney(p.amount, p.currency)}</b></td>
+                      <td><span class="fin-badge badge-blue">${esc(method)}</span></td>
+                      <td><span style="font-family:monospace;font-size:11px">${esc(p.reference || '—')}</span></td>
+                      <td>${inv ? `<span style="font-family:monospace">#${esc(inv.invoiceNumber)}</span>` : '—'}</td>
+                      <td><span class="user-tag"><span class="dot" style="background:${u.color}"></span>${esc(u.name)}</span></td>
+                    </tr>
+                  `;
+                }).join('')}
+              </tbody>
+            </table>
+          </div>
+        `}
+      </div>
+
+      <!-- SECTION E: Reminders and Follow-ups -->
+      <div class="fin-card">
+        <div class="fin-card-header">
+          <div class="fin-card-title">⏰ Reminders &amp; Follow-up Activity</div>
+          ${canEdit ? `<button class="btn sm ghost" data-fin-client-followup="${cl.id}" style="border:1px solid var(--line-strong);font-size:11.5px">+ Log Follow-up</button>` : ''}
+        </div>
+        ${reminders.length === 0 ? `
+          <div style="padding:16px;text-align:center;color:var(--muted);font-size:12px">No reminder history or logged follow-ups for this client.</div>
+        ` : `
+          <div style="display:flex;flex-direction:column;gap:8px">
+            ${reminders.map(r => {
+              const inv = invoices.find(i => i.id === r.invoiceId);
+              return `
+                <div style="padding:8px 12px;background:var(--surface-2);border-radius:8px;font-size:12px;display:flex;justify-content:space-between;align-items:flex-start">
+                  <div>
+                    <div style="font-weight:600;display:flex;align-items:center;gap:6px">
+                      <span class="fin-badge ${r.status==='dismissed'?'badge-gray':(r.reminderType==='overdue'?'badge-red':'badge-yellow')}">${r.reminderType.replace('_', ' ').toUpperCase()}</span>
+                      <span>${esc(r.notes || 'Payment notification')}</span>
+                    </div>
+                    <div style="font-size:11px;color:var(--muted);margin-top:2px">
+                      Triggered: ${fmtWhen(r.triggeredAt || r.createdAt)} ${inv ? `&middot; Invoice #${esc(inv.invoiceNumber)}` : ''}
+                      ${r.followupDate ? `&middot; Next Follow-up: <b>${fmtWhen(r.followupDate)}</b>` : ''}
+                    </div>
+                  </div>
+                  <span class="fin-badge ${r.status==='dismissed'?'badge-gray':'badge-green'}" style="font-size:9.5px">
+                    ${r.status.toUpperCase()}
+                  </span>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `}
+      </div>
+    </div>
+  </div>`;
+
+  return html;
+}
+
+
+// scratch/financial_invoices_payments_reports.js
+
+/* =================================================================
+   4. INVOICES SUB-TAB (Section 9)
+   ================================================================= */
+function financialInvoicesTab(canEdit){
+  const invoices = DB.finInvoices || [];
+  const clients = DB.finClients || [];
+
+  let filtered = invoices.filter(i => {
+    if(FINANCIAL_STATUS_FILTER !== "all" && i.status !== FINANCIAL_STATUS_FILTER) return false;
+    if(FINANCIAL_SERVICE_FILTER !== "all" && i.serviceCategory !== FINANCIAL_SERVICE_FILTER) return false;
+    if(FINANCIAL_SEARCH){
+      const q = FINANCIAL_SEARCH.trim().toLowerCase();
+      const cl = finClient(i.clientId);
+      const match = (i.invoiceNumber || "").toLowerCase().includes(q) ||
+                    (i.title || "").toLowerCase().includes(q) ||
+                    (cl?.businessName || "").toLowerCase().includes(q);
+      if(!match) return false;
+    }
+    return true;
+  });
+
+  // Sort by issued date descending
+  filtered.sort((a, b) => (b.issuedAt || 0) - (a.issuedAt || 0));
+
+  let html = `
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px;background:var(--surface);padding:12px 14px;border-radius:10px;border:1px solid var(--line)">
+    <div style="flex:1;min-width:200px">
+      <input type="text" id="fin-search-input" placeholder="🔍 Search invoice #, client, description..." value="${esc(FINANCIAL_SEARCH)}" style="width:100%;padding:8px 12px;border:1px solid var(--line-strong);border-radius:6px;background:var(--paper);font-size:12.5px" />
+    </div>
+    <div>
+      <select id="fin-filter-status" style="padding:7px 10px;border:1px solid var(--line-strong);border-radius:6px;background:var(--paper);font-size:12px">
+        <option value="all">All Invoice Statuses</option>
+        <option value="draft" ${FINANCIAL_STATUS_FILTER==='draft'?'selected':''}>Draft</option>
+        <option value="issued" ${FINANCIAL_STATUS_FILTER==='issued'?'selected':''}>Issued</option>
+        <option value="partially_paid" ${FINANCIAL_STATUS_FILTER==='partially_paid'?'selected':''}>Partially Paid</option>
+        <option value="paid" ${FINANCIAL_STATUS_FILTER==='paid'?'selected':''}>Paid</option>
+        <option value="overdue" ${FINANCIAL_STATUS_FILTER==='overdue'?'selected':''}>Overdue</option>
+        <option value="void" ${FINANCIAL_STATUS_FILTER==='void'?'selected':''}>Void</option>
+      </select>
+    </div>
+    <div>
+      <select id="fin-filter-service" style="padding:7px 10px;border:1px solid var(--line-strong);border-radius:6px;background:var(--paper);font-size:12px">
+        <option value="all">All Service Categories</option>
+        ${FIN_SERVICE_CATEGORIES.map(s => `<option value="${s.id}" ${FINANCIAL_SERVICE_FILTER===s.id?'selected':''}>${s.label}</option>`).join('')}
+      </select>
+    </div>
+    ${canEdit ? `
+      <button class="btn primary" id="btn-fin-card-add-inv" style="font-size:12px;padding:8px 14px;font-weight:700">
+        + Create Invoice
+      </button>
+    ` : ''}
+  </div>`;
+
+  if(filtered.length === 0){
+    html += `
+    <div style="padding:48px 20px;text-align:center;background:var(--surface);border-radius:12px;border:1px dashed var(--line-strong)">
+      <div style="font-size:32px;margin-bottom:8px">🧾</div>
+      <div style="font-weight:700;font-size:15px;margin-bottom:6px">No invoices match your filters</div>
+      <div style="font-size:12.5px;color:var(--muted);margin-bottom:14px">Generate invoices from client charges or create direct invoices.</div>
+      ${canEdit ? `<button class="btn primary" id="btn-fin-empty-add-inv">+ Create New Invoice</button>` : ''}
+    </div>`;
+    return html;
+  }
+
+  html += `
+  <div class="fin-table-wrap">
+    <table class="fin-table">
+      <thead>
+        <tr>
+          <th>Invoice #</th>
+          <th>Business Client</th>
+          <th>Service Category</th>
+          <th>Issued Date</th>
+          <th>Payment Due</th>
+          <th>Total Amount</th>
+          <th>Amount Paid</th>
+          <th>Balance Due</th>
+          <th>Status</th>
+          <th style="text-align:right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${filtered.map(inv => {
+          const client = finClient(inv.clientId);
+          const rem = getInvoiceReminderStatus(inv);
+          const sCat = finSvcCat(inv.serviceCategory);
+          return `
+            <tr>
+              <td>
+                <span style="font-family:monospace;font-weight:700">#${esc(inv.invoiceNumber)}</span>
+                <div style="font-size:11px;color:var(--ink-soft)">${esc(inv.title)}</div>
+              </td>
+              <td>
+                <a href="javascript:void(0)" data-fin-client-view="${inv.clientId || ''}" style="font-weight:700;color:var(--teal);text-decoration:none">
+                  ${esc(client?.businessName || inv.clientName || 'Direct Client')}
+                </a>
+              </td>
+              <td><span class="fin-tag">${sCat.icon} ${esc(sCat.label)}</span></td>
+              <td>${fmtWhen(inv.issuedAt)}</td>
+              <td>
+                <div>${fmtWhen(inv.dueAt)}</div>
+                ${(Number(inv.balanceDue)||0) > 0 ? `<span class="fin-badge ${rem.badgeClass}" style="font-size:9.5px">${rem.label}</span>` : ''}
+              </td>
+              <td><b>${fmtMoney(inv.amount, inv.currency)}</b></td>
+              <td style="color:#15803d">${fmtMoney(inv.amountPaid, inv.currency)}</td>
+              <td><b style="color:${inv.balanceDue>0?'var(--clay)':'inherit'}">${fmtMoney(inv.balanceDue, inv.currency)}</b></td>
+              <td>
+                <span class="fin-badge ${inv.status==='paid'?'badge-green':(inv.status==='overdue'?'badge-red':(inv.status==='partially_paid'?'badge-orange':'badge-yellow'))}">
+                  ${inv.status.replace('_', ' ').toUpperCase()}
+                </span>
+              </td>
+              <td style="text-align:right">
+                <div style="display:inline-flex;gap:4px">
+                  ${canEdit && (Number(inv.balanceDue)||0) > 0 && inv.status !== "void" ? `
+                    <button class="btn sm primary" data-fin-inv-pay="${inv.id}" style="font-size:11px;padding:3px 7px">💰 Pay</button>
+                  ` : ''}
+                  <button class="btn sm ghost" data-fin-inv-print="${inv.id}" title="Print / Download PDF" style="font-size:11px;padding:3px 6px;border:1px solid var(--line-strong)">📄</button>
+                  ${canEdit && inv.status !== "void" ? `
+                    <button class="btn sm ghost" data-fin-inv-edit="${inv.id}" title="Edit invoice" style="font-size:11px;padding:3px 6px">✏️</button>
+                    <button class="btn sm ghost" data-fin-inv-void="${inv.id}" title="Void invoice" style="font-size:11px;padding:3px 6px;color:var(--muted)">🚫</button>
+                  ` : ''}
+                  ${canDeleteFinancial() ? `
+                    <button class="btn sm ghost" data-fin-inv-del="${inv.id}" title="Delete invoice (Admin)" style="color:var(--clay);font-size:11px;padding:3px 6px">🗑️</button>
+                  ` : ''}
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('')}
+      </tbody>
+    </table>
+  </div>`;
+
+  return html;
+}
+
+/* =================================================================
+   5. PAYMENTS SUB-TAB (Section 9)
+   ================================================================= */
+function financialPaymentsTab(canEdit){
+  const payments = [...(DB.finPayments || [])].sort((a, b) => (b.paidAt || 0) - (a.paidAt || 0));
+
+  let filtered = payments.filter(p => {
+    if(FINANCIAL_SEARCH){
+      const q = FINANCIAL_SEARCH.trim().toLowerCase();
+      const cl = finClient(p.clientId);
+      const match = (p.reference || "").toLowerCase().includes(q) ||
+                    (p.paymentNumber || "").toLowerCase().includes(q) ||
+                    (cl?.businessName || "").toLowerCase().includes(q);
+      if(!match) return false;
+    }
+    return true;
+  });
+
+  const totalCollected = filtered.reduce((s, p) => s + (Number(p.amount) || 0), 0);
+
+  let html = `
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px;background:var(--surface);padding:12px 14px;border-radius:10px;border:1px solid var(--line)">
+    <div style="flex:1;min-width:200px">
+      <input type="text" id="fin-search-input" placeholder="🔍 Search reference, client name, payment #..." value="${esc(FINANCIAL_SEARCH)}" style="width:100%;padding:8px 12px;border:1px solid var(--line-strong);border-radius:6px;background:var(--paper);font-size:12.5px" />
+    </div>
+    <div style="font-size:12.5px;color:var(--ink);background:var(--surface-2);padding:6px 12px;border-radius:6px;border:1px solid var(--line)">
+      Total Filtered: <b style="color:#15803d">${fmtMoney(totalCollected)}</b> (${filtered.length} payments)
+    </div>
+    <button class="btn ghost sm" id="btn-fin-export-payments-csv" style="border:1px solid var(--line-strong);font-size:12px">
+      📥 Export CSV
+    </button>
+  </div>`;
+
+  if(filtered.length === 0){
+    html += `
+    <div style="padding:48px 20px;text-align:center;background:var(--surface);border-radius:12px;border:1px dashed var(--line-strong)">
+      <div style="font-size:32px;margin-bottom:8px">💳</div>
+      <div style="font-weight:700;font-size:15px;margin-bottom:6px">No payment records found</div>
+      <div style="font-size:12.5px;color:var(--muted)">Payments recorded against client invoices will appear here in chronological order.</div>
+    </div>`;
+    return html;
+  }
+
+  html += `
+  <div class="fin-table-wrap">
+    <table class="fin-table">
+      <thead>
+        <tr>
+          <th>Payment Date</th>
+          <th>Payment #</th>
+          <th>Business Client</th>
+          <th>Related Invoice</th>
+          <th>Amount Paid</th>
+          <th>Payment Method</th>
+          <th>Reference / Notes</th>
+          <th>Recorded By</th>
+          ${canDeleteFinancial() ? `<th style="text-align:right">Actions</th>` : ''}
+        </tr>
+      </thead>
+      <tbody>
+        ${filtered.map(p => {
+          const client = finClient(p.clientId);
+          const inv = (DB.finInvoices || []).find(i => i.id === p.invoiceId);
+          const u = user(p.createdBy);
+          const method = FIN_PAYMENT_METHODS.find(m => m.id === p.paymentMethod)?.label || p.paymentMethod;
+          return `
+            <tr>
+              <td>${fmtWhen(p.paidAt)}</td>
+              <td><span style="font-family:monospace;font-weight:600">#${esc(p.paymentNumber || p.id.slice(0,8))}</span></td>
+              <td>
+                <a href="javascript:void(0)" data-fin-client-view="${p.clientId || ''}" style="font-weight:700;color:var(--teal);text-decoration:none">
+                  ${esc(client?.businessName || 'Client')}
+                </a>
+              </td>
+              <td>${inv ? `<span style="font-family:monospace">#${esc(inv.invoiceNumber)}</span>` : '—'}</td>
+              <td><b style="color:#15803d;font-size:13px">${fmtMoney(p.amount, p.currency)}</b></td>
+              <td><span class="fin-badge badge-blue">${esc(method)}</span></td>
+              <td>
+                <span style="font-family:monospace;font-size:11.5px">${esc(p.reference || '—')}</span>
+                ${p.notes ? `<div style="font-size:10.5px;color:var(--muted)">${esc(p.notes)}</div>` : ''}
+              </td>
+              <td><span class="user-tag"><span class="dot" style="background:${u.color}"></span>${esc(u.name)}</span></td>
+              ${canDeleteFinancial() ? `
+                <td style="text-align:right">
+                  <button class="btn sm ghost" data-fin-pay-del="${p.id}" title="Delete payment record (Admin)" style="color:var(--clay);font-size:11px;padding:3px 6px">🗑️</button>
+                </td>
+              ` : ''}
+            </tr>
+          `;
+        }).join('')}
+      </tbody>
+    </table>
+  </div>`;
+
+  return html;
+}
+
+/* =================================================================
+   6. FINANCIAL REPORTS SUB-TAB (Section 10)
+   ================================================================= */
+function financialReportsTab(canEdit){
+  const now = Date.now();
+  const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).getTime();
+  const endOfMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0, 23, 59, 59, 999).getTime();
+
+  let html = `
+  <div style="background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <span style="font-weight:700;font-size:15px">📊 Financial Report:</span>
+        <select id="fin-report-selector" style="padding:6px 12px;border:1px solid var(--line-strong);border-radius:6px;background:var(--paper);font-size:13px;font-weight:600">
+          <option value="outstanding" ${FINANCIAL_REPORT_TYPE==='outstanding'?'selected':''}>Outstanding Balances by Client</option>
+          <option value="overdue" ${FINANCIAL_REPORT_TYPE==='overdue'?'selected':''}>Overdue Balances Audit</option>
+          <option value="due_7days" ${FINANCIAL_REPORT_TYPE==='due_7days'?'selected':''}>Payments Due Within Next 7 Days</option>
+          <option value="month_received" ${FINANCIAL_REPORT_TYPE==='month_received'?'selected':''}>Payments Received This Month</option>
+          <option value="month_invoiced" ${FINANCIAL_REPORT_TYPE==='month_invoiced'?'selected':''}>Monthly Invoiced Amounts</option>
+          <option value="recurring" ${FINANCIAL_REPORT_TYPE==='recurring'?'selected':''}>Monthly Recurring Retainers Breakdown</option>
+        </select>
+      </div>
+      <button class="btn primary sm" id="btn-fin-download-report-csv" style="font-size:12px;font-weight:700">
+        📥 Export Current Report (CSV)
+      </button>
+    </div>`;
+
+  if(FINANCIAL_REPORT_TYPE === "outstanding"){
+    const rows = (DB.finClients || []).map(cl => {
+      const fin = calcClientFinancials(cl.id);
+      return { client: cl, fin };
+    }).filter(r => r.fin.outstanding > 0).sort((a,b)=>b.fin.outstanding-a.fin.outstanding);
+
+    const totalOut = rows.reduce((s, r) => s + r.fin.outstanding, 0);
+
+    html += `
+      <div style="font-size:13px;margin-bottom:12px;color:var(--ink-soft)">
+        Total Outstanding across all active client portfolios: <b style="color:var(--clay);font-size:15px">${fmtMoney(totalOut)}</b> (${rows.length} businesses)
+      </div>
+      <div class="fin-table-wrap">
+        <table class="fin-table">
+          <thead>
+            <tr>
+              <th>Business Client</th>
+              <th>Contact</th>
+              <th>Total Invoiced</th>
+              <th>Total Paid</th>
+              <th>Outstanding Balance</th>
+              <th>Payment Status</th>
+              <th>Next Payment Due</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows.map(r => `
+              <tr>
+                <td><b>${esc(r.client.businessName)}</b></td>
+                <td>${esc(r.client.contactPerson || '—')} (${esc(r.client.phone || '—')})</td>
+                <td>${fmtMoney(r.fin.totalInvoiced)}</td>
+                <td style="color:#15803d">${fmtMoney(r.fin.totalPaid)}</td>
+                <td><b style="color:${r.fin.paymentStatus==='overdue'?'var(--clay)':'inherit'}">${fmtMoney(r.fin.outstanding)}</b></td>
+                <td><span class="fin-badge ${r.fin.paymentStatus==='overdue'?'badge-red':'badge-yellow'}">${r.fin.paymentStatus.toUpperCase()}</span></td>
+                <td>${r.fin.nextDueAt ? fmtWhen(r.fin.nextDueAt) : '—'}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>`;
+  } else if(FINANCIAL_REPORT_TYPE === "overdue"){
+    const overdueInvoices = (DB.finInvoices || []).filter(i => 
+      i.status !== "paid" && i.status !== "void" && (Number(i.balanceDue)||0) > 0 && i.dueAt && i.dueAt < now
+    ).sort((a, b) => a.dueAt - b.dueAt);
+
+    const totalOverdue = overdueInvoices.reduce((s, i) => s + (Number(i.balanceDue)||0), 0);
+
+    html += `
+      <div style="font-size:13px;margin-bottom:12px;color:var(--clay);font-weight:700">
+        🚨 Total Overdue Invoices: ${fmtMoney(totalOverdue)} (${overdueInvoices.length} invoices past deadline)
+      </div>
+      <div class="fin-table-wrap">
+        <table class="fin-table">
+          <thead>
+            <tr>
+              <th>Invoice #</th>
+              <th>Client</th>
+              <th>Due Date</th>
+              <th>Days Overdue</th>
+              <th>Invoice Amount</th>
+              <th>Balance Due</th>
+              <th>Account Manager</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${overdueInvoices.map(i => {
+              const cl = finClient(i.clientId);
+              const rem = getInvoiceReminderStatus(i);
+              const mgr = user(cl?.accountManagerId || i.userId);
+              return `
+                <tr>
+                  <td><b>#${esc(i.invoiceNumber)}</b></td>
+                  <td>${esc(cl?.businessName || i.clientName || 'Client')}</td>
+                  <td>${fmtWhen(i.dueAt)}</td>
+                  <td><span class="fin-badge badge-red">${Math.abs(rem.daysLeft)} days overdue</span></td>
+                  <td>${fmtMoney(i.amount, i.currency)}</td>
+                  <td><b style="color:var(--clay)">${fmtMoney(i.balanceDue, i.currency)}</b></td>
+                  <td><span class="user-tag"><span class="dot" style="background:${mgr.color}"></span>${esc(mgr.name)}</span></td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>`;
+  } else if(FINANCIAL_REPORT_TYPE === "due_7days"){
+    const dueSoon = (DB.finInvoices || []).filter(i => {
+      if(i.status === "paid" || i.status === "void" || (Number(i.balanceDue)||0) <= 0 || !i.dueAt) return false;
+      const d = getInvoiceReminderStatus(i).daysLeft;
+      return d >= 0 && d <= 7;
+    }).sort((a, b) => a.dueAt - b.dueAt);
+
+    const totalDueSoon = dueSoon.reduce((s, i) => s + (Number(i.balanceDue)||0), 0);
+
+    html += `
+      <div style="font-size:13px;margin-bottom:12px;color:#854d0e;font-weight:700">
+        ⏳ Invoices Due in Next 7 Days: ${fmtMoney(totalDueSoon)} (${dueSoon.length} invoices)
+      </div>
+      <div class="fin-table-wrap">
+        <table class="fin-table">
+          <thead>
+            <tr>
+              <th>Invoice #</th>
+              <th>Client</th>
+              <th>Due Date</th>
+              <th>Days Left</th>
+              <th>Remaining Balance</th>
+              <th>Account Manager</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${dueSoon.map(i => {
+              const cl = finClient(i.clientId);
+              const rem = getInvoiceReminderStatus(i);
+              const mgr = user(cl?.accountManagerId || i.userId);
+              return `
+                <tr>
+                  <td><b>#${esc(i.invoiceNumber)}</b></td>
+                  <td>${esc(cl?.businessName || i.clientName || 'Client')}</td>
+                  <td>${fmtWhen(i.dueAt)}</td>
+                  <td><span class="fin-badge ${rem.badgeClass}">${rem.label}</span></td>
+                  <td><b>${fmtMoney(i.balanceDue, i.currency)}</b></td>
+                  <td><span class="user-tag"><span class="dot" style="background:${mgr.color}"></span>${esc(mgr.name)}</span></td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>`;
+  } else if(FINANCIAL_REPORT_TYPE === "month_received"){
+    const thisMonthPayments = (DB.finPayments || []).filter(p => p.paidAt >= startOfMonth && p.paidAt <= endOfMonth);
+    const totalRec = thisMonthPayments.reduce((s, p) => s + (Number(p.amount)||0), 0);
+
+    html += `
+      <div style="font-size:13px;margin-bottom:12px;color:#15803d;font-weight:700">
+        ✓ Collections for Current Month: ${fmtMoney(totalRec)} (${thisMonthPayments.length} payments)
+      </div>
+      <div class="fin-table-wrap">
+        <table class="fin-table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Payment #</th>
+              <th>Client</th>
+              <th>Amount</th>
+              <th>Payment Method</th>
+              <th>Reference</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${thisMonthPayments.map(p => {
+              const cl = finClient(p.clientId);
+              const method = FIN_PAYMENT_METHODS.find(m => m.id === p.paymentMethod)?.label || p.paymentMethod;
+              return `
+                <tr>
+                  <td>${fmtWhen(p.paidAt)}</td>
+                  <td>#${esc(p.paymentNumber || p.id.slice(0,8))}</td>
+                  <td><b>${esc(cl?.businessName || 'Client')}</b></td>
+                  <td><b style="color:#15803d">${fmtMoney(p.amount, p.currency)}</b></td>
+                  <td><span class="fin-badge badge-blue">${esc(method)}</span></td>
+                  <td>${esc(p.reference || '—')}</td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>`;
+  } else if(FINANCIAL_REPORT_TYPE === "month_invoiced"){
+    const thisMonthInvoices = (DB.finInvoices || []).filter(i => i.issuedAt >= startOfMonth && i.issuedAt <= endOfMonth && i.status !== "draft");
+    const totalInv = thisMonthInvoices.reduce((s, i) => s + (Number(i.amount)||0), 0);
+
+    html += `
+      <div style="font-size:13px;margin-bottom:12px;font-weight:700">
+        Invoices Generated Current Month: ${fmtMoney(totalInv)} (${thisMonthInvoices.length} invoices)
+      </div>
+      <div class="fin-table-wrap">
+        <table class="fin-table">
+          <thead>
+            <tr>
+              <th>Invoice #</th>
+              <th>Client</th>
+              <th>Category</th>
+              <th>Issued Date</th>
+              <th>Due Date</th>
+              <th>Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${thisMonthInvoices.map(i => {
+              const cl = finClient(i.clientId);
+              return `
+                <tr>
+                  <td><b>#${esc(i.invoiceNumber)}</b></td>
+                  <td>${esc(cl?.businessName || i.clientName || 'Client')}</td>
+                  <td>${esc(finSvcCat(i.serviceCategory).label)}</td>
+                  <td>${fmtWhen(i.issuedAt)}</td>
+                  <td>${fmtWhen(i.dueAt)}</td>
+                  <td><b>${fmtMoney(i.amount, i.currency)}</b></td>
+                  <td><span class="fin-badge badge-gray">${i.status.toUpperCase()}</span></td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>`;
+  } else if(FINANCIAL_REPORT_TYPE === "recurring"){
+    const activeCharges = (DB.finCharges || []).filter(c => c.active !== false && c.isRecurring);
+    const totalRec = activeCharges.reduce((s, c) => s + (Number(c.amount)||0), 0);
+
+    html += `
+      <div style="font-size:13px;margin-bottom:12px;font-weight:700">
+        Total Active Monthly Retainers: ${fmtMoney(totalRec)} (${activeCharges.length} contracts)
+      </div>
+      <div class="fin-table-wrap">
+        <table class="fin-table">
+          <thead>
+            <tr>
+              <th>Client</th>
+              <th>Service Category</th>
+              <th>Description / Title</th>
+              <th>Billing Frequency</th>
+              <th>Recurring Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${activeCharges.map(c => {
+              const cl = finClient(c.clientId);
+              const sCat = finSvcCat(c.chargeType);
+              return `
+                <tr>
+                  <td><b>${esc(cl?.businessName || 'Client')}</b></td>
+                  <td>${sCat.icon} ${esc(sCat.label)}</td>
+                  <td>${esc(c.title)}</td>
+                  <td>${esc(c.billingPeriod || 'Monthly')}</td>
+                  <td><b>${fmtMoney(c.amount, c.currency)}</b></td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>`;
+  }
+
+  html += `</div>`;
+  return html;
+}
+
+/* =================================================================
+   7. SETTINGS SUB-TAB (Section 5 & 11)
+   ================================================================= */
+function financialSettingsTab(canEdit){
+  const cfg = getFinSettings();
+
+  let html = `
+  <div style="max-width:700px;margin:0 auto">
+    <div class="fin-card">
+      <div class="fin-card-header">
+        <div class="fin-card-title">⚙️ Payment Deadline Reminder Settings</div>
+        <span class="fin-tag blue">Automated Engine</span>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px;font-size:13px">
+        <div>
+          <label style="font-weight:700;display:block;margin-bottom:4px">Automatic Reminder Processing</label>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:8px">
+            Continuously evaluates all unpaid client invoices against upcoming deadlines and triggers in-app reminders.
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+            <input type="checkbox" id="cfg-fin-auto-reminders" ${cfg.autoReminders ? 'checked' : ''} ${!canEdit?'disabled':''} />
+            <b>Enable Automatic Reminder Engine (Runs every 60s and on app startup)</b>
+          </label>
+        </div>
+
+        <div>
+          <label style="font-weight:700;display:block;margin-bottom:4px">Default Reminder Intervals Schedule</label>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:8px">
+            Intervals before the due date when notifications are shown:
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;background:var(--surface-2);padding:12px;border-radius:8px;font-size:12px">
+            <div>✓ 7 days before due date (Yellow)</div>
+            <div>✓ 3 days before due date (Orange)</div>
+            <div>✓ 1 day before due date (Orange)</div>
+            <div>✓ On the due date (Red)</div>
+            <div>✓ After due date (Overdue Alert - Red)</div>
+            <div>✓ Auto-cleared when fully settled</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div>
+            <label style="font-weight:700;display:block;margin-bottom:4px">Default Payment Terms</label>
+            <input type="text" id="cfg-fin-terms" value="${esc(cfg.defaultPaymentTerms || 'Net 14')}" ${!canEdit?'disabled':''} style="width:100%;padding:8px 10px;border:1px solid var(--line-strong);border-radius:6px;background:var(--paper);font-size:12.5px" />
+          </div>
+          <div>
+            <label style="font-weight:700;display:block;margin-bottom:4px">Standard Currency</label>
+            <input type="text" id="cfg-fin-currency" value="${esc(cfg.currency || 'Rs.')}" ${!canEdit?'disabled':''} style="width:100%;padding:8px 10px;border:1px solid var(--line-strong);border-radius:6px;background:var(--paper);font-size:12.5px" />
+          </div>
+        </div>
+
+        ${canEdit ? `
+          <div style="display:flex;gap:10px;margin-top:10px">
+            <button class="btn primary" id="btn-fin-save-settings">Save Settings</button>
+            <button class="btn ghost" id="btn-fin-run-reminders-now" style="border:1px solid var(--line-strong)">
+              🔄 Run Reminder Check Now
+            </button>
+          </div>
+        ` : ''}
+      </div>
+    </div>
+
+    <!-- Migration status box -->
+    <div class="fin-card" style="background:var(--teal-wash);border-color:var(--teal)">
+      <div class="fin-card-title" style="color:var(--teal-deep);margin-bottom:8px">
+        💾 Supabase Database Synchronization
+      </div>
+      <div style="font-size:12px;color:var(--teal-deep);line-height:1.5">
+        The financial management module stores records in <code>fin_business_client</code>, <code>fin_client_charge</code>, <code>fin_client_invoice</code>, <code>fin_client_payment</code>, <code>fin_payment_reminder</code>, and <code>fin_settings</code>.
+        <br/><br/>
+        All tables are equipped with resilient offline caching and automatic cloud write syncing. If you haven't run the migration yet, run <b>supabase-financial-management.sql</b> in your Supabase SQL editor.
+      </div>
+    </div>
+  </div>`;
+
+  return html;
+}
+
+/* =================================================================
+   8. EXPORT REPORT TO CSV HELPER
+   ================================================================= */
+function exportFinancialReportCSV(reportType){
+  let rows = [];
+  let filename = `univerz-financial-${reportType}-${new Date().toISOString().slice(0,10)}.csv`;
+
+  if(reportType === "outstanding" || reportType === "reports"){
+    rows.push(["Business Client", "Contact Person", "Phone", "Category", "Total Invoiced", "Total Paid", "Outstanding Balance", "Payment Status"]);
+    (DB.finClients || []).forEach(cl => {
+      const f = calcClientFinancials(cl.id);
+      if(f.outstanding > 0){
+        rows.push([
+          cl.businessName,
+          cl.contactPerson || "",
+          cl.phone || "",
+          cl.category || "General",
+          f.totalInvoiced,
+          f.totalPaid,
+          f.outstanding,
+          f.paymentStatus
+        ]);
+      }
+    });
+  } else if(reportType === "recurring"){
+    rows.push(["Business Client", "Service", "Title", "Billing Period", "Amount"]);
+    (DB.finCharges || []).filter(c => c.active !== false && c.isRecurring).forEach(c => {
+      rows.push([finClient(c.clientId)?.businessName || "", finSvcCat(c.chargeType).label, c.title, c.billingPeriod, c.amount]);
+    });
+  } else if(reportType === "payments" || reportType === "month_received"){
+    const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).getTime();
+    rows.push(["Payment Date", "Payment Number", "Business Client", "Invoice Number", "Amount", "Method", "Reference", "Notes"]);
+    (DB.finPayments || []).filter(p => reportType === "payments" || p.paidAt >= monthStart).forEach(p => {
+      const cl = finClient(p.clientId);
+      const inv = (DB.finInvoices || []).find(i => i.id === p.invoiceId);
+      rows.push([
+        new Date(p.paidAt).toLocaleDateString(),
+        p.paymentNumber || p.id,
+        cl?.businessName || "Client",
+        inv?.invoiceNumber || "",
+        p.amount,
+        p.paymentMethod,
+        p.reference || "",
+        p.notes || ""
+      ]);
+    });
+  } else {
+    const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).getTime();
+    const open = i => i.status !== "paid" && i.status !== "void" && (Number(i.balanceDue)||0) > 0 && i.dueAt;
+    const keep = {
+      overdue:        i => open(i) && i.dueAt < Date.now(),   // same rule as the on-screen report
+      due_7days:      i => open(i) && getInvoiceReminderStatus(i).daysLeft >= 0 && getInvoiceReminderStatus(i).daysLeft <= 7,
+      month_invoiced: i => i.issuedAt >= monthStart && i.status !== "draft",
+    }[reportType] || (() => true);
+    rows.push(["Invoice Number", "Client", "Title", "Amount", "Paid", "Balance Due", "Status", "Due Date"]);
+    (DB.finInvoices || []).filter(keep).forEach(i => {
+      const cl = finClient(i.clientId);
+      rows.push([
+        i.invoiceNumber,
+        cl?.businessName || i.clientName || "",
+        i.title,
+        i.amount,
+        i.amountPaid,
+        i.balanceDue,
+        i.status,
+        new Date(i.dueAt).toLocaleDateString()
+      ]);
+    });
+  }
+
+  const csvContent = rows.map(e => e.map(val => `"${String(val).replace(/"/g, '""')}"`).join(",")).join("\n");
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", filename);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  toast("✓ Exported " + filename);
+}
+
+/* =================================================================
+   9. PRINT INVOICE HELPER
+   ================================================================= */
+function printFinancialInvoice(invoiceId){
+  const inv = (DB.finInvoices || []).find(i => i.id === invoiceId);
+  if(!inv){ toast("Invoice not found"); return; }
+  const cl = finClient(inv.clientId);
+
+  const printWindow = window.open('', '_blank');
+  if(!printWindow){ toast("Please allow popups to print invoices"); return; }
+
+  const html = `
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <title>Invoice #${esc(inv.invoiceNumber)} - Univerz Creative Agency</title>
+    <style>
+      body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; color: #1e293b; margin: 40px auto; max-width: 800px; padding: 20px; line-height: 1.5; }
+      .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #0f766e; padding-bottom: 20px; margin-bottom: 24px; }
+      .logo { font-size: 26px; font-weight: 900; color: #0f766e; letter-spacing: -0.5px; }
+      .sublogo { font-size: 13px; color: #64748b; }
+      .inv-title { font-size: 24px; font-weight: 800; color: #1e293b; text-align: right; }
+      .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px; }
+      .box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; font-size: 13px; }
+      table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+      th { background: #f1f5f9; padding: 10px; text-align: left; font-size: 12px; font-weight: 700; border-bottom: 2px solid #cbd5e1; }
+      td { padding: 12px 10px; border-bottom: 1px solid #e2e8f0; font-size: 13px; }
+      .totals { margin-left: auto; width: 280px; margin-bottom: 24px; }
+      .totals-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; }
+      .totals-row.grand { font-size: 16px; font-weight: 800; border-top: 2px solid #1e293b; padding-top: 8px; color: #0f766e; }
+      .footer { border-top: 1px solid #e2e8f0; padding-top: 16px; font-size: 12px; color: #64748b; text-align: center; }
+      @media print { body { margin: 0; padding: 0; } .no-print { display: none; } }
+    </style>
+  </head>
+  <body>
+    <div class="no-print" style="margin-bottom: 20px; text-align: right;">
+      <button onclick="window.print()" style="background:#0f766e;color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-weight:700">🖨️ Print / Save as PDF</button>
+    </div>
+    <div class="header">
+      <div>
+        <div class="logo">UNIVERZ</div>
+        <div class="sublogo">Creative Agency (Pvt) Ltd</div>
+        <div style="font-size:12px;color:#64748b;margin-top:4px">Colombo, Sri Lanka &middot; info@univerz.lk</div>
+      </div>
+      <div>
+        <div class="inv-title">INVOICE</div>
+        <div style="font-size:14px;font-weight:700;color:#0f766e">#${esc(inv.invoiceNumber)}</div>
+        <div style="font-size:12px;color:#64748b">Date: ${new Date(inv.issuedAt).toLocaleDateString()}</div>
+        <div style="font-size:12px;color:#b91c1c;font-weight:700">Due: ${new Date(inv.dueAt).toLocaleDateString()}</div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="box">
+        <div style="font-weight:700;color:#64748b;margin-bottom:6px;text-transform:uppercase;font-size:11px">Billed To</div>
+        <div style="font-size:15px;font-weight:800;color:#1e293b">${esc(cl?.businessName || inv.clientName || 'Client')}</div>
+        <div>Attn: ${esc(cl?.contactPerson || '—')}</div>
+        <div>Phone: ${esc(cl?.phone || '—')}</div>
+        <div>Email: ${esc(cl?.email || '—')}</div>
+      </div>
+      <div class="box">
+        <div style="font-weight:700;color:#64748b;margin-bottom:6px;text-transform:uppercase;font-size:11px">Payment Information</div>
+        <div>Payment Terms: <b>${esc(inv.paymentTerms || 'Net 14')}</b></div>
+        <div>Status: <b>${inv.status.toUpperCase()}</b></div>
+        <div style="margin-top:6px;font-size:11.5px;color:#64748b">
+          Bank: Commercial Bank of Ceylon<br/>
+          Account: Univerz Creative Agency (Pvt) Ltd<br/>
+          No: 1000123456789
+        </div>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th>Category</th>
+          <th style="text-align:right">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <b>${esc(inv.title)}</b>
+            ${inv.description ? `<div style="font-size:12px;color:#64748b;margin-top:4px">${esc(inv.description)}</div>` : ''}
+          </td>
+          <td>${esc(finSvcCat(inv.serviceCategory).label)}</td>
+          <td style="text-align:right;font-weight:700">${fmtMoney(inv.amount, inv.currency)}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="totals">
+      <div class="totals-row">
+        <span>Subtotal:</span>
+        <span>${fmtMoney(inv.amount, inv.currency)}</span>
+      </div>
+      <div class="totals-row">
+        <span>Amount Paid:</span>
+        <span style="color:#15803d">${fmtMoney(inv.amountPaid, inv.currency)}</span>
+      </div>
+      <div class="totals-row grand">
+        <span>Balance Due:</span>
+        <span>${fmtMoney(inv.balanceDue, inv.currency)}</span>
+      </div>
+    </div>
+
+    ${inv.notes ? `
+      <div class="box" style="margin-bottom:24px">
+        <div style="font-weight:700;font-size:11px;color:#64748b;margin-bottom:4px">NOTES &amp; INSTRUCTIONS</div>
+        <div style="font-size:12px">${esc(inv.notes)}</div>
+      </div>
+    ` : ''}
+
+    <div class="footer">
+      Thank you for your business! &middot; Univerz Creative Agency (Pvt) Ltd
+    </div>
+  </body>
+  </html>
+  `;
+
+  printWindow.document.open();
+  printWindow.document.write(html);
+  printWindow.document.close();
+}
+
+
+// scratch/financial_modals.js
+
+/* =================================================================
+   MODALS & FORMS FOR FINANCIAL MANAGEMENT
+   ================================================================= */
+
+/* ----- Business Client Form (Add / Edit) ----- */
+function financialClientForm(c){
+  const isNew = !c;
+  if(!canManageFinancial()){
+    toast("You have viewing access. Only Sahan, Subodha or HR can manage clients.");
+    return;
+  }
+
+  c = c || {
+    id: "fcl_" + uid(),
+    businessName: "",
+    contactPerson: "",
+    phone: "",
+    email: "",
+    category: "Corporate",
+    services: ["website"],
+    accountManagerId: DB.currentUserId,
+    billingCycle: "monthly",
+    notes: "",
+    contactId: "",
+    status: "active"
+  };
+
+  const services = Array.isArray(c.services) ? c.services : jsonbArray(c.services);
+
+  openModal(`
+  <div class="modal" style="max-width:580px">
+    <header>
+      <h3>${isNew ? "Register New Business Client" : "Edit Business Client — " + esc(c.businessName)}</h3>
+      <button class="x" data-close>×</button>
+    </header>
+    <div class="pad">
+      <div class="field" style="margin-bottom:12px">
+        <label>Business / Company Name *</label>
+        <input id="fcl-name" value="${esc(c.businessName)}" placeholder="e.g. Apex Holdings (Pvt) Ltd" autofocus />
+      </div>
+
+      <div class="grid2" style="margin-bottom:12px">
+        <div class="field">
+          <label>Main Contact Person</label>
+          <input id="fcl-contact-person" value="${esc(c.contactPerson)}" placeholder="e.g. Rohan Jayawardena" />
+        </div>
+        <div class="field">
+          <label>Business Category</label>
+          <select id="fcl-category">
+            ${FIN_CLIENT_CATEGORIES.map(cat => `<option value="${cat}" ${c.category===cat?'selected':''}>${cat}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+
+      <div class="grid2" style="margin-bottom:12px">
+        <div class="field">
+          <label>Phone Number</label>
+          <input id="fcl-phone" value="${esc(c.phone)}" placeholder="e.g. 077 123 4567" />
+        </div>
+        <div class="field">
+          <label>Email Address</label>
+          <input id="fcl-email" value="${esc(c.email)}" placeholder="e.g. finance@apex.lk" />
+        </div>
+      </div>
+
+      <div class="grid2" style="margin-bottom:12px">
+        <div class="field">
+          <label>Assigned Account Manager</label>
+          <select id="fcl-manager">
+            ${(DB.users || []).map(u => `<option value="${u.id}" ${c.accountManagerId===u.id?'selected':''}>${esc(u.name)} (${esc(u.title||u.role)})</option>`).join('')}
+          </select>
+        </div>
+        <div class="field">
+          <label>Billing Cycle</label>
+          <select id="fcl-cycle">
+            <option value="monthly" ${c.billingCycle==='monthly'?'selected':''}>Monthly</option>
+            <option value="quarterly" ${c.billingCycle==='quarterly'?'selected':''}>Quarterly</option>
+            <option value="bi-annual" ${c.billingCycle==='bi-annual'?'selected':''}>Bi-Annual</option>
+            <option value="annual" ${c.billingCycle==='annual'?'selected':''}>Annual</option>
+            <option value="milestone" ${c.billingCycle==='milestone'?'selected':''}>Milestone Based</option>
+            <option value="one-time" ${c.billingCycle==='one-time'?'selected':''}>One-Time Project</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Link to existing CRM contact -->
+      <div class="field" style="margin-bottom:12px">
+        <label>Link to Existing CRM Contact (Optional)</label>
+        <select id="fcl-contact-id">
+          <option value="">-- None / Standalone Business --</option>
+          ${(DB.contacts || []).map(ct => `<option value="${ct.id}" ${c.contactId===ct.id?'selected':''}>${esc(ct.name)} ${ct.company ? `(${esc(ct.company)})` : ''}</option>`).join('')}
+        </select>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">Links financial profile to an existing CRM lead or contact without duplicating records.</div>
+      </div>
+
+      <!-- Services Provided Checkboxes -->
+      <div class="field" style="margin-bottom:12px">
+        <label>Services Provided (Select all that apply)</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;background:var(--surface-2);padding:10px;border-radius:8px">
+          ${FIN_SERVICE_CATEGORIES.map(s => `
+            <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer">
+              <input type="checkbox" name="fcl-service" value="${s.id}" ${services.includes(s.id)?'checked':''} />
+              <span>${s.icon} ${s.label}</span>
+            </label>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="field" style="margin-bottom:14px">
+        <label>Notes &amp; Billing Terms</label>
+        <textarea id="fcl-notes" rows="2" placeholder="Special agreements, payment notes, PO numbers...">${esc(c.notes)}</textarea>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;gap:8px;border-top:1px solid var(--line);padding-top:12px">
+        <button class="btn" data-close>Cancel</button>
+        <button class="btn primary" id="btn-fcl-save">${isNew ? "Register Client" : "Save Changes"}</button>
+      </div>
+    </div>
+  </div>`);
+
+  $("#btn-fcl-save").onclick = async () => {
+    const name = $("#fcl-name").value.trim();
+    if(!name){ toast("Please enter the business name"); $("#fcl-name").focus(); return; }
+
+    const selectedServices = Array.from(document.querySelectorAll('input[name="fcl-service"]:checked')).map(el => el.value);
+
+    c.businessName = name;
+    c.contactPerson = $("#fcl-contact-person").value.trim();
+    c.category = $("#fcl-category").value;
+    c.phone = $("#fcl-phone").value.trim();
+    c.email = $("#fcl-email").value.trim();
+    c.accountManagerId = $("#fcl-manager").value;
+    c.billingCycle = $("#fcl-cycle").value;
+    c.contactId = $("#fcl-contact-id").value || null;
+    c.services = selectedServices;
+    c.notes = $("#fcl-notes").value.trim();
+
+    if(isNew){
+      c.createdAt = Date.now();
+      c.createdBy = DB.currentUserId;
+      if(!DB.finClients) DB.finClients = [];
+      DB.finClients.unshift(c);
+    }
+
+    cacheLocal(DB);
+    await sbSave("fin_business_client", objToSnake(c), isNew ? null : c.id);
+    closeModal();
+    toast(isNew ? "✓ Business client registered!" : "✓ Business client updated!");
+    renderFinancial();
+  };
+}
+
+/* ----- Service Charge Form (Recurring or One-Time) ----- */
+function financialChargeForm(clientId, ch){
+  const isNew = !ch;
+  if(!canManageFinancial()){
+    toast("You have viewing access. Only authorized managers can add charges.");
+    return;
+  }
+
+  const client = finClient(clientId);
+  ch = ch || {
+    id: "fch_" + uid(),
+    clientId,
+    chargeType: "website",
+    title: "",
+    isRecurring: true,
+    billingPeriod: "monthly",
+    amount: 0,
+    currency: "Rs.",
+    notes: "",
+    active: true
+  };
+
+  openModal(`
+  <div class="modal" style="max-width:500px">
+    <header>
+      <h3>${isNew ? "Add Service Charge" : "Edit Charge"} — ${esc(client?.businessName || 'Client')}</h3>
+      <button class="x" data-close>×</button>
+    </header>
+    <div class="pad">
+      <div class="field" style="margin-bottom:12px">
+        <label>Service Category *</label>
+        <select id="fch-type">
+          ${FIN_SERVICE_CATEGORIES.map(s => `<option value="${s.id}" ${ch.chargeType===s.id?'selected':''}>${s.icon} ${s.label}</option>`).join('')}
+        </select>
+      </div>
+
+      <div class="field" style="margin-bottom:12px">
+        <label>Charge Title / Description *</label>
+        <input id="fch-title" value="${esc(ch.title)}" placeholder="e.g. Monthly Website Maintenance &amp; Cloud Hosting" autofocus />
+      </div>
+
+      <div class="grid2" style="margin-bottom:12px">
+        <div class="field">
+          <label>Amount (${ch.currency || 'Rs.'}) *</label>
+          <input type="number" id="fch-amount" value="${ch.amount || ''}" placeholder="e.g. 45000" />
+        </div>
+        <div class="field">
+          <label>Billing Frequency</label>
+          <select id="fch-frequency">
+            <option value="monthly" ${ch.billingPeriod==='monthly'?'selected':''}>Monthly Recurring</option>
+            <option value="quarterly" ${ch.billingPeriod==='quarterly'?'selected':''}>Quarterly</option>
+            <option value="bi-annual" ${ch.billingPeriod==='bi-annual'?'selected':''}>Bi-Annual</option>
+            <option value="annual" ${ch.billingPeriod==='annual'?'selected':''}>Annual</option>
+            <option value="one-time" ${!ch.isRecurring?'selected':''}>One-Time Charge</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field" style="margin-bottom:12px">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+          <input type="checkbox" id="fch-recurring" ${ch.isRecurring ? 'checked' : ''} />
+          <span><b>Is Recurring Retainer</b> (uncheck for one-time project fee)</span>
+        </label>
+      </div>
+
+      <div class="field" style="margin-bottom:14px">
+        <label>Notes (Optional)</label>
+        <textarea id="fch-notes" rows="2" placeholder="Details of deliverables, budget breakdown...">${esc(ch.notes)}</textarea>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;gap:8px;border-top:1px solid var(--line);padding-top:12px">
+        <button class="btn" data-close>Cancel</button>
+        <button class="btn primary" id="btn-fch-save">${isNew ? "Add Charge" : "Save Charge"}</button>
+      </div>
+    </div>
+  </div>`);
+
+  $("#fch-frequency").onchange = e => {
+    if(e.target.value === "one-time") $("#fch-recurring").checked = false;
+    else $("#fch-recurring").checked = true;
+  };
+
+  $("#btn-fch-save").onclick = async () => {
+    const title = $("#fch-title").value.trim();
+    const amount = Number($("#fch-amount").value);
+    if(!title){ toast("Please enter a charge title"); $("#fch-title").focus(); return; }
+    if(isNaN(amount) || amount <= 0){ toast("Please enter a valid amount"); $("#fch-amount").focus(); return; }
+
+    ch.chargeType = $("#fch-type").value;
+    ch.title = title;
+    ch.amount = amount;
+    ch.isRecurring = $("#fch-recurring").checked;
+    ch.billingPeriod = $("#fch-frequency").value;
+    ch.notes = $("#fch-notes").value.trim();
+
+    if(isNew){
+      ch.createdAt = Date.now();
+      ch.createdBy = DB.currentUserId;
+      if(!DB.finCharges) DB.finCharges = [];
+      DB.finCharges.unshift(ch);
+    }
+
+    cacheLocal(DB);
+    await sbSave("fin_client_charge", objToSnake(ch), isNew ? null : ch.id);
+    closeModal();
+    toast(isNew ? "✓ Service charge added!" : "✓ Service charge updated!");
+    renderFinancial();
+  };
+}
+
+/* ----- Generate Invoice from Active Charges Modal ----- */
+function financialGenerateInvoiceModal(clientId){
+  const client = finClient(clientId);
+  if(!client){ toast("Client not found"); return; }
+
+  const charges = (DB.finCharges || []).filter(c => c.clientId === clientId && c.active !== false);
+  if(charges.length === 0){
+    toast("No active charges configured for this client. Add a charge first.");
+    financialChargeForm(clientId, null);
+    return;
+  }
+
+  const now = new Date();
+  const currentMonthStr = now.toLocaleString('default', { month: 'long', year: 'numeric' });
+  const totalAmount = charges.reduce((s, c) => s + (Number(c.amount) || 0), 0);
+
+  // Generate sequence-based invoice number
+  const prefix = "INV-" + (client.businessName.replace(/[^A-Za-z]/g, '').slice(0,3).toUpperCase() || "UNZ");
+  const count = (DB.finInvoices || []).length + 1;
+  const invNumber = `${prefix}-${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}-${String(count).padStart(3,'0')}`;
+
+  const defaultDue = new Date(Date.now() + 14 * 86400000).toISOString().slice(0,10);
+  const defaultIssue = new Date().toISOString().slice(0,10);
+
+  openModal(`
+  <div class="modal" style="max-width:520px">
+    <header>
+      <h3>Generate Invoice — ${esc(client.businessName)}</h3>
+      <button class="x" data-close>×</button>
+    </header>
+    <div class="pad">
+      <div style="background:var(--surface-2);border-radius:8px;padding:12px;margin-bottom:14px;font-size:12.5px">
+        <div style="font-weight:700;margin-bottom:6px">Active charges included in this invoice:</div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          ${charges.map(ch => `
+            <div style="display:flex;justify-content:space-between">
+              <span>&bull; ${esc(ch.title)} (${finSvcCat(ch.chargeType).label})</span>
+              <b>${fmtMoney(ch.amount, ch.currency)}</b>
+            </div>
+          `).join('')}
+        </div>
+        <div style="border-top:1px solid var(--line);margin-top:8px;padding-top:6px;display:flex;justify-content:space-between;font-weight:800;font-size:13.5px">
+          <span>Total Invoice Amount:</span>
+          <span style="color:var(--teal)">${fmtMoney(totalAmount)}</span>
+        </div>
+      </div>
+
+      <div class="field" style="margin-bottom:12px">
+        <label>Invoice Number *</label>
+        <input id="fin-gen-number" value="${esc(invNumber)}" />
+      </div>
+
+      <div class="field" style="margin-bottom:12px">
+        <label>Invoice Title / Billing Cycle</label>
+        <input id="fin-gen-title" value="Retainer &amp; Services — ${currentMonthStr}" />
+      </div>
+
+      <div class="grid2" style="margin-bottom:12px">
+        <div class="field">
+          <label>Issue Date</label>
+          <input type="date" id="fin-gen-issue" value="${defaultIssue}" />
+        </div>
+        <div class="field">
+          <label>Payment Due Date *</label>
+          <input type="date" id="fin-gen-due" value="${defaultDue}" />
+        </div>
+      </div>
+
+      <div class="field" style="margin-bottom:14px">
+        <label>Payment Terms &amp; Instructions</label>
+        <input id="fin-gen-terms" value="Net 14 &middot; Direct Bank Transfer to Commercial Bank Account #1000123456789" />
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;gap:8px;border-top:1px solid var(--line);padding-top:12px">
+        <button class="btn" data-close>Cancel</button>
+        <button class="btn primary" id="btn-fin-gen-confirm">⚡ Generate &amp; Issue Invoice</button>
+      </div>
+    </div>
+  </div>`);
+
+  $("#btn-fin-gen-confirm").onclick = async () => {
+    const invNum = $("#fin-gen-number").value.trim();
+    const title = $("#fin-gen-title").value.trim();
+    const issueVal = $("#fin-gen-issue").value;
+    const dueVal = $("#fin-gen-due").value;
+    const terms = $("#fin-gen-terms").value.trim();
+
+    if(!invNum){ toast("Please enter an invoice number"); return; }
+    if(!dueVal){ toast("Please choose a payment due date"); return; }
+
+    const issuedAt = issueVal ? new Date(issueVal).getTime() : Date.now();
+    const dueAt = new Date(dueVal).getTime();
+
+    // Check duplicate invoice number
+    if((DB.finInvoices || []).some(i => i.invoiceNumber.toLowerCase() === invNum.toLowerCase())){
+      toast("An invoice with this number already exists. Please choose a unique number.");
+      return;
+    }
+
+    const newInv = {
+      id: "finv_" + uid(),
+      invoiceNumber: invNum,
+      clientId: client.id,
+      serviceCategory: charges[0]?.chargeType || "other",
+      title: title || `Services Invoice - ${client.businessName}`,
+      description: charges.map(c => c.title).join(", "),
+      billingCycle: currentMonthStr,
+      amount: totalAmount,
+      amountPaid: 0,
+      balanceDue: totalAmount,
+      currency: "Rs.",
+      status: "issued",
+      issuedAt,
+      dueAt,
+      paidAt: null,
+      paymentTerms: terms,
+      notes: "",
+      createdBy: DB.currentUserId,
+      createdAt: Date.now()
+    };
+
+    if(!DB.finInvoices) DB.finInvoices = [];
+    DB.finInvoices.unshift(newInv);
+
+    cacheLocal(DB);
+    await sbSave("fin_client_invoice", objToSnake(newInv));
+    logFinanceAction("Generated Client Invoice", `Issued #${invNum} for ${client.businessName} - ${fmtMoney(totalAmount)}`, totalAmount);
+    checkFinancialReminders();
+    closeModal();
+    toast("✓ Invoice #" + invNum + " generated and issued!");
+    renderFinancial();
+  };
+}
+
+/* ----- Direct Invoice Form (Add / Edit) ----- */
+function financialInvoiceForm(inv, prefilledClientId){
+  const isNew = !inv;
+  if(!canManageFinancial()){
+    toast("You have viewing access. Only authorized managers can create invoices.");
+    return;
+  }
+
+  const defaultDue = new Date(Date.now() + 14 * 86400000).toISOString().slice(0,10);
+  const defaultIssue = new Date().toISOString().slice(0,10);
+  const count = (DB.finInvoices || []).length + 1;
+  const defaultNum = `INV-UNZ-${new Date().getFullYear()}-${String(count).padStart(3,'0')}`;
+
+  inv = inv || {
+    id: "finv_" + uid(),
+    invoiceNumber: defaultNum,
+    clientId: prefilledClientId || (DB.finClients?.[0]?.id || ""),
+    serviceCategory: "website",
+    title: "",
+    description: "",
+    billingCycle: "",
+    amount: 0,
+    amountPaid: 0,
+    balanceDue: 0,
+    currency: "Rs.",
+    status: "issued",
+    issuedAt: Date.now(),
+    dueAt: Date.now() + 14 * 86400000,
+    paymentTerms: "Net 14",
+    notes: ""
+  };
+
+  const issueStr = inv.issuedAt ? new Date(inv.issuedAt).toISOString().slice(0,10) : defaultIssue;
+  const dueStr = inv.dueAt ? new Date(inv.dueAt).toISOString().slice(0,10) : defaultDue;
+
+  openModal(`
+  <div class="modal" style="max-width:540px">
+    <header>
+      <h3>${isNew ? "Create Direct Invoice" : "Edit Invoice #" + esc(inv.invoiceNumber)}</h3>
+      <button class="x" data-close>×</button>
+    </header>
+    <div class="pad">
+      <div class="grid2" style="margin-bottom:12px">
+        <div class="field">
+          <label>Business Client *</label>
+          <select id="finv-client">
+            ${(DB.finClients || []).map(cl => `<option value="${cl.id}" ${inv.clientId===cl.id?'selected':''}>${esc(cl.businessName)}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field">
+          <label>Service Category</label>
+          <select id="finv-category">
+            ${FIN_SERVICE_CATEGORIES.map(s => `<option value="${s.id}" ${inv.serviceCategory===s.id?'selected':''}>${s.icon} ${s.label}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+
+      <div class="grid2" style="margin-bottom:12px">
+        <div class="field">
+          <label>Invoice Number *</label>
+          <input id="finv-number" value="${esc(inv.invoiceNumber)}" placeholder="e.g. INV-2026-001" />
+        </div>
+        <div class="field">
+          <label>Invoice Status</label>
+          <select id="finv-status">
+            <option value="draft" ${inv.status==='draft'?'selected':''}>Draft</option>
+            <option value="issued" ${inv.status==='issued'?'selected':''}>Issued</option>
+            <option value="partially_paid" ${inv.status==='partially_paid'?'selected':''}>Partially Paid</option>
+            <option value="paid" ${inv.status==='paid'?'selected':''}>Paid</option>
+            <option value="overdue" ${inv.status==='overdue'?'selected':''}>Overdue</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field" style="margin-bottom:12px">
+        <label>Invoice Title / Subject *</label>
+        <input id="finv-title" value="${esc(inv.title)}" placeholder="e.g. Website Re-design Phase 1" />
+      </div>
+
+      <div class="field" style="margin-bottom:12px">
+        <label>Line Items / Deliverables Description</label>
+        <textarea id="finv-desc" rows="2" placeholder="Itemized deliverables, work scope...">${esc(inv.description)}</textarea>
+      </div>
+
+      <div class="grid2" style="margin-bottom:12px">
+        <div class="field">
+          <label>Total Invoice Amount (Rs.) *</label>
+          <input type="number" id="finv-amount" value="${inv.amount || ''}" placeholder="e.g. 75000" />
+        </div>
+        <div class="field">
+          <label>Payment Terms</label>
+          <input id="finv-terms" value="${esc(inv.paymentTerms || 'Net 14')}" placeholder="e.g. Net 14" />
+        </div>
+      </div>
+
+      <div class="grid2" style="margin-bottom:14px">
+        <div class="field">
+          <label>Issued Date</label>
+          <input type="date" id="finv-issue" value="${issueStr}" />
+        </div>
+        <div class="field">
+          <label>Payment Due Date *</label>
+          <input type="date" id="finv-due" value="${dueStr}" />
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;gap:8px;border-top:1px solid var(--line);padding-top:12px">
+        <button class="btn" data-close>Cancel</button>
+        <button class="btn primary" id="btn-finv-save">${isNew ? "Create Invoice" : "Save Invoice"}</button>
+      </div>
+    </div>
+  </div>`);
+
+  $("#btn-finv-save").onclick = async () => {
+    const num = $("#finv-number").value.trim();
+    const title = $("#finv-title").value.trim();
+    const amount = Number($("#finv-amount").value);
+    const dueVal = $("#finv-due").value;
+
+    if(!num){ toast("Please enter invoice number"); return; }
+    if(!title){ toast("Please enter invoice title"); return; }
+    if(isNaN(amount) || amount <= 0){ toast("Please enter valid amount"); return; }
+    if(!dueVal){ toast("Please choose payment due date"); return; }
+
+    inv.invoiceNumber = num;
+    inv.clientId = $("#finv-client").value;
+    inv.serviceCategory = $("#finv-category").value;
+    inv.title = title;
+    inv.description = $("#finv-desc").value.trim();
+    inv.amount = amount;
+    inv.paymentTerms = $("#finv-terms").value.trim();
+    inv.issuedAt = $("#finv-issue").value ? new Date($("#finv-issue").value).getTime() : Date.now();
+    inv.dueAt = new Date(dueVal).getTime();
+    inv.status = $("#finv-status").value;
+
+    // Balance calculation
+    inv.balanceDue = Math.max(0, inv.amount - (Number(inv.amountPaid) || 0));
+    if(inv.balanceDue <= 0 && inv.status !== "void"){
+      inv.status = "paid";
+      inv.paidAt = inv.paidAt || Date.now();
+    }
+
+    if(isNew){
+      inv.createdAt = Date.now();
+      inv.createdBy = DB.currentUserId;
+      if(!DB.finInvoices) DB.finInvoices = [];
+      DB.finInvoices.unshift(inv);
+    }
+
+    cacheLocal(DB);
+    await sbSave("fin_client_invoice", objToSnake(inv), isNew ? null : inv.id);
+    checkFinancialReminders();
+    closeModal();
+    toast(isNew ? "✓ Invoice created!" : "✓ Invoice updated!");
+    renderFinancial();
+  };
+}
+
+/* ----- Record Payment Modal (Section 9) ----- */
+function financialPaymentModal(invoiceId){
+  const inv = (DB.finInvoices || []).find(i => i.id === invoiceId);
+  if(!inv){ toast("Invoice not found"); return; }
+  const client = finClient(inv.clientId);
+
+  if(!canManageFinancial()){
+    toast("You have viewing access. Only authorized managers can record payments.");
+    return;
+  }
+
+  const remaining = Number(inv.balanceDue) || 0;
+  const defaultNum = "PAY-" + String(Date.now()).slice(-6);
+
+  openModal(`
+  <div class="modal" style="max-width:480px">
+    <header>
+      <h3>Record Payment — #${esc(inv.invoiceNumber)}</h3>
+      <button class="x" data-close>×</button>
+    </header>
+    <div class="pad">
+      <!-- Invoice Summary Box -->
+      <div style="background:var(--surface-2);border-radius:8px;padding:12px;margin-bottom:14px;font-size:12.5px">
+        <div style="font-weight:700;margin-bottom:4px;color:var(--ink)">${esc(client?.businessName || inv.clientName || 'Client')}</div>
+        <div style="font-size:11.5px;color:var(--muted);margin-bottom:8px">${esc(inv.title)}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;border-top:1px solid var(--line);padding-top:8px">
+          <div>
+            <span style="color:var(--muted);font-size:11px">Total Amount</span><br/>
+            <b>${fmtMoney(inv.amount, inv.currency)}</b>
+          </div>
+          <div>
+            <span style="color:var(--muted);font-size:11px">Already Paid</span><br/>
+            <b style="color:#15803d">${fmtMoney(inv.amountPaid, inv.currency)}</b>
+          </div>
+          <div>
+            <span style="color:var(--muted);font-size:11px">Balance Due</span><br/>
+            <b style="color:var(--clay);font-size:13.5px">${fmtMoney(remaining, inv.currency)}</b>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid2" style="margin-bottom:12px">
+        <div class="field">
+          <label>Payment Amount (Rs.) *</label>
+          <input type="number" id="fpay-amount" value="${remaining}" placeholder="e.g. 25000" autofocus />
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">Partial payments allowed. Remaining balance is calculated automatically.</div>
+        </div>
+        <div class="field">
+          <label>Payment Date *</label>
+          <input type="date" id="fpay-date" value="${new Date().toISOString().slice(0,10)}" />
+        </div>
+      </div>
+
+      <div class="grid2" style="margin-bottom:12px">
+        <div class="field">
+          <label>Payment Method</label>
+          <select id="fpay-method">
+            ${FIN_PAYMENT_METHODS.map(m => `<option value="${m.id}">${m.label}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field">
+          <label>Reference / Cheque #</label>
+          <input id="fpay-ref" placeholder="e.g. TXN-998822 / Chq 4501" />
+        </div>
+      </div>
+
+      <div class="field" style="margin-bottom:14px">
+        <label>Payment Notes (Optional)</label>
+        <textarea id="fpay-notes" rows="2" placeholder="Bank deposit slip reference, branch, verified by..."></textarea>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;gap:8px;border-top:1px solid var(--line);padding-top:12px">
+        <button class="btn" data-close>Cancel</button>
+        <button class="btn primary" id="btn-fpay-save">💰 Record &amp; Apply Payment</button>
+      </div>
+    </div>
+  </div>`);
+
+  $("#btn-fpay-save").onclick = async () => {
+    const amt = Number($("#fpay-amount").value);
+    const dateVal = $("#fpay-date").value;
+    const method = $("#fpay-method").value;
+    const ref = $("#fpay-ref").value.trim();
+    const notes = $("#fpay-notes").value.trim();
+
+    if(isNaN(amt) || amt <= 0){ toast("Please enter a valid payment amount"); return; }
+    if(amt > remaining){ toast(`Payment is more than the balance due (${fmtMoney(remaining, inv.currency)})`); return; }
+    if(!dateVal){ toast("Please select payment date"); return; }
+
+    const paidAt = new Date(dateVal).getTime();
+
+    // 1. Create Payment Record
+    const payment = {
+      id: "fpay_" + uid(),
+      invoiceId: inv.id,
+      clientId: inv.clientId,
+      paymentNumber: defaultNum,
+      amount: amt,
+      currency: inv.currency || "Rs.",
+      paymentMethod: method,
+      reference: ref,
+      paidAt,
+      notes,
+      createdBy: DB.currentUserId,
+      createdAt: Date.now()
+    };
+
+    if(!DB.finPayments) DB.finPayments = [];
+    DB.finPayments.unshift(payment);
+
+    // 2. Update Invoice Balances & Status
+    inv.amountPaid = (Number(inv.amountPaid) || 0) + amt;
+    inv.balanceDue = Math.max(0, (Number(inv.amount) || 0) - inv.amountPaid);
+
+    if(inv.balanceDue <= 0){
+      inv.status = "paid";
+      inv.paidAt = paidAt;
+      // Immediately resolve reminders for this settled invoice
+      (DB.finReminders || []).forEach(r => {
+        if(r.invoiceId === inv.id && (r.status === "pending" || r.status === "sent")){
+          r.status = "dismissed";
+          r.notes = (r.notes || "") + " [Auto-resolved: Fully paid]";
+          sbSave("fin_payment_reminder", objToSnake(r), r.id);
+        }
+      });
+    } else {
+      inv.status = "partially_paid";
+    }
+
+    cacheLocal(DB);
+    await sbSave("fin_client_payment", objToSnake(payment));
+    await sbSave("fin_client_invoice", objToSnake(inv), inv.id);
+
+    logFinanceAction("Recorded Client Payment", `Received ${fmtMoney(amt, inv.currency)} for invoice #${inv.invoiceNumber} from ${client?.businessName || 'Client'}`, amt);
+    checkFinancialReminders();
+    closeModal();
+    toast(`✓ Recorded payment of ${fmtMoney(amt, inv.currency)}! Balance due: ${fmtMoney(inv.balanceDue, inv.currency)}`);
+    renderFinancial();
+  };
+}
+
+/* ----- Follow-up & Reminder Modal (Section 5 & 7) ----- */
+function financialFollowupModal(invoiceId){
+  const inv = (DB.finInvoices || []).find(i => i.id === invoiceId);
+  if(!inv){ toast("Invoice not found"); return; }
+  const client = finClient(inv.clientId);
+
+  const defaultNext = new Date(Date.now() + 3 * 86400000).toISOString().slice(0,10);
+
+  openModal(`
+  <div class="modal" style="max-width:480px">
+    <header>
+      <h3>Log Client Follow-up — #${esc(inv.invoiceNumber)}</h3>
+      <button class="x" data-close>×</button>
+    </header>
+    <div class="pad">
+      <div style="background:var(--surface-2);border-radius:8px;padding:12px;margin-bottom:14px;font-size:12.5px">
+        <div style="font-weight:700">${esc(client?.businessName || 'Client')}</div>
+        <div style="font-size:11.5px;color:var(--muted)">Contact: ${esc(client?.contactPerson || '—')} &middot; Phone: ${esc(client?.phone || '—')}</div>
+        <div style="margin-top:6px;font-size:13px">
+          Outstanding: <b style="color:var(--clay)">${fmtMoney(inv.balanceDue, inv.currency)}</b> (Due: ${fmtWhen(inv.dueAt)})
+        </div>
+      </div>
+
+      <div class="field" style="margin-bottom:12px">
+        <label>Follow-up Channel</label>
+        <select id="frem-channel">
+          <option value="call">📞 Phone Call</option>
+          <option value="whatsapp">💬 WhatsApp Message</option>
+          <option value="email">✉️ Email</option>
+          <option value="in_person">🤝 In-Person Meeting</option>
+        </select>
+      </div>
+
+      <div class="field" style="margin-bottom:12px">
+        <label>Follow-up Notes &amp; Client Response *</label>
+        <textarea id="frem-notes" rows="3" placeholder="Client promised payment by Friday, sent updated invoice PDF..." autofocus></textarea>
+      </div>
+
+      <div class="field" style="margin-bottom:14px">
+        <label>Schedule Next Follow-up Date</label>
+        <input type="date" id="frem-next-date" value="${defaultNext}" />
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;gap:8px;border-top:1px solid var(--line);padding-top:12px">
+        <button class="btn" data-close>Cancel</button>
+        <button class="btn primary" id="btn-frem-save">Save Follow-up</button>
+      </div>
+    </div>
+  </div>`);
+
+  $("#btn-frem-save").onclick = async () => {
+    const notes = $("#frem-notes").value.trim();
+    const channel = $("#frem-channel").value;
+    const nextDate = $("#frem-next-date").value ? new Date($("#frem-next-date").value).getTime() : null;
+
+    if(!notes){ toast("Please enter follow-up notes"); return; }
+
+    const rem = {
+      id: "rem_" + uid(),
+      invoiceId: inv.id,
+      clientId: inv.clientId,
+      reminderType: "manual_followup",
+      dueAt: inv.dueAt,
+      triggeredAt: Date.now(),
+      channel,
+      status: "followed_up",
+      notes: `[${channel.toUpperCase()}] ${notes}`,
+      followupDate: nextDate,
+      userId: DB.currentUserId,
+      createdAt: Date.now()
+    };
+
+    if(!DB.finReminders) DB.finReminders = [];
+    DB.finReminders.unshift(rem);
+
+    cacheLocal(DB);
+    await sbSave("fin_payment_reminder", objToSnake(rem));
+    closeModal();
+    toast("✓ Follow-up logged successfully!");
+    renderFinancial();
+  };
+}
+
+/* ----- Delete Functions (Restricted to Sahan Admin) ----- */
+function deleteFinancialClient(clientId){
+  if(!canDeleteFinancial()){ toast("Only Sahan (Admin) can delete client records."); return; }
+  const cl = finClient(clientId);
+  if(!cl) return;
+
+  if(confirm(`⚠️ Permanently delete ${cl.businessName}? Associated charges and historical records will be removed.`)){
+    DB.finClients = (DB.finClients || []).filter(c => c.id !== clientId);
+    cacheLocal(DB);
+    sbWrite(sb.from('fin_business_client').delete().eq('id', clientId));
+    toast("✓ Business client deleted");
+    if(FINANCIAL_SELECTED_CLIENT_ID === clientId) FINANCIAL_SELECTED_CLIENT_ID = null;
+    renderFinancial();
+  }
+}
+
+function deleteFinancialInvoice(invoiceId){
+  if(!canDeleteFinancial()){ toast("Only Sahan (Admin) can delete invoices."); return; }
+  const inv = (DB.finInvoices || []).find(i => i.id === invoiceId);
+  if(!inv) return;
+
+  if(confirm(`⚠️ Delete invoice #${inv.invoiceNumber}? This action cannot be undone.`)){
+    DB.finInvoices = (DB.finInvoices || []).filter(i => i.id !== invoiceId);
+    cacheLocal(DB);
+    sbWrite(sb.from('fin_client_invoice').delete().eq('id', invoiceId));
+    toast("✓ Invoice deleted");
+    renderFinancial();
+  }
+}
+
+function deleteFinancialPayment(paymentId){
+  if(!canDeleteFinancial()){ toast("Only Sahan (Admin) can delete payment records."); return; }
+  const pay = (DB.finPayments || []).find(p => p.id === paymentId);
+  if(!pay) return;
+
+  if(confirm(`⚠️ Delete payment record of ${fmtMoney(pay.amount)}? Invoice balances will need to be re-checked.`)){
+    DB.finPayments = (DB.finPayments || []).filter(p => p.id !== paymentId);
+    // Adjust invoice if present
+    const inv = (DB.finInvoices || []).find(i => i.id === pay.invoiceId);
+    if(inv){
+      inv.amountPaid = Math.max(0, (Number(inv.amountPaid) || 0) - (Number(pay.amount) || 0));
+      inv.balanceDue = Math.max(0, (Number(inv.amount) || 0) - inv.amountPaid);
+      if(inv.balanceDue > 0 && (inv.status === "paid" || inv.status === "partially_paid")){
+        inv.status = inv.amountPaid > 0 ? "partially_paid" : "issued";
+        inv.paidAt = null;
+      }
+      sbSave("fin_client_invoice", objToSnake(inv), inv.id);
+    }
+    cacheLocal(DB);
+    sbWrite(sb.from('fin_client_payment').delete().eq('id', paymentId));
+    toast("✓ Payment record deleted");
+    renderFinancial();
+  }
+}
+
+function deleteFinancialCharge(chargeId){
+  if(!canDeleteFinancial()){ toast("Only Sahan (Admin) can delete service charges. Use Pause instead."); return; }
+  if(confirm("Delete this service charge?")){
+    DB.finCharges = (DB.finCharges || []).filter(c => c.id !== chargeId);
+    cacheLocal(DB);
+    sbWrite(sb.from('fin_client_charge').delete().eq('id', chargeId));
+    toast("✓ Service charge deleted");
+    renderFinancial();
+  }
+}
+
+
 
 function renderAccount(){
   if(!DB.accounts) DB.accounts = [];
@@ -13417,6 +16558,9 @@ function submitAuth(){
     buildMe();
     go(getInitialView());
     subscribeRealtime();
+    // Once per page load — logging out and back in must not stack a second timer
+    if(!window.FIN_REMINDER_TIMER) window.FIN_REMINDER_TIMER = setInterval(checkFinancialReminders, 60000);
+    setTimeout(checkFinancialReminders, 3000);
     toast(`Welcome back, ${selUser.name}!`);
   } else {
     if(errEl){
@@ -13727,9 +16871,201 @@ document.addEventListener("keydown", e => {
   }
 });
 
+/* Financial filters are <select>s: they must react to "change", not "click" —
+   re-rendering on click destroys the dropdown before an option can be picked. */
+$("#content").addEventListener("change", e => {
+  const setters = {
+    "fin-filter-service":  v => FINANCIAL_SERVICE_FILTER = v,
+    "fin-filter-status":   v => FINANCIAL_STATUS_FILTER = v,
+    "fin-filter-manager":  v => FINANCIAL_MANAGER_FILTER = v,
+    "fin-report-selector": v => FINANCIAL_REPORT_TYPE = v,
+  };
+  const set = setters[e.target.id];
+  if(!set) return;
+  set(e.target.value);
+  renderFinancial();
+});
+
 /* ---- Business section: products, quotations & invoices ---- */
 $("#content").addEventListener("click", e => {
-  const bizView    = e.target.closest("[data-biz-view]");
+  // Financial Management events
+  const finView = e.target.closest("[data-fin-view]");
+  const finRemFilter = e.target.closest("[data-fin-rem-filter]");
+  const finClientView = e.target.closest("[data-fin-client-view]");
+  const finClientEdit = e.target.closest("[data-fin-client-edit]");
+  const finClientDel = e.target.closest("[data-fin-client-del]");
+  const finClientInv = e.target.closest("[data-fin-client-invoice]");
+  const finGenInv = e.target.closest("[data-fin-gen-invoice]");
+  const finChargeAdd = e.target.closest("[data-fin-charge-add]");
+  const finChargeEdit = e.target.closest("[data-fin-charge-edit]");
+  const finChargeDel = e.target.closest("[data-fin-charge-del]");
+  const finChargeToggle = e.target.closest("[data-fin-charge-toggle]");
+  const finClientFollowup = e.target.closest("[data-fin-client-followup]");
+  const finRemFollowup = e.target.closest("[data-fin-rem-followup]");
+  const finInvPay = e.target.closest("[data-fin-inv-pay]");
+  const finInvPrint = e.target.closest("[data-fin-inv-print]");
+  const finInvEdit = e.target.closest("[data-fin-inv-edit]");
+  const finInvVoid = e.target.closest("[data-fin-inv-void]");
+  const finInvDel = e.target.closest("[data-fin-inv-del]");
+  const finPayDel = e.target.closest("[data-fin-pay-del]");
+
+  if(finView){
+    FINANCIAL_TAB = finView.dataset.finView;
+    FINANCIAL_STATUS_FILTER = "all";   // client and invoice tabs use different status values
+    renderFinancial();
+    return;
+  }
+  if(finRemFilter){
+    FINANCIAL_REMINDER_FILTER = finRemFilter.dataset.finRemFilter;
+    renderFinancial();
+    return;
+  }
+  if(finClientView){
+    const cid = finClientView.dataset.finClientView;
+    if(cid){
+      FINANCIAL_SELECTED_CLIENT_ID = cid;
+      FINANCIAL_TAB = "profile";
+      renderFinancial();
+    }
+    return;
+  }
+  if(finClientEdit){
+    financialClientForm(finClient(finClientEdit.dataset.finClientEdit));
+    return;
+  }
+  if(finClientDel){
+    deleteFinancialClient(finClientDel.dataset.finClientDel);
+    return;
+  }
+  if(finClientInv){
+    financialInvoiceForm(null, finClientInv.dataset.finClientInvoice);
+    return;
+  }
+  if(finGenInv){
+    financialGenerateInvoiceModal(finGenInv.dataset.finGenInvoice);
+    return;
+  }
+  if(finChargeAdd){
+    financialChargeForm(finChargeAdd.dataset.finChargeAdd, null);
+    return;
+  }
+  if(finChargeEdit){
+    const ch = (DB.finCharges || []).find(x => x.id === finChargeEdit.dataset.finChargeEdit);
+    if(ch) financialChargeForm(ch.clientId, ch);
+    return;
+  }
+  if(finChargeDel){
+    deleteFinancialCharge(finChargeDel.dataset.finChargeDel);
+    return;
+  }
+  if(finChargeToggle){
+    const ch = (DB.finCharges || []).find(x => x.id === finChargeToggle.dataset.finChargeToggle);
+    if(ch){
+      ch.active = ch.active === false ? true : false;
+      cacheLocal(DB);
+      sbSave("fin_client_charge", objToSnake(ch), ch.id);
+      toast(ch.active ? "✓ Charge activated" : "✓ Charge paused");
+      renderFinancial();
+    }
+    return;
+  }
+  if(finClientFollowup){
+    financialFollowupModal(finClientFollowup.dataset.finClientFollowup);
+    return;
+  }
+  if(finRemFollowup){
+    financialFollowupModal(finRemFollowup.dataset.finRemFollowup);
+    return;
+  }
+  if(finInvPay){
+    financialPaymentModal(finInvPay.dataset.finInvPay);
+    return;
+  }
+  if(finInvPrint){
+    printFinancialInvoice(finInvPrint.dataset.finInvPrint);
+    return;
+  }
+  if(finInvEdit){
+    const inv = (DB.finInvoices || []).find(x => x.id === finInvEdit.dataset.finInvEdit);
+    if(inv) financialInvoiceForm(inv);
+    return;
+  }
+  if(finInvVoid){
+    const inv = (DB.finInvoices || []).find(x => x.id === finInvVoid.dataset.finInvVoid);
+    if(inv && confirm("Void invoice #" + inv.invoiceNumber + "? It will no longer show as outstanding.")){
+      inv.status = "void";
+      cacheLocal(DB);
+      sbSave("fin_client_invoice", objToSnake(inv), inv.id);
+      checkFinancialReminders();
+      toast("✓ Invoice voided");
+      renderFinancial();
+    }
+    return;
+  }
+  if(finInvDel){
+    deleteFinancialInvoice(finInvDel.dataset.finInvDel);
+    return;
+  }
+  if(finPayDel){
+    deleteFinancialPayment(finPayDel.dataset.finPayDel);
+    return;
+  }
+  if(e.target.closest("#btn-fin-add-client") || e.target.closest("#btn-fin-card-add-client") || e.target.closest("#btn-fin-empty-add-client")){
+    financialClientForm(null);
+    return;
+  }
+  if(e.target.closest("#btn-fin-add-invoice") || e.target.closest("#btn-fin-card-add-inv") || e.target.closest("#btn-fin-empty-add-inv")){
+    financialInvoiceForm(null);
+    return;
+  }
+  if(e.target.closest("#btn-fin-refresh")){
+    toast("Refreshing financial records from shared database...");
+    loadFromSupabase().then(data => {
+      DB.finClients = data.finClients;
+      DB.finCharges = data.finCharges;
+      DB.finInvoices = data.finInvoices;
+      DB.finPayments = data.finPayments;
+      DB.finReminders = data.finReminders;
+      DB.finSettings = data.finSettings;
+      cacheLocal(DB);
+      renderFinancial();
+      toast("✓ Financial records refreshed!");
+    }).catch(err => {
+      toast("⚠ Refresh failed: " + err.message);
+    });
+    return;
+  }
+  if(e.target.closest("#btn-fin-export-payments-csv")){
+    exportFinancialReportCSV("payments");
+    return;
+  }
+  if(e.target.closest("#btn-fin-download-report-csv")){
+    exportFinancialReportCSV(FINANCIAL_REPORT_TYPE);
+    return;
+  }
+  if(e.target.closest("#btn-fin-save-settings")){
+    const autoRem = $("#cfg-fin-auto-reminders")?.checked ?? true;
+    const terms = $("#cfg-fin-terms")?.value.trim() || "Net 14";
+    const curr = $("#cfg-fin-currency")?.value.trim() || "Rs.";
+    saveFinSettings({
+      id: "default",
+      reminderIntervals: [7, 3, 1, 0, -1],
+      autoReminders: autoRem,
+      currency: curr,
+      defaultPaymentTerms: terms,
+      updatedAt: Date.now()
+    });
+    toast("✓ Financial settings saved!");
+    renderFinancial();
+    return;
+  }
+  if(e.target.closest("#btn-fin-run-reminders-now")){
+    checkFinancialReminders();
+    toast("✓ Payment reminder engine checked all invoices!");
+    renderFinancial();
+    return;
+  }
+  const bizView   = e.target.closest("[data-biz-view]");
   const bizFilter  = e.target.closest("[data-biz-filter]");
   const addProduct = e.target.closest("#btn-add-product") || e.target.closest("#btn-empty-add-product");
   const editProd   = e.target.closest("[data-edit-product]");
@@ -13788,7 +17124,20 @@ $("#nav").addEventListener("click",e=>{
 });
 $("#bottom-nav").addEventListener("click",e=>{ const b=e.target.closest("[data-view]"); if(b) go(b.dataset.view); });
 $("#add-contact").onclick = ()=>{
-  if(VIEW === "account"){
+  if(VIEW === "financial"){
+    if(!canManageFinancial()){
+      toast("Financial Management is in viewing mode for your account.");
+      return;
+    }
+    if(FINANCIAL_TAB === "clients") financialClientForm(null);
+    else if(FINANCIAL_TAB === "invoices") financialInvoiceForm(null);
+    else if(FINANCIAL_TAB === "payments") {
+      const openInvs = (DB.finInvoices || []).filter(i => (Number(i.balanceDue)||0) > 0);
+      if(openInvs.length > 0) financialPaymentModal(openInvs[0].id);
+      else toast("No unpaid invoices to record payment against.");
+    }
+    else financialClientForm(null);
+  } else if(VIEW === "account"){
     if(!isSahan()){
       claimForm(null);
     } else {
@@ -13953,7 +17302,8 @@ function changeMe(userId){
   syncHRUserSession();
   buildMe();
   toast("Now acting as "+(u?.name || userId));
-  if(VIEW === "account") renderAccount();
+  if(VIEW === "financial") renderFinancial();
+  else if(VIEW === "account") renderAccount();
   else if(VIEW === "humanresource") renderHumanResource();
   else draw();
 }
@@ -13980,6 +17330,36 @@ if(authToggle){
 /* badges */
 function refreshBadges(){
   const now=Date.now();
+
+  // Financial Management badge: invoices approaching deadline (due <= 7 days) and overdue
+  const finUnpaid = (DB.finInvoices || []).filter(i => 
+    i.status !== "paid" && i.status !== "void" && i.status !== "draft" && (Number(i.balanceDue) || 0) > 0 && i.dueAt
+  );
+  const finOverdue = finUnpaid.filter(i => getInvoiceReminderStatus(i).daysLeft < 0);
+  const finDueSoon = finUnpaid.filter(i => {
+    const d = getInvoiceReminderStatus(i).daysLeft;
+    return d >= 0 && d <= 7;
+  });
+  const finAttentionCount = finOverdue.length + finDueSoon.length;
+
+  [$("#badge-financial"), $("#badge-financial-mobile")].forEach(b => {
+    if(!b) return;
+    b.textContent = finAttentionCount;
+    b.classList.toggle("zero", finAttentionCount === 0);
+    if(finOverdue.length > 0){
+      b.style.background = "var(--clay)";
+      b.style.color = "#fff";
+      b.title = "🚨 " + finOverdue.length + " invoice(s) overdue!";
+    } else if(finDueSoon.length > 0){
+      b.style.background = "var(--amber)";
+      b.style.color = "#fff";
+      b.title = finDueSoon.length + " invoice(s) approaching payment deadline";
+    } else {
+      b.style.background = "";
+      b.style.color = "";
+      b.title = "No urgent payment deadlines";
+    }
+  });
   const due = DB.contacts.filter(c=>!c.doNotCall && c.nextCallAt && (c.nextCallAt<now || new Date(c.nextCallAt).toDateString()===new Date().toDateString())).length;
   const b=$("#badge-today"); if(b) { b.textContent=due; b.classList.toggle("zero",due===0); }
   const bm=$("#badge-today-mobile"); if(bm) { bm.textContent=due; bm.classList.toggle("zero",due===0); }
@@ -14131,6 +17511,12 @@ function subscribeRealtime(){
         if(data.loans) DB.loans = data.loans;
         if(data.bills) DB.bills = data.bills;
         if(data.claims) DB.claims = data.claims;
+        if(data.finClients) DB.finClients = data.finClients;
+        if(data.finCharges) DB.finCharges = data.finCharges;
+        if(data.finInvoices) DB.finInvoices = data.finInvoices;
+        if(data.finPayments) DB.finPayments = data.finPayments;
+        if(data.finReminders) DB.finReminders = data.finReminders;
+        if(data.finSettings) DB.finSettings = data.finSettings;
         cacheLocal(DB);
         draw();
       }catch(e){ console.warn("Realtime refresh failed:", e); }
