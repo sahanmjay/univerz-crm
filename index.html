@@ -263,6 +263,127 @@ td .num{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
 .field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--teal-wash);border-color:var(--teal)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 
+/* ---- Finance Reports tab (form + live A4 preview) ---- */
+.rp-wrap{display:grid;grid-template-columns:minmax(330px,430px) minmax(0,1fr);gap:18px;align-items:start}
+/* Each column scrolls on its own: .content is an overflow box, so position:sticky would never engage */
+.rp-form-col{display:flex;flex-direction:column;gap:12px;min-width:0;max-height:calc(100vh - 150px);overflow:auto;padding-right:4px}
+.rp-prev-col{min-width:0}
+.rp-toolbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px}
+.rp-tb-meta{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.rp-pages-scroll{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:12px;max-height:calc(100vh - 195px);overflow:auto}
+#rp-pages .rp-page{box-shadow:0 2px 10px rgba(32,38,46,.12);margin:0 auto 14px}
+.rp-fcard{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.rp-fh{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-weight:750;font-size:13px;margin-bottom:10px}
+.rp-fh span{font-weight:500;font-size:11px;color:var(--muted);text-align:right}
+.rp-fcard .field{margin-bottom:9px}
+.rp-fcard input,.rp-fcard select,.rp-fcard textarea{width:100%;min-width:0;border:1px solid var(--line-strong);border-radius:6px;padding:6px 8px;font-size:12.5px;background:var(--surface);color:var(--ink);font-family:inherit}
+.rp-fcard input.num{font-family:var(--mono)}
+.rp-fcard input[type=color]{padding:1px;height:30px;width:30px}
+.rp-fcard input[type=checkbox],.rp-fcard input[type=radio]{width:auto}
+.rp-rows{display:flex;flex-direction:column;gap:6px}
+.rp-row{display:grid;gap:6px;align-items:center}
+.rp-row-bucket{grid-template-columns:30px 1fr 62px 1fr 28px}
+.rp-row-dir,.rp-dhead{grid-template-columns:1.3fr 1fr 74px 74px 28px}
+.rp-row-dir{padding-bottom:6px;border-bottom:1px dashed var(--line)}
+.rp-row-dir .rp-note-in{grid-column:1 / 5}
+.rp-dhead{display:grid;gap:6px;font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:4px}
+.rp-row-opt{grid-template-columns:22px 1fr 110px 28px}
+.rp-row-pt{grid-template-columns:1fr 28px}
+.rp-row-pt textarea{grid-column:1 / 2}
+.rp-row-saved{grid-template-columns:1fr auto}
+.rp-row-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px;font-size:11px;color:var(--muted)}
+.rp-row-foot .ok{color:var(--green);font-weight:700}
+.rp-row-foot .bad{color:var(--clay);font-weight:700}
+.rp-radio{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;padding:7px 9px;border:1px solid var(--line);border-radius:7px;margin-bottom:6px;cursor:pointer;font-size:12.5px}
+.rp-radio b{font-family:var(--mono)}
+.rp-radio small,.rp-check small{color:var(--muted)}
+.rp-check{display:flex;gap:7px;align-items:center;font-size:12.5px;padding:3px 0;cursor:pointer}
+.rp-hint{font-size:11.5px;color:var(--muted)}
+.rp-tip{margin-top:8px;padding:8px 10px;background:var(--amber-wash);border-radius:7px;font-size:12px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.rp-letter,.rp-auto{font-family:var(--mono);font-size:12px}
+@media (max-width:1100px){
+  .rp-wrap{grid-template-columns:1fr}
+  .rp-form-col,.rp-pages-scroll{max-height:none;overflow:visible}
+}
+
+/* ---- The A4 report sheet itself (preview and PDF share this) ---- */
+#rp-measure{position:absolute;left:-10000px;top:0;visibility:hidden;pointer-events:none}
+/* The app's table rows fade in from opacity 0; a printed sheet must be fully there when it is captured */
+.rp-page *{animation:none !important;transition:none !important}
+/* The phone layout turns every table into stacked cards; an A4 sheet keeps real tables at every width */
+.rp-page table{display:table}
+.rp-page thead{display:table-header-group}
+.rp-page tbody{display:table-row-group}
+.rp-page tr,.rp-page thead tr{display:table-row;position:static;border:0;border-radius:0;background:none;margin:0;padding:0;box-shadow:none}
+.rp-page th,.rp-page td{display:table-cell}
+.rp-page td::before{content:none}
+.rp-page .rp-tbl td{padding:6px 9px !important;border-bottom:0;position:static}
+.rp-page{
+  --paper:#faf8f4;--surface:#fff;--surface-2:#f3f0e9;--ink:#20262e;--ink-soft:#444b54;--muted:#6f6a60;--line:#e7e1d6;
+  --teal:#1f5c5a;--teal-wash:#e8f0ef;--clay:#bb472b;--clay-wash:#f7e7e1;--amber:#9a6a14;--amber-wash:#f4ecd9;--green:#3c7a4e;--green-wash:#e6f0e8;
+  width:210mm;height:297mm;padding:14mm;box-sizing:border-box;background:var(--paper);color:var(--ink);
+  font-family:var(--sans);font-size:12px;line-height:1.45;display:flex;flex-direction:column;overflow:hidden;
+  -webkit-print-color-adjust:exact;print-color-adjust:exact;
+}
+.rp-head{flex:none;display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:9px;border-bottom:1.5px solid #d8d1c2;margin-bottom:5mm}
+.rp-brand{display:flex;align-items:center;gap:10px}
+.rp-logo{height:38px;width:auto;display:block;border-radius:7px}
+.rp-brand b{display:block;font-size:17px;font-weight:800;line-height:1.15}
+.rp-brand span{font-size:11px;color:var(--muted)}
+.rp-meta{text-align:right;font-family:var(--mono);font-size:10px;color:var(--muted);line-height:1.55}
+.rp-pill{display:inline-block;font-family:var(--sans);font-size:10px;font-weight:800;letter-spacing:.05em;padding:3px 9px;border-radius:999px;margin-bottom:3px;background:var(--surface-2);color:var(--muted)}
+.rp-pill.pending{background:var(--amber-wash);color:var(--amber)}
+.rp-pill.approved{background:var(--green-wash);color:var(--green)}
+.rp-body{flex:1;min-height:0}
+.rp-block{margin-bottom:4.5mm}
+.rp-block:last-child{margin-bottom:0}
+.rp-foot{flex:none;display:flex;justify-content:space-between;border-top:1px solid #d8d1c2;padding-top:5px;margin-top:4mm;font-size:9px;color:var(--muted)}
+.rp-title h1{margin:0 0 5px;font-size:22px;font-weight:800;letter-spacing:-.3px;line-height:1.2}
+.rp-title p{margin:0;font-size:12.5px;color:var(--ink-soft);line-height:1.5}
+.rp-sec-h{display:flex;align-items:center;gap:7px;font-size:14px;font-weight:800;margin-bottom:7px}
+.rp-num{background:var(--teal);color:#fff;font-family:var(--mono);font-size:9px;font-weight:700;padding:2px 5px;border-radius:4px;line-height:1.3}
+.rp-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.rp-card{background:var(--surface-2);border:1px solid var(--line);border-radius:7px;padding:9px 10px}
+.rp-card.hl{background:var(--teal-wash);border-color:var(--teal)}
+.rp-card .k{font-size:8.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.rp-card .v{font-family:var(--mono);font-size:15.5px;font-weight:700;margin:5px 0 3px;white-space:nowrap}
+.rp-card .s{font-size:9px;color:var(--muted)}
+.rp-pos{color:var(--green)}
+.rp-neg{color:var(--clay)}
+.rp-bar{display:flex;height:9px;border-radius:5px;overflow:hidden;margin-bottom:7px}
+.rp-bar span{display:block;height:100%}
+.rp-tw{border:1px solid var(--line);border-radius:7px;overflow:hidden;background:var(--surface)}
+.rp-tw + .rp-tw{margin-top:7px}
+.rp-tbl{width:100%;border-collapse:collapse;font-size:11.5px}
+.rp-tbl th{background:var(--surface-2);font-size:8.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:left;padding:6px 9px;border-bottom:1px solid var(--line);white-space:nowrap}
+.rp-tbl td{padding:6px 9px;border-top:1px solid var(--line);vertical-align:middle}
+.rp-tbl tbody tr:first-child td{border-top:none}
+.rp-tbl .r{text-align:right}
+.rp-tbl .m{font-family:var(--mono);white-space:nowrap}
+.rp-tbl tr.tot td{background:var(--teal-wash);font-weight:800}
+.rp-points td{vertical-align:top}
+.rp-points td:last-child{white-space:pre-line}
+.rp-sw{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px}
+.rp-tag{display:inline-block;font-family:var(--sans);font-size:9px;font-weight:800;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.rp-tag.ok,.rp-tag.spare{background:var(--green-wash);color:var(--green)}
+.rp-tag.over{background:var(--clay-wash);color:var(--clay)}
+.rp-tag.note{background:var(--amber-wash);color:var(--amber);font-family:var(--mono)}
+.rp-callout{margin-top:7px;padding:7px 11px;background:var(--teal-wash);border-left:3px solid var(--teal);border-radius:5px;font-size:11px;line-height:1.5}
+.rp-callout.bad{background:var(--clay-wash);border-left-color:var(--clay)}
+.rp-sign{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.rp-signcard{background:var(--surface);border:1px solid var(--line);border-radius:7px;padding:9px 11px}
+.rp-signcard b{font-size:12px}
+.rp-role{font-size:9.5px;color:var(--muted);margin-bottom:7px}
+.rp-checks{font-size:11px}
+.rp-box{display:inline-block;width:10px;height:10px;border:1.2px solid var(--ink-soft);border-radius:2px;margin-right:4px;vertical-align:-1px;background:#fff}
+.rp-sigline{display:flex;justify-content:space-between;margin-top:20px;padding-bottom:2px;border-bottom:1.2px solid #d8d1c2;font-size:9px;color:var(--muted)}
+.rp-fine{margin-top:8px;font-size:10px;color:var(--muted);line-height:1.5}
+.rp-sharecell{display:flex;align-items:center;gap:6px}
+.rp-share{display:flex;flex:1;height:6px;background:var(--surface-2);border-radius:3px;overflow:hidden}
+.rp-share span{display:block;height:100%}
+.rp-pct{font-family:var(--mono);font-size:10px;color:var(--muted);width:28px;text-align:right}
+.rp-note{background:var(--surface);border:1px solid var(--line);border-radius:7px;padding:10px 12px;white-space:pre-line;font-size:11.5px}
+
 /* disposition chips */
 .chips{display:flex;flex-wrap:wrap;gap:7px}
 .chip{
@@ -8444,7 +8565,8 @@ const ALL_ACC_TABS = [
   { id: 'founders', name: 'Founder Salaries', icon: '💼', desc: 'Founder partner monthly remuneration & 6-way profit split' },
   { id: 'reports', name: 'Monthly Ledger & Analytics', icon: '📊', desc: 'Monthly financial metrics, category stats, and AI audit' },
   { id: 'advisor', name: 'AI Advisor', icon: '🤖', desc: 'Interactive AI financial assistant & chat consultant' },
-  { id: 'audit', name: 'Audit Trail', icon: '📋', desc: 'System finance logs, event audit trail and timeline' }
+  { id: 'audit', name: 'Audit Trail', icon: '📋', desc: 'System finance logs, event audit trail and timeline' },
+  { id: 'finreports', name: 'Reports', icon: '🧾', desc: 'Branded A4 PDF reports for the directors to review and sign' }
 ];
 
 function getAccTabPrefs(){
@@ -11394,6 +11516,819 @@ function deleteFinancialCharge(chargeId){
 
 
 
+/* =================================================================
+   FINANCE REPORTS  (Accounts & Balances → Reports)
+   A saved report is only its form inputs. Every figure on the page is
+   recomputed from live DB data by rpContext(), so nothing is typed in twice.
+     RP_FORM          form blocks (inputs) — a template asks for them through its sections
+     RP_SECTIONS      numbered report sections, each rendered from the context
+     REPORT_TEMPLATES which sections a template prints. Add a template = add an entry.
+   The preview is a set of real A4 pages; the PDF is a snapshot of those same pages.
+   ================================================================= */
+let RP_STATE = null;            // the report open in the Reports tab
+let RP_LOGO = null;             // company logo as {data,w,h}, embedded in every exported PDF
+let RP_PULLED = false;          // saved reports fetched from the cloud this session
+let RP_RAF = 0;
+const RP_MM = 96 / 25.4;        // CSS px per mm
+const RP_GAP_MM = 4.5;          // .rp-block margin-bottom
+const RP_FOUNDERS = ["u3","u2","u1","u4","u5","u6"];
+const RP_H2C = "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js";
+
+const rpSum = list => list.reduce((s, t) => s + (Number(t.amount) || 0), 0);
+function rpDate(ts){ return new Date(ts).toLocaleDateString("en-GB", {day:"numeric", month:"short", year:"numeric"}); }
+function rpShortDate(ts){ return new Date(ts).toLocaleDateString("en-GB", {day:"numeric", month:"short"}); }
+function rpMon(d){ return d.toLocaleDateString("en-US", {month:"short"}); }
+function rpShortRange(c){ return `${rpMon(c.startDate)} ${c.startDate.getDate()} – ${rpMon(c.endDate)} ${c.endDate.getDate()}`; }
+function rpCycleLabel(c){
+  const s = c.startDate, e = c.endDate;
+  return s.getFullYear() === e.getFullYear()
+    ? `${rpShortRange(c)}, ${e.getFullYear()}`
+    : `${rpMon(s)} ${s.getDate()}, ${s.getFullYear()} – ${rpMon(e)} ${e.getDate()}, ${e.getFullYear()}`;
+}
+function rpSigned(n){ return (n > 0 ? "+" : "") + fmtMoney(n); }
+function rpDateInput(ts){ const d = new Date(ts); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
+function rpExpCatId(re, fallback){ const c = getExpenseCategories().find(c => re.test(c.id) || re.test(c.label)); return c ? c.id : fallback; }
+function rpIsOtherIncome(t){ return t.category === "other" || /other/i.test(incCat(t.category).label || ""); }
+function rpTxIsRent(t){ return /\brent\b/i.test(`${t.category} ${expCat(t.category).label} ${t.description}`); }
+function rpBillIsRent(b){ return /\brent\b/i.test(`${b.name} ${b.payee} ${b.category}`); }
+function rpTpl(st){ return REPORT_TEMPLATES[st.template] || REPORT_TEMPLATES.payout; }
+
+/* ---- Defaults, remembered between reports ---- */
+function rpPrefs(){ try{ return JSON.parse(localStorage.getItem("crm_report_prefs") || "{}") || {}; }catch(e){ return {}; } }
+function rpRememberPrefs(st){
+  const prefs = {
+    accountId: st.accountId,
+    options: st.options,
+    // salary and rent "planned" values belong to one cycle, so they are not carried over
+    buckets: st.buckets.map(b => ({...b, plan: b.role === "salary" || b.role === "rent" ? "" : b.plan})),
+    directors: st.directors.map(d => ({userId:d.userId, name:d.name, role:d.role, salary:d.salary, transport:d.transport})),
+  };
+  try{ localStorage.setItem("crm_report_prefs", JSON.stringify(prefs)); }catch(e){}
+  sbWrite(sb.from('app_setting').upsert({key:'finance_report_prefs', value:prefs, updated_at:Date.now()}));
+}
+function rpDefaultDirectors(){
+  const saved = rpPrefs().directors;
+  const rows = Array.isArray(saved) && saved.length ? saved
+    : RP_FOUNDERS.map(id => DB.users.find(u => u.id === id)).filter(Boolean).map(u => ({
+        userId: u.id, name: u.name, role: u.role === "admin" ? (u.title || "Director") : "Director", salary: 5000, transport: 2000,
+      }));
+  return rows.map(d => ({...d, key: uid(), note: "", sign: true}));
+}
+function rpDefaultAccountId(){
+  const a = DB.accounts || [];
+  return (a.find(x => /genie/i.test(x.name || "")) || a.find(x => x.isDefault) || a[0] || {}).id || "";
+}
+function rpNewState(template){
+  const prefs = rpPrefs();
+  const now = Date.now();
+  return {
+    id: "rpt_" + uid(), template: template || "payout", status: "draft", ref: "",
+    title: "", subtitle: "", notes: "",
+    cycleStart: getCycleBounds(-1).start,           // last closed cycle
+    accountId: prefs.accountId && account(prefs.accountId).id ? prefs.accountId : rpDefaultAccountId(),
+    base: "all",
+    buckets: JSON.parse(JSON.stringify(prefs.buckets || [
+      {name:"Bank reserve (savings)", pct:35, color:"#1f5c5a", role:"reserve",   plan:"kept in account"},
+      {name:"Director salaries",      pct:20, color:"#bb472b", role:"salary",    plan:""},
+      {name:"Office rent",            pct:25, color:"#9a6a14", role:"rent",      plan:""},
+      {name:"Banners & marketing",    pct:20, color:"#3c7a4e", role:"marketing", plan:"set aside"},
+    ])),
+    directors: rpDefaultDirectors(),
+    options: JSON.parse(JSON.stringify(prefs.options || [{mode:"fixed", amount:5000}, {mode:"fit", amount:0}])),
+    toggles: {bills:true, rent:true, loans:true, baseWarn:true},
+    points: [],
+    sections: ["snapshot", "categories", "notes", "approval"],
+    createdBy: DB.currentUserId, createdAt: now, updatedAt: now, issuedAt: now, loggedAt: null,
+  };
+}
+/* Fill in anything an older saved report is missing */
+function rpHydrate(st){
+  const base = rpNewState(st.template);
+  const out = Object.assign(base, st);
+  out.toggles = Object.assign({bills:true, rent:true, loans:true, baseWarn:true}, st.toggles);
+  out.directors.forEach(d => { if(!d.key) d.key = uid(); });
+  return out;
+}
+const RP_NEW_ROW = {
+  buckets:   () => ({name:"New bucket", pct:0, color:"#6f6a60", role:"other", plan:""}),
+  directors: () => ({key:uid(), userId:"", name:"", role:"Director", salary:0, transport:0, note:"", sign:true}),
+  options:   () => ({mode:"fixed", amount:0}),
+  points:    () => ({title:"", detail:""}),
+};
+
+/* ---- Saved reports: localStorage first, mirrored to app_setting like the other finance settings ---- */
+function rpReports(){ try{ const a = JSON.parse(localStorage.getItem("crm_finance_reports") || "[]"); return Array.isArray(a) ? a : []; }catch(e){ return []; } }
+function rpWriteReports(list){
+  try{ localStorage.setItem("crm_finance_reports", JSON.stringify(list)); }catch(e){}
+  // ponytail: whole list in one app_setting row; move to its own table if it grows past a few hundred reports
+  sbWrite(sb.from('app_setting').upsert({key:'finance_reports', value:list, updated_at:Date.now()}));
+}
+async function rpPullReports(){
+  if(RP_PULLED) return;
+  RP_PULLED = true;
+  try{
+    const { data } = await sb.from('app_setting').select('value').eq('key', 'finance_reports').maybeSingle();
+    const remote = Array.isArray(data && data.value) ? data.value : [];
+    if(!remote.length) return;
+    const byId = new Map(rpReports().map(r => [r.id, r]));
+    remote.forEach(r => { const mine = byId.get(r.id); if(!mine || (r.updatedAt || 0) > (mine.updatedAt || 0)) byId.set(r.id, r); });
+    try{ localStorage.setItem("crm_finance_reports", JSON.stringify([...byId.values()])); }catch(e){}
+    if($("#rp-form")) rpRenderForm();
+  }catch(e){ console.warn("Could not load saved reports from the cloud:", e); }
+}
+
+/* ---- Reference numbers: UNZ-<TYPE>-YYYY-MM-<seq>, month of the cycle end ---- */
+function rpRefPrefix(st){
+  const e = getCycleForDate(st.cycleStart).endDate;
+  return `UNZ-${rpTpl(st).code}-${e.getFullYear()}-${String(e.getMonth()+1).padStart(2,"0")}-`;
+}
+function rpNextRef(st){
+  const p = rpRefPrefix(st);
+  const max = rpReports().filter(r => r.id !== st.id && (r.ref || "").startsWith(p))
+    .reduce((m, r) => Math.max(m, Number(r.ref.slice(p.length)) || 0), 0);
+  return p + String(max + 1).padStart(2, "0");
+}
+function rpRef(st){ return st.ref && st.ref.startsWith(rpRefPrefix(st)) ? st.ref : rpNextRef(st); }
+
+/* ---- Calculations ---- */
+/* Same brought-forward rule as the Overview tab: today's total balance minus what moved since. */
+function rpCycleFinance(c){
+  const txs = DB.transactions || [];
+  const inCycle = txs.filter(t => t.at >= c.start && t.at <= c.end);
+  const inc = inCycle.filter(t => t.type === "income"), exp = inCycle.filter(t => t.type === "expense");
+  const netOf = list => list.reduce((s, t) => t.type === "income" ? s + (Number(t.amount)||0) : t.type === "expense" ? s - (Number(t.amount)||0) : s, 0);
+  const total = (DB.accounts || []).reduce((s, a) => s + (Number(a.balance) || 0), 0);
+  const income = rpSum(inc), expenses = rpSum(exp);
+  return {
+    inc, exp, income, expenses, net: income - expenses,
+    opening: total - netOf(txs.filter(t => t.at >= c.start)),
+    closing: total - netOf(txs.filter(t => t.at > c.end)),
+  };
+}
+/* Largest-remainder rounding: whole rupees that add up exactly to the base */
+function rpAllocate(base, pcts){
+  const raw = pcts.map(p => base * p / 100);
+  const out = raw.map(Math.floor);
+  let left = Math.round(base) - out.reduce((s, v) => s + v, 0);
+  raw.map((v, i) => [v - Math.floor(v), i]).sort((a, b) => b[0] - a[0] || a[1] - b[1])
+     .forEach(([, i]) => { if(left > 0){ out[i]++; left--; } });
+  return out;
+}
+/* [2000,2000,1000] -> "2 × Rs. 2,000 + 1 × Rs. 1,000" */
+function rpGroupDesc(amounts){
+  const counts = new Map();
+  amounts.filter(a => a > 0).forEach(a => counts.set(a, (counts.get(a) || 0) + 1));
+  return [...counts].map(([a, n]) => `${n} × ${fmtMoney(a)}`).join(" + ");
+}
+
+function rpContext(st, forExport){
+  const tpl = rpTpl(st);
+  const cycle = getCycleForDate(st.cycleStart);
+  const cycleWord = cycle.isCurrent ? "This cycle" : cycle.start === getCycleBounds(-1).start ? "Last cycle" : "Cycle";
+  const cf = rpCycleFinance(cycle);
+  const acc = account(st.accountId);
+  const accBal = Number(acc.balance) || 0;
+  const me = user(st.createdBy || DB.currentUserId);
+
+  // Income base
+  const otherTxs = cf.inc.filter(rpIsOtherIncome);
+  const otherTotal = rpSum(otherTxs);
+  const baseAll = cf.income, baseClient = cf.income - otherTotal;
+  const base = st.base === "client" ? baseClient : baseAll;
+
+  // Directors, and reimbursements already paid to them since the cycle started
+  const reimbTxs = (DB.transactions || []).filter(t => t.type === "expense" && t.at >= cycle.start && /reimburs/i.test(t.description || ""));
+  const dirs = st.directors.map(d => {
+    const salary = Number(d.salary) || 0, transport = Number(d.transport) || 0;
+    const first = (d.name || "").trim().split(/\s+/)[0] || "";
+    const reimb = first.length > 2 ? reimbTxs.filter(t => (t.description || "").toLowerCase().includes(first.toLowerCase())) : [];
+    return {...d, salary, transport, total: salary + transport, first, reimb};
+  });
+  const salaryTotal = dirs.reduce((s, d) => s + d.salary, 0);
+  const transportTotal = dirs.reduce((s, d) => s + d.transport, 0);
+  const payoutTotal = salaryTotal + transportTotal;
+  const rentActual = rpSum(cf.exp.filter(rpTxIsRent));
+
+  // Allocation buckets
+  const pctTotal = st.buckets.reduce((s, b) => s + (Number(b.pct) || 0), 0);
+  const pctOk = Math.abs(pctTotal - 100) < 0.001;
+  const allocs = pctOk ? rpAllocate(base, st.buckets.map(b => Number(b.pct) || 0))
+                       : st.buckets.map(b => Math.round(base * (Number(b.pct) || 0) / 100));
+  const buckets = st.buckets.map((b, i) => {
+    const alloc = allocs[i];
+    const auto = b.role === "salary" ? salaryTotal : (b.role === "rent" && rentActual > 0 ? rentActual : null);
+    const typed = String(b.plan == null ? "" : b.plan).trim();
+    const typedNum = typed.replace(/^rs\.?\s*/i, "").replace(/,/g, "");
+    let planned = null, planText = "";
+    if(!typed) planned = auto;
+    else if(/^\d+(\.\d+)?$/.test(typedNum)) planned = Number(typedNum);
+    else planText = typed;
+    let status = {kind:"ok", label:"OK", diff:0};
+    if(planned != null && planned > alloc) status = {kind:"over", label:`Over by ${fmtMoney(planned - alloc)}`, diff: planned - alloc};
+    else if(planned != null && planned < alloc) status = {kind:"spare", label:`${fmtMoney(alloc - planned)} spare`, diff: alloc - planned};
+    return {...b, pct: Number(b.pct) || 0, alloc, auto, planned, planText, status};
+  });
+  const salaryBucket = buckets.find(b => b.role === "salary");
+
+  // Salary options (A, B, …); "fit" rounds down to Rs. 50 so it stays inside the bucket
+  const n = dirs.length;
+  const options = (st.options || []).map((o, i) => {
+    const each = o.mode === "fit" ? (salaryBucket && n ? Math.floor(salaryBucket.alloc / n / 50) * 50 : 0) : (Number(o.amount) || 0);
+    return {letter: String.fromCharCode(65 + i), mode: o.mode, each, total: each * n};
+  });
+
+  // Commitments still ahead in the current cycle
+  const cur = getCycleBounds(0);
+  const unpaidBills = (DB.bills || []).filter(b => b.lastPaidCycle !== cur.key);
+  const rentBills = unpaidBills.filter(rpBillIsRent);
+  const otherBills = unpaidBills.filter(b => !rpBillIsRent(b));
+  const rentPaid = (DB.bills || []).some(b => rpBillIsRent(b) && b.lastPaidCycle === cur.key);
+  const nextRent = rentBills.length ? rpSum(rentBills) : (rentPaid ? 0 : rentActual);
+  const rentMonth = cur.endDate.toLocaleDateString("en-US", {month:"long"});
+  const dirLoans = (DB.loans || []).filter(l => (l.loanType === "director" || l.isDeferred) && (Number(l.remainingAmount) || 0) > 0);
+
+  // "Can we afford it?" running balance
+  let run = accBal;
+  const afford = [{label:`Balance today (${acc.name})`, amt:null, run}];
+  const take = (label, amt) => { if(amt <= 0) return; run -= amt; afford.push({label, amt:-amt, run}); };
+  take(`Director salaries (${rpGroupDesc(dirs.map(d => d.salary))})`, salaryTotal);
+  take(`Transport (${rpGroupDesc(dirs.map(d => d.transport))})`, transportTotal);
+  if(st.toggles.bills) take(`Pending bills — ${otherBills.map(b => `${b.name} ${fmtMoney(b.amount)}`).join(" + ")}`, rpSum(otherBills));
+  if(st.toggles.rent) take(`${rentMonth} rent`, nextRent);
+
+  // Points for the directors: automatic ones first, then the ones typed in
+  const points = [];
+  if(salaryBucket && salaryBucket.status.kind === "over"){
+    const over = salaryBucket.status.diff;
+    const spare = buckets.find(b => b !== salaryBucket && b.status.kind === "spare" && b.status.diff >= over);
+    const parts = options.map(o => (o.mode === "fixed" && o.total === salaryTotal && spare)
+      ? `Option ${o.letter}: cover the ${fmtMoney(over)} from the ${esc(spare.name.toLowerCase())} bucket's spare ${fmtMoney(spare.status.diff)}.`
+      : `Option ${o.letter}: pay ${fmtMoney(o.each)} each (${fmtMoney(o.total)} total)${o.total <= salaryBucket.alloc ? ` to stay inside ${salaryBucket.pct}%` : ""}.`);
+    points.push({title:`Salary is ${fmtMoney(over)} over the ${salaryBucket.pct}% bucket`,
+      html:`${salaryBucket.pct}% of ${fmtMoney(base)} is ${fmtMoney(salaryBucket.alloc)}. ${parts.join(" ")}`});
+  }
+  if(transportTotal > 0){
+    points.push({title:"Transport is a reimbursement, not salary",
+      html:`${fmtMoney(transportTotal)} is proposed to be logged as <i>${esc(expCat(rpExpCatId(/travel|transport/i, "travel")).label)}</i> (operating expense), so it does not count against the salary bucket.`});
+  }
+  if(st.toggles.baseWarn && otherTotal > 0){
+    const groups = new Map();
+    otherTxs.forEach(t => {
+      const k = (contact(t.contactId) || {}).name || (t.description || "Other").slice(0, 28);
+      groups.set(k, (groups.get(k) || 0) + (Number(t.amount) || 0));
+    });
+    const list = [...groups].sort((a, b) => b[1] - a[1]).slice(0, 3).map(([k, v]) => `${esc(k)} ${fmtMoney(v)}`).join(", ") + (groups.size > 3 ? ", …" : "");
+    const alt = st.base === "client" ? baseAll : baseClient;
+    const sal = salaryBucket ? ` — on that base the ${salaryBucket.pct}% salary bucket would be ${fmtMoney(Math.round(alt * salaryBucket.pct / 100))}` : "";
+    points.push({title:"Income base", html: st.base === "client"
+      ? `${fmtMoney(otherTotal)} of ${cycleWord.toLowerCase()}'s income was "Other income" (${list}) and is left out of the base. All income was ${fmtMoney(baseAll)}${sal}.`
+      : `${fmtMoney(otherTotal)} of ${cycleWord.toLowerCase()}'s income was "Other income" (${list}). Client income alone was ${fmtMoney(baseClient)}${sal}.`});
+  }
+  if(st.toggles.loans && dirLoans.length){
+    const who = dirLoans.map(l => `${esc(l.lender ? l.lender.split(/\s+/)[0] : l.name)} ${fmtMoney(l.remainingAmount)}`);
+    const joined = who.length > 1 ? who.slice(0, -1).join(", ") + " and " + who[who.length - 1] : who[0];
+    points.push({title:"Director loans on record",
+      html:`${joined} remaining (${dirLoans.length === 2 ? "both " : dirLoans.length > 2 ? "all " : ""}on hold). Not affected by this payout.`});
+  }
+  (st.points || []).filter(p => (p.title || "").trim() || (p.detail || "").trim())
+    .forEach(p => points.push({title: p.title, html: esc(p.detail)}));
+
+  // Category breakdown
+  const byCat = (txs, lookup, fallbackColor) => {
+    const m = new Map();
+    txs.forEach(t => {
+      const k = t.category || "other";
+      const e = m.get(k) || {label: lookup(k).label, color: lookup(k).color || fallbackColor, amount: 0, count: 0};
+      e.amount += Number(t.amount) || 0; e.count++;
+      m.set(k, e);
+    });
+    return [...m.values()].sort((a, b) => b.amount - a.amount);
+  };
+
+  const cycleTok = `${rpMon(cycle.endDate)}${cycle.endDate.getFullYear()}`;
+  return {
+    st, tpl, cycle, cycleWord, cycleLabel: rpCycleLabel(cycle), cf, acc, accBal, me,
+    base, baseAll, baseClient, otherTotal,
+    dirs, salaryTotal, transportTotal, payoutTotal, buckets, pctTotal, pctOk, salaryBucket, options,
+    afford, left: run, points,
+    incCats: byCat(cf.inc, incCat, "#3c7a4e"), expCats: byCat(cf.exp, expCat, "#bb472b"),
+    ref: rpRef(st),
+    statusLabel: {draft:"Draft", pending:"Pending approval", approved:"Approved"}[st.status] || "Draft",
+    issued: rpDate(st.issuedAt || Date.now()),
+    title: (st.title || "").trim() || tpl.docTitle,
+    logoSrc: forExport && RP_LOGO ? RP_LOGO.data : (getCompanyProfile().logo || "/logo-placeholder.png"),
+    fileName: `Univerz_${tpl.name.replace(/[^A-Za-z0-9]+/g, "_")}_${cycleTok}.pdf`,
+  };
+}
+
+/* ---- Report sections ---- */
+function rpCard(k, v, s, hl){ return `<div class="rp-card${hl ? " hl" : ""}"><div class="k">${k}</div><div class="v">${v}</div><div class="s">${s}</div></div>`; }
+function rpTable(head, rows, totalRow){
+  return `<div class="rp-tw"><table class="rp-tbl"><thead><tr>${head}</tr></thead><tbody>${rows}${totalRow ? `<tr class="tot">${totalRow}</tr>` : ""}</tbody></table></div>`;
+}
+
+const RP_SECTIONS = {
+  snapshot: { label:"Account snapshot", name:"Account snapshot", needs:[], render: x => `
+    <div class="rp-cards">
+      ${rpCard(`${x.cycleWord} income`, `<span class="rp-pos">${rpSigned(x.cf.income)}</span>`, `${rpShortRange(x.cycle)} · ${x.cf.inc.length} receipt${x.cf.inc.length === 1 ? "" : "s"}`)}
+      ${rpCard(`${x.cycleWord} expenses`, `<span class="rp-neg">${rpSigned(-x.cf.expenses)}</span>`, `${x.cf.exp.length} payment${x.cf.exp.length === 1 ? "" : "s"}`)}
+      ${rpCard(`${x.cycleWord} net`, fmtMoney(x.cf.net), `${x.cycle.isCurrent ? "Running at" : "Closed at"} ${fmtMoney(x.cf.closing)}`)}
+      ${rpCard("Balance today", fmtMoney(x.accBal), esc(x.acc.name), true)}
+    </div>` },
+
+  movement: { label:"Cash movement (opening → closing)", name:"Cash movement", needs:[], render: x => rpTable(
+    `<th>Item</th><th class="r">Amount</th><th class="r">Balance</th>`,
+    `<tr><td>Opening reserve (${rpShortDate(x.cycle.start)})</td><td></td><td class="r m">${fmtMoney(x.cf.opening)}</td></tr>
+     <tr><td>Income received (${x.cf.inc.length})</td><td class="r m rp-pos">${rpSigned(x.cf.income)}</td><td class="r m">${fmtMoney(x.cf.opening + x.cf.income)}</td></tr>
+     <tr><td>Expenses paid (${x.cf.exp.length})</td><td class="r m rp-neg">${rpSigned(-x.cf.expenses)}</td><td class="r m">${fmtMoney(x.cf.closing)}</td></tr>`,
+    `<td>${x.cycle.isCurrent ? "Running balance" : "Closing reserve"} (${rpShortDate(x.cycle.end)})</td><td class="r m">${rpSigned(x.cf.net)}</td><td class="r m">${fmtMoney(x.cf.closing)}</td>`) },
+
+  allocation: { label:"Income allocation policy", name: x => `Income allocation policy (${x.buckets.map(b => b.pct).join(" / ")})`,
+    needs:["base", "buckets", "directors"], render: x => !x.buckets.length ? "" : `
+    <div class="rp-bar">${x.buckets.map(b => `<span style="width:${b.pct}%;background:${esc(b.color)}"></span>`).join("")}</div>
+    ${rpTable(
+      `<th>Bucket</th><th class="r">Share</th><th class="r">Allocated (on ${fmtMoney(x.base)})</th><th class="r">Planned / actual use</th><th>Status</th>`,
+      x.buckets.map(b => `<tr><td><span class="rp-sw" style="background:${esc(b.color)}"></span>${esc(b.name)}</td><td class="r m">${b.pct}%</td>
+        <td class="r m">${fmtMoney(b.alloc)}</td><td class="r m">${b.planned != null ? fmtMoney(b.planned) : esc(b.planText || "—")}</td>
+        <td><span class="rp-tag ${b.status.kind}">${b.status.label}</span></td></tr>`).join(""),
+      `<td>Total</td><td class="r m">${+x.pctTotal.toFixed(2)}%</td><td class="r m">${fmtMoney(x.buckets.reduce((s, b) => s + b.alloc, 0))}</td><td></td><td></td>`)}
+    ${x.pctOk ? "" : `<div class="rp-callout bad">Shares add up to ${+x.pctTotal.toFixed(2)}%, not 100%. Fix the policy before this goes out.</div>`}` },
+
+  payout: { label:"Proposed payout per director", name:"Proposed payout per director", needs:["directors", "options"], render: x => {
+    if(!x.dirs.length) return "";
+    const notes = x.dirs.filter(d => d.note && d.reimb.length).map(d => {
+      const last = d.reimb.reduce((a, t) => t.at > a.at ? t : a);
+      return `${esc(d.first)}'s transport is not in this payout — ${fmtMoney(rpSum(d.reimb))} was already reimbursed on ${rpShortDate(last.at)}${last.receiptRef ? ` (Ref: ${esc(last.receiptRef)})` : ""}.`;
+    });
+    return rpTable(
+      `<th>#</th><th>Director</th><th class="r">Salary</th><th class="r">Transport (last month)</th><th class="r">Total</th>`,
+      x.dirs.map((d, i) => `<tr><td>${i + 1}</td><td>${esc(d.name)}</td><td class="r m">${fmtMoney(d.salary)}</td>
+        <td class="r m">${d.transport ? fmtMoney(d.transport) : "—"}${d.note ? ` <span class="rp-tag note">${esc(d.note)}</span>` : ""}</td>
+        <td class="r m">${fmtMoney(d.total)}</td></tr>`).join(""),
+      `<td></td><td>Total</td><td class="r m">${fmtMoney(x.salaryTotal)}</td><td class="r m">${fmtMoney(x.transportTotal)}</td><td class="r m">${fmtMoney(x.payoutTotal)}</td>`)
+      + (notes.length ? `<div class="rp-callout">${notes.join("<br>")}</div>` : "");
+  } },
+
+  afford: { label:"Can we afford it?", name:"Can we afford it?", needs:["directors", "toggles"], render: x => {
+    const t = x.st.toggles;
+    const after = [t.bills && "bills", t.rent && "rent"].filter(Boolean);
+    return rpTable(
+      `<th>Item</th><th class="r">Amount</th><th class="r">Running balance</th>`,
+      x.afford.map(r => `<tr><td>${esc(r.label)}</td><td class="r m rp-neg">${r.amt == null ? "" : fmtMoney(r.amt)}</td><td class="r m">${fmtMoney(r.run)}</td></tr>`).join(""),
+      `<td>Left after all of the above</td><td></td><td class="r m">${fmtMoney(x.left)}</td>`)
+      + `<div class="rp-callout ${x.left < 0 ? "bad" : ""}"><b>Cash position:</b> ${x.left >= 0
+          ? `the account can cover the full ${fmtMoney(x.payoutTotal)}${after.length ? ` and still pay this month's ${after.join(" and ")}` : ""}, leaving about ${fmtMoney(x.left)}.`
+          : `paying the full ${fmtMoney(x.payoutTotal)} plus the items above would leave the account short by ${fmtMoney(-x.left)}.`}</div>`;
+  } },
+
+  points: { label:"Points for the directors to decide", name:"Points for the directors to decide", needs:["points", "toggles", "options"],
+    render: x => !x.points.length ? "" : `<div class="rp-tw"><table class="rp-tbl rp-points"><thead><tr><th style="width:27%">Point</th><th>Detail</th></tr></thead><tbody>
+      ${x.points.map(p => `<tr><td><b>${esc(p.title)}</b></td><td>${p.html}</td></tr>`).join("")}</tbody></table></div>` },
+
+  categories: { label:"Breakdown by category", name:"Breakdown by category", needs:[], render: x => {
+    const tbl = (title, rows, total) => !rows.length ? "" : rpTable(
+      `<th>${title}</th><th class="r">Entries</th><th class="r">Amount</th><th style="width:30%">Share</th>`,
+      rows.map(r => {
+        const pct = total ? r.amount / total * 100 : 0;
+        return `<tr><td><span class="rp-sw" style="background:${esc(r.color)}"></span>${esc(r.label)}</td><td class="r m">${r.count}</td><td class="r m">${fmtMoney(r.amount)}</td>
+          <td><div class="rp-sharecell"><div class="rp-share"><span style="width:${pct.toFixed(1)}%;background:${esc(r.color)}"></span></div><span class="rp-pct">${Math.round(pct)}%</span></div></td></tr>`;
+      }).join(""),
+      `<td>Total</td><td class="r m">${rows.reduce((s, r) => s + r.count, 0)}</td><td class="r m">${fmtMoney(total)}</td><td></td>`);
+    return (tbl("Income category", x.incCats, x.cf.income) + tbl("Expense category", x.expCats, x.cf.expenses))
+      || `<div class="rp-fine">No income or expenses were recorded in this cycle.</div>`;
+  } },
+
+  topexp: { label:"Largest expenses", name:"Largest expenses", needs:[], render: x => {
+    const rows = [...x.cf.exp].sort((a, b) => (Number(b.amount) || 0) - (Number(a.amount) || 0)).slice(0, 8);
+    return !rows.length ? "" : rpTable(
+      `<th>Date</th><th>Description</th><th>Category</th><th class="r">Amount</th>`,
+      rows.map(t => `<tr><td class="m">${rpShortDate(t.at)}</td><td>${esc(t.description || "—")}</td><td>${esc(expCat(t.category).label)}</td><td class="r m rp-neg">${fmtMoney(-(Number(t.amount) || 0))}</td></tr>`).join(""));
+  } },
+
+  notes: { label:"Notes", name:"Notes", needs:["notes"], render: x => (x.st.notes || "").trim() ? `<div class="rp-note">${esc(x.st.notes.trim())}</div>` : "" },
+
+  approval: { label:"Approval & signatures", name: x => x.tpl.code === "PAY" ? "Director approval" : "Approval", needs:["signatories"], render: x => {
+    const signers = x.dirs.filter(d => d.sign !== false);
+    if(!signers.length) return "";
+    const opts = x.tpl.code === "PAY" && x.options.length
+      ? ` Salary option chosen: ${x.options.map(o => `<span class="rp-box"></span>${o.letter} — ${fmtMoney(o.each)} each`).join("&nbsp;&nbsp; ")}` : "";
+    return `<div class="rp-sign">${signers.map(d => `<div class="rp-signcard"><b>${esc(d.name)}</b><div class="rp-role">${esc(d.role || "Director")}</div>
+        <div class="rp-checks"><span class="rp-box"></span>Approve &nbsp; <span class="rp-box"></span>Reject</div>
+        <div class="rp-sigline"><span>Signature</span><span>Date</span></div></div>`).join("")}</div>
+      <div class="rp-fine">Figures taken from Univerz CRM → Accounts &amp; Balances on ${x.issued}.${opts}</div>`;
+  } },
+};
+
+const REPORT_TEMPLATES = {
+  payout: {
+    code: "PAY", name: "Director Payout Approval", docTitle: "Director Salary & Transport Payout",
+    subtitle: x => `Approval request for the ${x.cycleLabel} cycle · Paid from <b>${esc(x.acc.name)}</b> · Prepared by ${esc(x.me.name)}${x.me.title ? ` (${esc(x.me.title)})` : ""}`,
+    sections: () => ["snapshot", "allocation", "payout", "afford", "points", "approval"],
+  },
+  cycle: {
+    code: "CYC", name: "Cycle Financial Summary", docTitle: "Cycle Financial Summary",
+    subtitle: x => `Income, expenses and net for the ${x.cycleLabel} billing cycle · Prepared by ${esc(x.me.name)}${x.me.title ? ` (${esc(x.me.title)})` : ""}`,
+    sections: () => ["snapshot", "movement", "categories", "topexp", "notes", "approval"],
+  },
+  custom: {
+    code: "CUS", name: "Custom Report", docTitle: "Finance Report",
+    subtitle: x => esc((x.st.subtitle || "").trim() || `Prepared for the ${x.cycleLabel} cycle by ${x.me.name}`),
+    sections: st => st.sections || [],
+  },
+};
+
+/* ---- Form blocks ---- */
+function rpFCard(title, body, hint){ return `<div class="rp-fcard"><div class="rp-fh">${title}${hint ? `<span>${hint}</span>` : ""}</div>${body}</div>`; }
+const RP_FORM_ORDER = ["basics", "sections", "base", "buckets", "directors", "options", "toggles", "points", "notes", "signatories"];
+const RP_FORM = {
+  basics: (st, x) => {
+    const cycles = [];
+    for(let o = 0; o >= -12; o--) cycles.push(getCycleBounds(o));
+    if(!cycles.some(c => c.start === x.cycle.start)) cycles.push(x.cycle);
+    return rpFCard("Report", `
+      <div class="field"><label>Template</label><select data-rp="template" data-rp-redraw>
+        ${Object.entries(REPORT_TEMPLATES).map(([k, t]) => `<option value="${k}" ${st.template === k ? "selected" : ""}>${t.name}</option>`).join("")}</select></div>
+      <div class="field"><label>Title</label><input data-rp="title" value="${esc(st.title)}" placeholder="${esc(x.tpl.docTitle)}"></div>
+      ${st.template === "custom" ? `<div class="field"><label>Subtitle</label><input data-rp="subtitle" value="${esc(st.subtitle || "")}" placeholder="Prepared for the … cycle"></div>` : ""}
+      <div class="field"><label>Billing cycle</label><select data-rp="cycleStart" data-rp-num data-rp-redraw>
+        ${cycles.map(c => `<option value="${c.start}" ${c.start === x.cycle.start ? "selected" : ""}>${rpCycleLabel(c)}${c.isCurrent ? " (in progress)" : ""}</option>`).join("")}</select></div>
+      <div class="grid2">
+        <div class="field"><label>Status</label><select data-rp="status">
+          ${[["draft","Draft"],["pending","Pending approval"],["approved","Approved"]].map(([v, l]) => `<option value="${v}" ${st.status === v ? "selected" : ""}>${l}</option>`).join("")}</select></div>
+        <div class="field"><label>Issued</label><input type="date" data-rp="issuedAt" data-rp-date value="${rpDateInput(st.issuedAt || Date.now())}"></div>
+      </div>
+      <div class="field" style="margin-bottom:0"><label>Paid from / balance account</label><select data-rp="accountId" data-rp-redraw>
+        ${(DB.accounts || []).map(a => `<option value="${a.id}" ${a.id === st.accountId ? "selected" : ""}>${esc(a.name)} — ${fmtMoney(a.balance)}</option>`).join("") || `<option value="">No accounts yet</option>`}</select></div>`);
+  },
+  sections: st => rpFCard("Sections", Object.entries(RP_SECTIONS).map(([k, s]) =>
+      `<label class="rp-check"><input type="checkbox" data-rp-section="${k}" ${(st.sections || []).includes(k) ? "checked" : ""}> ${s.label}</label>`).join(""),
+    "Printed in this order"),
+  base: (st, x) => rpFCard("Income base", `
+    <label class="rp-radio"><input type="radio" name="rp-base" value="all" data-rp="base" data-rp-redraw ${st.base !== "client" ? "checked" : ""}><span>All cycle income</span><b>${fmtMoney(x.baseAll)}</b></label>
+    <label class="rp-radio"><input type="radio" name="rp-base" value="client" data-rp="base" data-rp-redraw ${st.base === "client" ? "checked" : ""}><span>Client income only <small>(excludes Other income)</small></span><b>${fmtMoney(x.baseClient)}</b></label>
+    ${x.otherTotal ? `<div class="rp-hint">Difference: ${fmtMoney(x.otherTotal)} of Other income.</div>` : ""}`),
+  buckets: (st, x) => rpFCard("Allocation policy", `
+    <div class="rp-rows">${st.buckets.map((b, i) => `<div class="rp-row rp-row-bucket">
+      <input type="color" data-rp="buckets.${i}.color" value="${esc(b.color)}" title="Colour">
+      <input data-rp="buckets.${i}.name" value="${esc(b.name)}" placeholder="Bucket name">
+      <input type="number" class="num" data-rp="buckets.${i}.pct" value="${b.pct}" min="0" max="100" step="0.5" title="Share %">
+      <input data-rp="buckets.${i}.plan" value="${esc(b.plan || "")}" title="Planned / actual use: a number, or a note like 'set aside'"
+        placeholder="${x.buckets[i] && x.buckets[i].auto != null ? "auto: " + fmtMoney(x.buckets[i].auto) : "planned use"}">
+      <button class="btn ghost sm" data-rp-del="buckets.${i}" title="Remove bucket">✕</button></div>`).join("")}</div>
+    <div class="rp-row-foot"><button class="btn sm" data-rp-add="buckets">+ Bucket</button><span id="rp-pct-total"></span></div>`,
+    "Rent fills from RENT expenses; type to override"),
+  directors: (st, x) => {
+    const tips = x.dirs.filter(d => d.reimb.length && !d.note).map(d => {
+      const last = d.reimb.reduce((a, t) => t.at > a.at ? t : a);
+      return `<div class="rp-tip">💡 <span><b>${esc(d.first)}</b> was reimbursed ${fmtMoney(rpSum(d.reimb))} on ${rpShortDate(last.at)}${last.receiptRef ? ` (${esc(last.receiptRef)})` : ""}.</span>
+        <button class="btn sm" data-rp-act="mark-paid" data-key="${d.key}">Mark transport as already paid</button></div>`;
+    });
+    return rpFCard("Directors", `
+      <div class="rp-dhead"><span>Name</span><span>Role</span><span>Salary</span><span>Transport</span><span></span></div>
+      <div class="rp-rows">${st.directors.map((d, i) => `<div class="rp-row rp-row-dir">
+        <input data-rp="directors.${i}.name" value="${esc(d.name)}" placeholder="Name">
+        <input data-rp="directors.${i}.role" value="${esc(d.role || "")}" placeholder="Director">
+        <input type="number" class="num" data-rp="directors.${i}.salary" value="${d.salary}" min="0" step="50">
+        <input type="number" class="num" data-rp="directors.${i}.transport" value="${d.transport}" min="0" step="50">
+        <button class="btn ghost sm" data-rp-del="directors.${i}" title="Remove director">✕</button>
+        <input class="rp-note-in" data-rp="directors.${i}.note" value="${esc(d.note || "")}" placeholder="Note, e.g. already paid"></div>`).join("")}</div>
+      <div class="rp-row-foot"><button class="btn sm" data-rp-add="directors">+ Director</button><span>Remembered for next time</span></div>
+      ${tips.join("")}`, "Pre-filled from People");
+  },
+  options: (st, x) => rpFCard("Salary options", `
+    <div class="rp-rows">${(st.options || []).map((o, i) => `<div class="rp-row rp-row-opt">
+      <b class="rp-letter">${String.fromCharCode(65 + i)}</b>
+      <select data-rp="options.${i}.mode" data-rp-redraw>
+        <option value="fixed" ${o.mode !== "fit" ? "selected" : ""}>Fixed amount each</option>
+        <option value="fit" ${o.mode === "fit" ? "selected" : ""}>Fit inside salary bucket</option></select>
+      ${o.mode === "fit" ? `<span class="rp-auto" id="rp-opt-each-${i}">${fmtMoney(x.options[i].each)} each</span>`
+                         : `<input type="number" class="num" data-rp="options.${i}.amount" value="${o.amount || 0}" min="0" step="50">`}
+      <button class="btn ghost sm" data-rp-del="options.${i}" title="Remove option">✕</button></div>`).join("")}</div>
+    <div class="rp-row-foot"><button class="btn sm" data-rp-add="options">+ Option</button><span>Shown as tick-boxes in the PDF</span></div>`),
+  toggles: st => rpFCard("Include", [["bills","Pending recurring bills"],["rent","Next rent"],["loans","Director loans"],["baseWarn","Income-base warning"]]
+    .map(([k, l]) => `<label class="rp-check"><input type="checkbox" data-rp="toggles.${k}" ${st.toggles[k] ? "checked" : ""}> ${l}</label>`).join("")),
+  points: st => rpFCard("Points for directors to decide", `
+    <div class="rp-rows">${(st.points || []).map((p, i) => `<div class="rp-row rp-row-pt">
+      <input data-rp="points.${i}.title" value="${esc(p.title)}" placeholder="Point">
+      <button class="btn ghost sm" data-rp-del="points.${i}" title="Remove point">✕</button>
+      <textarea data-rp="points.${i}.detail" rows="2" placeholder="Detail">${esc(p.detail)}</textarea></div>`).join("")}</div>
+    <div class="rp-row-foot"><button class="btn sm" data-rp-add="points">+ Point</button><span>Salary, transport, income and loan points are added for you</span></div>`),
+  notes: st => rpFCard("Notes", `<textarea data-rp="notes" rows="4" placeholder="Anything the directors should read">${esc(st.notes || "")}</textarea>`),
+  signatories: st => rpFCard("Signatories", st.directors.map((d, i) =>
+      `<label class="rp-check"><input type="checkbox" data-rp="directors.${i}.sign" ${d.sign !== false ? "checked" : ""}> ${esc(d.name || "Unnamed")} <small>${esc(d.role || "Director")}</small></label>`).join("")
+      || `<div class="rp-hint">No directors yet.</div>`, "Approve / Reject + signature and date"),
+};
+
+/* ---- Rendering: form, pages, toolbar ---- */
+function rpShellHtml(){
+  return `<div class="rp-wrap" id="rp-root">
+    <div class="rp-form-col" id="rp-form"></div>
+    <div class="rp-prev-col"><div class="rp-toolbar" id="rp-toolbar"></div><div class="rp-pages-scroll"><div id="rp-pages"></div></div></div>
+  </div>`;
+}
+function rpFormBlocks(st){
+  const needs = new Set(["basics"]);
+  if(st.template === "custom") needs.add("sections");
+  rpTpl(st).sections(st).forEach(k => ((RP_SECTIONS[k] || {}).needs || []).forEach(n => needs.add(n)));
+  return RP_FORM_ORDER.filter(k => needs.has(k));
+}
+function rpRenderForm(){
+  const el = $("#rp-form");
+  if(!el) return;
+  const x = rpContext(RP_STATE);
+  const saved = rpReports().sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+  el.innerHTML = rpFCard("Saved reports", `<div class="rp-row rp-row-saved">
+      <select id="rp-open-select"><option value="">${saved.length ? "Open a saved report…" : "No saved reports yet"}</option>
+        ${saved.map(r => `<option value="${r.id}" ${r.id === RP_STATE.id ? "selected" : ""}>${esc(r.ref || "Unsaved")} · ${esc(rpTpl(r).name)} · ${rpDate(r.updatedAt)}</option>`).join("")}</select>
+      <button class="btn sm" data-rp-act="new" title="Start a fresh report">+ New</button></div>`)
+    + rpFormBlocks(RP_STATE).map(k => RP_FORM[k](RP_STATE, x)).join("");
+}
+function rpHeadHtml(x){
+  return `<div class="rp-head">
+    <div class="rp-brand"><img class="rp-logo" src="${esc(x.logoSrc)}" alt="Univerz"><div><b>Univerz</b><span>Accounts &amp; Balances · Finance</span></div></div>
+    <div class="rp-meta"><span class="rp-pill ${esc(x.st.status)}">● ${esc(x.statusLabel.toUpperCase())}</span><div>REF: ${esc(x.ref)}</div><div>Issued: ${x.issued}</div></div>
+  </div>`;
+}
+function rpFootHtml(x, i, n){ return `<div class="rp-foot"><span>Univerz CRM · ${esc(x.tpl.name)} · ${esc(x.ref)}</span><span>Page ${i} of ${n}</span></div>`; }
+function rpBlocks(x){
+  const blocks = [`<div class="rp-title"><h1>${esc(x.title)}</h1><p>${x.tpl.subtitle(x)}</p></div>`];
+  let n = 0;
+  x.tpl.sections(x.st).forEach(k => {
+    const s = RP_SECTIONS[k];
+    const body = s ? s.render(x) : "";
+    if(!body) return;
+    const name = typeof s.name === "function" ? s.name(x) : s.name;
+    blocks.push(`<div class="rp-sec-h"><span class="rp-num">${String(++n).padStart(2, "0")}</span>${esc(name)}</div>${body}`);
+  });
+  return blocks;
+}
+/* Measure every block at print size, then fill pages with whole blocks — a section never splits */
+function rpPaginate(x){
+  const blocks = rpBlocks(x);
+  let m = document.getElementById("rp-measure");
+  if(!m){ m = document.createElement("div"); m.id = "rp-measure"; document.body.appendChild(m); }
+  m.innerHTML = `<div class="rp-page" style="height:auto">${rpHeadHtml(x)}<div class="rp-body">${blocks.map(b => `<div class="rp-block">${b}</div>`).join("")}</div>${rpFootHtml(x, 1, 1)}</div>`;
+  const page = m.firstChild, body = page.querySelector(".rp-body");
+  const pr = page.getBoundingClientRect(), br = body.getBoundingClientRect();
+  const avail = 297 * RP_MM - (br.top - pr.top) - (pr.bottom - br.bottom);
+  const gap = RP_GAP_MM * RP_MM;
+  const pages = [[]];
+  let used = 0;
+  [...body.children].forEach((el, i) => {
+    const h = el.getBoundingClientRect().height;
+    if(pages[pages.length - 1].length && used + h > avail){ pages.push([]); used = 0; }
+    pages[pages.length - 1].push(blocks[i]);
+    used += h + gap;
+  });
+  m.innerHTML = "";
+  return pages.map((p, i) => `<div class="rp-page">${rpHeadHtml(x)}<div class="rp-body">${p.map(b => `<div class="rp-block">${b}</div>`).join("")}</div>${rpFootHtml(x, i + 1, pages.length)}</div>`);
+}
+function rpUsesAllocation(st){ return rpTpl(st).sections(st).includes("allocation"); }
+function rpToolbarHtml(x, pageCount){
+  const st = RP_STATE;
+  const blocked = rpUsesAllocation(st) && !x.pctOk;
+  const canLog = x.tpl.code === "PAY" && st.status === "approved";
+  return `<button class="btn sm" data-rp-act="preview">Preview</button>
+    <button class="btn primary sm" data-rp-act="download" ${blocked ? `disabled title="Allocation shares must add up to 100%"` : ""}>⬇ Download PDF</button>
+    <button class="btn sm" data-rp-act="save">Save as draft</button>
+    <button class="btn sm" data-rp-act="duplicate">Duplicate last report</button>
+    ${canLog ? `<button class="btn sm" data-rp-act="log" ${st.loggedAt ? `disabled title="Logged on ${rpDate(st.loggedAt)}"` : ""} style="border-color:var(--clay);color:var(--clay)">
+      ${st.loggedAt ? "✓ Payouts logged" : "Log these payouts as expenses"}</button>` : ""}
+    <span class="rp-tb-meta">${esc(x.ref)} · ${pageCount} page${pageCount === 1 ? "" : "s"}</span>`;
+}
+function rpRenderPreview(){
+  const box = $("#rp-pages");
+  if(!box || !RP_STATE) return;
+  const x = rpContext(RP_STATE);
+  const pages = rpPaginate(x);
+  box.innerHTML = pages.join("");
+  $("#rp-toolbar").innerHTML = rpToolbarHtml(x, pages.length);
+  // Live bits of the form that depend on the numbers
+  const tot = $("#rp-pct-total");
+  if(tot){
+    tot.className = x.pctOk ? "ok" : "bad";
+    tot.textContent = `Total ${+x.pctTotal.toFixed(2)}%${x.pctOk ? " ✓" : " — must be exactly 100%"}`;
+  }
+  x.options.forEach((o, i) => { const e = $(`#rp-opt-each-${i}`); if(e) e.textContent = `${fmtMoney(o.each)} each`; });
+  rpFitPreview();
+}
+function rpSchedulePreview(){ cancelAnimationFrame(RP_RAF); RP_RAF = requestAnimationFrame(rpRenderPreview); }
+function rpFitPreview(){
+  const box = $("#rp-pages");
+  if(box) box.style.zoom = Math.min(1, box.parentElement.clientWidth / (210 * RP_MM + 26)).toFixed(4);
+}
+window.addEventListener("resize", rpFitPreview);
+
+/* ---- Wiring ---- */
+function rpMount(){
+  const root = $("#rp-root");
+  if(!root) return;
+  if(!RP_STATE) RP_STATE = rpNewState("payout");
+  rpRenderForm();
+  rpRenderPreview();
+  rpPullReports();
+  rpEnsureLogo();
+  root.addEventListener("input", rpOnInput);
+  root.addEventListener("change", rpOnInput);
+  root.addEventListener("click", rpOnClick);
+}
+function rpSet(path, v){
+  const ks = path.split(".");
+  let o = RP_STATE;
+  for(let i = 0; i < ks.length - 1; i++) o = o[ks[i]];
+  o[ks[ks.length - 1]] = v;
+}
+function rpOnInput(e){
+  const el = e.target;
+  if(el.id === "rp-open-select"){
+    if(e.type === "change" && el.value) rpOpen(el.value);
+    return;
+  }
+  // Selects, ticks and radios react on "change"; typing reacts on "input"
+  const isPick = el.tagName === "SELECT" || el.type === "checkbox" || el.type === "radio";
+  if(isPick !== (e.type === "change")) return;
+  if(el.dataset.rpSection){
+    const on = new Set(RP_STATE.sections);
+    el.checked ? on.add(el.dataset.rpSection) : on.delete(el.dataset.rpSection);
+    RP_STATE.sections = Object.keys(RP_SECTIONS).filter(k => on.has(k));
+    rpRenderForm();
+    rpSchedulePreview();
+    return;
+  }
+  const path = el.dataset.rp;
+  if(!path || (el.type === "radio" && !el.checked)) return;
+  let v = el.type === "checkbox" ? el.checked : el.value;
+  if(el.type === "number") v = el.value === "" ? 0 : Number(el.value);
+  if("rpNum" in el.dataset) v = Number(v);
+  if("rpDate" in el.dataset) v = el.value ? new Date(el.value + "T12:00:00").getTime() : Date.now();
+  rpSet(path, v);
+  if("rpRedraw" in el.dataset) rpRenderForm();
+  rpSchedulePreview();
+}
+function rpOnClick(e){
+  const add = e.target.closest("[data-rp-add]"), del = e.target.closest("[data-rp-del]"), act = e.target.closest("[data-rp-act]");
+  if(add){
+    RP_STATE[add.dataset.rpAdd].push(RP_NEW_ROW[add.dataset.rpAdd]());
+  } else if(del){
+    const [k, i] = del.dataset.rpDel.split(".");
+    RP_STATE[k].splice(Number(i), 1);
+  } else if(act){
+    rpAction(act.dataset.rpAct, act);
+    return;
+  } else return;
+  rpRenderForm();
+  rpSchedulePreview();
+}
+function rpOpen(id){
+  const r = rpReports().find(x => x.id === id);
+  if(!r) return;
+  RP_STATE = rpHydrate(JSON.parse(JSON.stringify(r)));
+  rpRenderForm();
+  rpRenderPreview();
+  toast(`Opened ${r.ref || "report"}`);
+}
+async function rpAction(a, btn){
+  if(!isSahan()){ toast("Only Admin / Finance (Sahan) can create finance reports."); return; }
+  if(a === "preview"){
+    rpRenderPreview();
+    $("#rp-pages").scrollIntoView({behavior:"smooth", block:"start"});
+  } else if(a === "save"){
+    rpSave("Saved finance report");
+    toast(`✓ Saved ${RP_STATE.ref}`);
+    rpRenderForm(); rpRenderPreview();
+  } else if(a === "download"){
+    await rpDownload(btn);
+  } else if(a === "duplicate"){
+    rpDuplicateLast();
+  } else if(a === "new"){
+    RP_STATE = rpNewState(RP_STATE.template);
+    rpRenderForm(); rpRenderPreview();
+  } else if(a === "mark-paid"){
+    const d = RP_STATE.directors.find(r => r.key === btn.dataset.key);
+    if(d){ d.transport = 0; d.note = "already paid"; }
+    rpRenderForm(); rpRenderPreview();
+  } else if(a === "log"){
+    rpLogPayouts();
+  }
+}
+
+/* ---- Save, duplicate, export ---- */
+function rpSave(action, amount){
+  const st = RP_STATE;
+  st.ref = rpRef(st);
+  st.updatedAt = Date.now();
+  rpWriteReports([JSON.parse(JSON.stringify(st)), ...rpReports().filter(r => r.id !== st.id)]);
+  rpRememberPrefs(st);
+  const x = rpContext(st);
+  logFinanceAction(action, `${st.ref} · ${x.tpl.name} · ${x.cycleLabel} · ${x.statusLabel}`, amount || 0);
+  cacheLocal(DB);
+}
+function rpDuplicateLast(){
+  const last = rpReports().sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0))[0];
+  if(!last){ toast("No saved report yet — save or download one first."); return; }
+  const now = Date.now();
+  RP_STATE = rpHydrate({...JSON.parse(JSON.stringify(last)), id: "rpt_" + uid(), ref: "", status: "draft",
+    cycleStart: getCycleBounds(-1).start, issuedAt: now, createdAt: now, updatedAt: now, createdBy: DB.currentUserId, loggedAt: null});
+  RP_STATE.directors.forEach(d => { d.note = ""; });   // "already paid" belonged to the old cycle
+  rpRenderForm(); rpRenderPreview();
+  toast(`Copied ${last.ref || "the last report"} into a new draft for ${rpCycleLabel(getCycleBounds(-1))}`);
+}
+/* The logo is embedded as base64 so it can never come out missing in the file */
+async function rpEnsureLogo(){
+  if(!RP_LOGO) RP_LOGO = await pdfLoadImage(getCompanyProfile().logo || "/logo-placeholder.png");
+  return RP_LOGO;
+}
+function rpLoadHtml2canvas(){
+  return new Promise((ok, fail) => {
+    if(window.html2canvas) return ok();
+    const s = document.createElement("script");
+    s.src = RP_H2C;
+    s.onload = ok;
+    s.onerror = () => fail(new Error("the html2canvas library could not be downloaded"));
+    document.head.appendChild(s);
+  });
+}
+async function rpDownload(btn){
+  const JsPDF = window.jspdf && window.jspdf.jsPDF;
+  if(!JsPDF){ toast("The PDF library did not load — check your connection and reload."); return; }
+  if(rpUsesAllocation(RP_STATE) && !rpContext(RP_STATE).pctOk){ toast("Allocation shares must add up to exactly 100%."); return; }
+  const original = btn.innerHTML;
+  btn.disabled = true; btn.innerHTML = "Building PDF…";
+  const stage = document.createElement("div");
+  try{
+    const logo = await rpEnsureLogo();
+    if(!logo){
+      toast("The logo could not be loaded, so no PDF was made. Check the logo in Products & Billing → Company & Billing Setup.");
+      return;
+    }
+    await rpLoadHtml2canvas();
+    if(document.fonts) await document.fonts.ready;
+    rpSave("Exported finance report PDF");          // fixes the reference number before it is printed
+    const x = rpContext(RP_STATE, true);
+    stage.id = "rp-stage";
+    stage.style.cssText = "position:fixed;left:-10000px;top:0";
+    stage.innerHTML = rpPaginate(x).join("");
+    document.body.appendChild(stage);
+    await Promise.all([...stage.querySelectorAll("img")].map(img => img.decode ? img.decode().catch(() => {}) : null));
+    const pdf = new JsPDF({unit:"mm", format:"a4", orientation:"portrait", compress:true});
+    pdf.setProperties({title: `${x.title} — ${x.ref}`, author: "Univerz", creator: "Univerz CRM"});
+    const pages = [...stage.querySelectorAll(".rp-page")];
+    for(let i = 0; i < pages.length; i++){
+      const canvas = await html2canvas(pages[i], {
+        scale: 3, backgroundColor: "#faf8f4", logging: false,
+        onclone: doc => { doc.getElementById("rp-stage").style.left = "0px"; },
+      });
+      if(i) pdf.addPage();
+      pdf.addImage(canvas.toDataURL("image/jpeg", 0.95), "JPEG", 0, 0, 210, 297);
+    }
+    pdf.save(x.fileName);
+    toast(`✓ ${x.fileName} downloaded`);
+    rpRenderForm(); rpRenderPreview();
+  }catch(err){
+    console.error("Report PDF failed:", err);
+    toast("Could not build the PDF — " + err.message);
+  }finally{
+    stage.remove();
+    btn.disabled = false; btn.innerHTML = original;
+  }
+}
+/* After approval only, and only when asked: one expense per director per kind */
+function rpLogPayouts(){
+  const st = RP_STATE;
+  const x = rpContext(st);
+  if(st.status !== "approved" || x.tpl.code !== "PAY") return;
+  if(st.loggedAt){ toast("These payouts were already logged."); return; }
+  const acc = (DB.accounts || []).find(a => a.id === st.accountId);
+  if(!acc){ toast("Choose the account the payouts are paid from."); return; }
+  const salCat = rpExpCatId(/salar/i, "salary"), travCat = rpExpCatId(/travel|transport/i, "travel");
+  const lines = x.dirs.flatMap(d => [
+    d.salary > 0 && {d, amount: d.salary, category: salCat, what: "Director salary"},
+    d.transport > 0 && {d, amount: d.transport, category: travCat, what: "Director transport"},
+  ]).filter(Boolean);
+  if(!lines.length){ toast("Nothing to log — every amount is zero."); return; }
+  const total = lines.reduce((s, l) => s + l.amount, 0);
+  if(!confirm(`Log ${lines.length} expenses totalling ${fmtMoney(total)} from ${acc.name}?\n\n`
+    + `Salaries: ${fmtMoney(x.salaryTotal)} → ${expCat(salCat).label}\nTransport: ${fmtMoney(x.transportTotal)} → ${expCat(travCat).label}\n\n`
+    + `The account balance drops to ${fmtMoney((Number(acc.balance) || 0) - total)}.`)) return;
+  st.ref = rpRef(st);
+  const at = Date.now();
+  lines.forEach(l => {
+    const tx = {
+      id: uid(), accountId: acc.id, toAccountId: null, type: "expense", amount: l.amount, category: l.category, contactId: "",
+      description: `${l.what}: ${l.d.name} — ${x.cycleLabel} (${st.ref})`, receiptRef: st.ref,
+      userId: l.d.userId || DB.currentUserId, at,
+    };
+    DB.transactions.unshift(tx);
+    sbWrite(sb.from('finance_transaction').insert(objToSnake(tx)));
+  });
+  acc.balance = (Number(acc.balance) || 0) - total;
+  sbWrite(sb.from('finance_account').update({balance: acc.balance}).eq('id', acc.id));
+  st.loggedAt = at;
+  rpSave("Logged director payouts as expenses", -total);
+  toast(`✓ Logged ${lines.length} payout expenses (${fmtMoney(total)}) from ${acc.name}`);
+  renderAccount();
+}
+
 function renderAccount(){
   if(!DB.accounts) DB.accounts = [];
   if(!DB.transactions) DB.transactions = [];
@@ -11496,7 +12431,7 @@ function renderAccount(){
   const unpaidFoundersCount = allFoundersList.filter(u => !isFounderPaidThisCycle(u.id, cycle)).length;
 
   // Strict non-Sahan privacy & access control: non-Sahan users are restricted to staff claims, founder salaries, and protected overview
-  const RESTRICTED_TABS = ['transactions', 'all', 'expense', 'income', 'sahan', 'loans', 'bills', 'audit', 'reports', 'advisor'];
+  const RESTRICTED_TABS = ['transactions', 'all', 'expense', 'income', 'sahan', 'loans', 'bills', 'audit', 'reports', 'advisor', 'finreports'];
   if(!isSahanUser && RESTRICTED_TABS.includes(ACCOUNT_TAB)){
     ACCOUNT_TAB = 'claims';
   }
@@ -11590,6 +12525,7 @@ function renderAccount(){
   else if(ACCOUNT_TAB === 'reports') viewTitle = 'Monthly Ledger &amp; Financial Analytics';
   else if(ACCOUNT_TAB === 'advisor') viewTitle = 'AI Financial Advisor';
   else if(ACCOUNT_TAB === 'audit') viewTitle = 'Financial Audit Trail &amp; System Logs';
+  else if(ACCOUNT_TAB === 'finreports') viewTitle = 'Finance Reports for Director Sign-off';
 
   h += `
   <div class="view-head" style="margin-bottom:14px;align-items:center">
@@ -12459,6 +13395,8 @@ function renderAccount(){
       </div>
     </div>
     `;
+  } else if(ACCOUNT_TAB === "finreports"){
+    h += rpShellHtml();   // filled in by rpMount() once it is in the page
   } else if(ACCOUNT_TAB === "audit"){
     // Render Audit Log Table
     const logs = [...DB.financeLogs].sort((a,b) => b.at - a.at);
@@ -13010,6 +13948,7 @@ function renderAccount(){
   }
 
   $("#content").innerHTML = h;
+  if(ACCOUNT_TAB === "finreports") rpMount();
 
   // Wire search & filter inputs in the rendered view
   const sInput = $("#acc-search-input");
